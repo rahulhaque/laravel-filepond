@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
-class FilepondAbstract
+abstract class AbstractFilepond
 {
     private $field;
     private $isMultiple;

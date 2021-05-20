@@ -7,7 +7,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
-class Filepond extends FilepondAbstract
+class Filepond extends AbstractFilepond
 {
     /**
      * Set the FilePond field name

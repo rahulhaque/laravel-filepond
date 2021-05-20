@@ -59,7 +59,9 @@ Let's assume we are updating user avatar like the form below.
 </script>
 ```
 
-Now in `UserAvatarController.php` get and process the submitted file as below. Here I am using a disk `avatar` for storing the file. We will call the `moveTo` method from the `Filepond` facade which will return the moved file information for further processing along with deleting the file from temporary storage.
+Now selecting a file with FilePond input field which will upload the file in the temporary directory right away and append the hidden input in the form. Submit the form to process the uploaded file like below in your controller.
+
+In `UserAvatarController.php` get and process the submitted file by calling the `moveTo()` method from the `Filepond` facade which will return the moved file information as well as delete the file from the temporary storage.
 
 ```php
 use Illuminate\Http\Request;
@@ -91,51 +93,51 @@ class UserAvatarController extends Controller
 }
 ```
 
-This is the quickest way to get started with FilePond. This package has already implemented all the classes and controllers for you. Next we will talk about all the nitty gritty stuffs available.
+This is the quickest way to get started. This package has already implemented all the classes and controllers for you. Next we will discuss about all the nitty gritty stuffs available.
 
 ## Usage
 
 ### Configuration
 
-First have a look at the `./config/filepond.php` to know about all the options available for you out of the box. 
+First have a look at the `./config/filepond.php` to know about all the options available out of the box.
 
 ### Temporary Storage
 
-By default this package adds a temporary disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory. You have the freedom to set your own storage disk in the configuration file.
+This package adds a disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory for temporary file storage. Set your own if needed.
 
 ### Command
 
-This package will register a `php artisan filepond:clear` command which will clean up the expired files from the storage upon calling. File expiration minute can be set in the configuration file. Add this command to your scheduled command list to run daily. Detail about task scheduling can be found here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
+This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File expiration minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
 
-You can also pass `--all` option to truncate the `fileponds` table and delete everything inside the temporary storage. This is useful when you lost track of your uploaded files.
+This command takes `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
 ### Methods
 
 #### field()
 
-This is a required method which tell the library which FilePond form field to process. This can be single or multiple file upload field.
+`Filepond::field($field)` is a required method which tell the library which FilePond form field to work with. Chain the rest of the methods as required.
 
 #### getFile()
 
-Calling the `Filepond::field($field)->getFile()` method will return the request file object the same way as the Laravel returns `$request->file()` object. For multiple upload, it will return a collection of request objects. You can then process the file manually any way you want. All the methods provided by the standard Laravel `$request->file()` object is available there.
+`Filepond::field()->getFile()` method returns the file object same as the Laravel's `$request->file()` object. For multiple uploads, it will return a collection of file objects. You can then process the file manually any way you want.
 
-**N.B.** Handling the file object manually will not update the associated filepond database model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
+*Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
 
 #### getModel()
 
-Calling the `Filepond::field($field)->getModel()` method will return the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
+`Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
 
 #### copyTo()
 
-Calling the `Filepond::field($field)->copyTo($path-with-filename)` method will copy the file from the temporary storage to the path provided along with the filename and will set the file extension automatically. This method will return copied file info along with filepond model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with trailing incremental values like `$filename-{$i}`.
+Calling the `Filepond::field()->copyTo($path-with-filename)` method will copy the file from the temporary storage to the path provided along with the filename and will set the file extension automatically. This method will return copied file info along with filepond model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with trailing incremental values like `$filename-{$i}`.
 
 #### moveTo()
 
-Calling the `Filepond::field($field)->moveTo($path-with-filename)` method works the same way as copy method. One thing it does extra for you is delete the file after copying, respecting the value of `soft_delete` configuration for `Filepond` model. 
+Calling the `Filepond::field()->moveTo($path-with-filename)` method works the same way as copy method. One thing it does extra for you is delete the file after copying, respecting the value of `soft_delete` configuration for `Filepond` model. 
 
 #### delete()
 
-Calling the `Filepond::field($field)->delete()` method will delete the temporary file respecting the value of `soft_delete` configuration for `Filepond` model. This method is useful when you're manually handling the file processing using `getFile()` method.
+Calling the `Filepond::field()->delete()` method will delete the temporary file respecting the soft delete configuration for `Filepond` model. This method is useful when you're manually handling the file processing using `getFile()` method.
 
 ### Traits
 
@@ -144,6 +146,7 @@ There is a `HasFilepond` trait available to get the temporary files uploaded by 
 ```php
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use RahulHaque\Filepond\Traits\HasFilepond;
 
 class User extends Authenticatable
@@ -158,13 +161,13 @@ Now you can get all the file info uploaded by a single user like this.
 User::find(1)->fileponds;
 ```
 
-### Testing
+## Testing
 
 ```bash
 composer test
 ```
 
-### Changelog
+## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
 
