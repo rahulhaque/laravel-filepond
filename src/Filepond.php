@@ -3,7 +3,6 @@
 namespace RahulHaque\Filepond;
 
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
@@ -28,7 +27,7 @@ class Filepond extends AbstractFilepond
     /**
      * Return file object from the field
      *
-     * @return UploadedFile|\Illuminate\Support\Collection
+     * @return array|UploadedFile
      */
     public function getFile()
     {
@@ -38,7 +37,7 @@ class Filepond extends AbstractFilepond
             foreach ($fileponds as $filepond) {
                 $response[] = $this->createFileObject($filepond);
             }
-            return new Collection($response);
+            return $response;
         }
 
         $filepond = $this->getFieldModel();

@@ -25,6 +25,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
   protected function getEnvironmentSetUp($app)
   {
-    // perform environment setup
+      include_once __DIR__ . '/../database/migrations/create_fileponds_table.php.stub';
+
+      (new \CreateFilepondsTable())->up();
   }
 }
