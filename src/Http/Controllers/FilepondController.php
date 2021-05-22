@@ -27,8 +27,9 @@ class FilepondController extends Controller implements FilepondServerInterface
         $uploadedFile = is_array($input) ? $input[0] : $input;
 
         if (!$uploadedFile) {
+            $key = array_key_first($request->all());
             throw ValidationException::withMessages([
-                'errors' => 'No files uploaded.'
+                $key => 'The ' . $key . ' field does not contain any file.'
             ]);
         }
 
