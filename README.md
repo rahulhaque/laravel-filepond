@@ -37,6 +37,8 @@ Let's assume we are updating user avatar like the form below.
 
 ```html
 <form action="{{ route('avatar') }}" method="post">
+    @csrf
+    
     <intput type="file" name="avatar" required/>
 
     <button type="submit">Submit</button>
