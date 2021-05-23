@@ -49,7 +49,7 @@ Let's assume we are updating user avatar like the form below.
             process: "{{ config('filepond.server.process') }}",
             revert: "{{ config('filepond.server.revert') }}",
             headers: {
-                'X-CSRF-TOKEN': "{{ @csrf_token }}",
+                'X-CSRF-TOKEN': "{{ @csrf_token() }}",
             }
         }
     });
