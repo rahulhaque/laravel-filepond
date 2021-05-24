@@ -61,7 +61,7 @@ Let's assume we are updating user avatar like the form below.
 </script>
 ```
 
-Now selecting a file with FilePond input field which will upload the file in the temporary directory right away and append the hidden input in the form. Submit the form to process the uploaded file like below in your controller.
+Now selecting a file with FilePond input field will upload the file in the temporary directory immediately and append the hidden input in the form. Submit the form to process the uploaded file like below in your controller.
 
 In `UserAvatarController.php` get and process the submitted file by calling the `moveTo()` method from the `Filepond` facade which will return the moved file information as well as delete the file from the temporary storage.
 
@@ -87,6 +87,15 @@ class UserAvatarController extends Controller
     
         $fileInfo = Filepond::field($request->avatar)
             ->moveTo(Storage::disk('avatar')->path($filename));
+            
+        // dd($fileInfo);
+        // [
+        //     "id" => 1,
+        //     "dirname" => "/filepath/storage/app/public/avatars",
+        //     "basename" => "avatar-1.png",
+        //     "extension" => "png",
+        //     "filename" => "avatar-1",
+        // ];
     
         auth()->user()->update([
             'avatar' => $fileInfo['basename']
@@ -131,11 +140,11 @@ This command takes `--all` option which will truncate the `Filepond` model and d
 
 #### copyTo()
 
-Calling the `Filepond::field()->copyTo($path-with-filename)` method will copy the file from the temporary storage to the path provided along with the filename and will set the file extension automatically. This method will return copied file info along with filepond model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with trailing incremental values like `$filename-{$i}`.
+Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the file from the temporary storage to the path provided along with the filename and will set the file extension automatically. This method will return the copied file info along with filepond model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with trailing incremental values like `$filename-{$i}`.
 
 #### moveTo()
 
-Calling the `Filepond::field()->moveTo($path-with-filename)` method works the same way as copy method. One thing it does extra for you is delete the file after copying, respecting the value of `soft_delete` configuration for `Filepond` model. 
+Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as copy method. One thing it does extra for you is delete the file after copying, respecting the value of `soft_delete` configuration for `Filepond` model. 
 
 #### delete()
 
