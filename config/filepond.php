@@ -72,6 +72,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default Validation Rules
+    |--------------------------------------------------------------------------
+    |
+    | Set the default validation for uploaded files.
+    |
+    */
+    'validation_rules' => [
+        'required',
+        'file',
+        'max:5000'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | FilePond Server Paths
     |--------------------------------------------------------------------------
     |
@@ -82,8 +96,5 @@ return [
     'server' => [
         'process' => env('FILEPOND_PROCESS_URL', '/filepond'),
         'revert' => env('FILEPOND_REVERT_URL', '/filepond'),
-        // 'restore' => env('FILEPOND_RESTORE_URL', '/filepond?id='),
-        // 'load' => env('FILEPOND_LOAD_URL', '/filepond'),
-        // 'fetch' => env('FILEPOND_FETCH_URL', '/filepond?data='),
     ]
 ];

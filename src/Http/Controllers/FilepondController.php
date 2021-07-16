@@ -7,16 +7,15 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use RahulHaque\Filepond\Contracts\FilepondServerInterface;
+use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Models\Filepond;
 
-class FilepondController extends Controller implements FilepondServerInterface
+class FilepondController extends Controller
 {
     /**
      * FilePond ./process route logic.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      * @throws \Illuminate\Validation\ValidationException
      */
@@ -26,11 +25,12 @@ class FilepondController extends Controller implements FilepondServerInterface
 
         $uploadedFile = is_array($input) ? $input[0] : $input;
 
-        if (!$uploadedFile) {
-            $key = array_key_first($request->all());
-            throw ValidationException::withMessages([
-                $key => 'The ' . $key . ' field does not contain any file.'
-            ]);
+        $field = array_key_first($request->all());
+
+        $validator = Validator::make([$field => $uploadedFile], [$field => config('filepond.validation_rules')]);
+
+        if ($validator->fails()) {
+            return Response::make($validator->errors(), 422);
         }
 
         $filepond = Filepond::create([
@@ -39,7 +39,7 @@ class FilepondController extends Controller implements FilepondServerInterface
             'extension' => $uploadedFile->getClientOriginalExtension(),
             'mimetypes' => $uploadedFile->getClientMimeType(),
             'disk' => config('filepond.disk', 'filepond'),
-            'created_by' => auth()->id() ?? null,
+            'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30))
         ]);
 
@@ -51,7 +51,7 @@ class FilepondController extends Controller implements FilepondServerInterface
     /**
      * FilePond ./revert route logic.
      *
-     * @param Request $request
+     * @param  Request  $request
      * @return \Illuminate\Http\Response
      */
     public function revert(Request $request)
