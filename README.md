@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-This package provides a straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. Supports both single and multiple file uploads. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. It also comes with an artisan command to clean up temporary files after they have expired.
+A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads along with server side validation. It also comes with an artisan command to clean up temporary files after they have expired.
 
 ## Installation
 
@@ -12,8 +12,6 @@ Install the package via composer:
 ```bash
 composer require rahulhaque/laravel-filepond
 ```
-
-### Laravel
 
 Publish the configuration and migration files.
 
@@ -106,17 +104,21 @@ class UserAvatarController extends Controller
 
 This is the quickest way to get started. This package has already implemented all the classes and controllers for you. Next we will discuss about all the nitty gritty stuffs available.
 
-## Usage
+> **Important:** If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.  
 
-### Configuration
+## Configuration
 
-First have a look at the `./config/filepond.php` to know about all the options available out of the box.
+First have a look at the `./config/filepond.php` to know about all the options available out of the box. Some important ones mentioned below.
+
+### Validation Rules
+
+Default server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`
 
 ### Temporary Storage
 
 This package adds a disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory for temporary file storage. Set your own if needed.
 
-### Command
+## Command
 
 This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File expiration minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
 
@@ -132,7 +134,7 @@ This command takes `--all` option which will truncate the `Filepond` model and d
 
 `Filepond::field()->getFile()` method returns the file object same as the Laravel's `$request->file()` object. For multiple uploads, it will return an array of uploaded file objects. You can then process the file manually any way you want.
 
-*Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
+> *Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
 
 #### getModel()
 

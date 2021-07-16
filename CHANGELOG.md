@@ -2,6 +2,12 @@
 
 All notable changes to `filepond` will be documented in this file
 
+## 1.1.2 - 2021-07-16
+
+- Server side validation option added in `./config/filepond.php`.
+- Documentation updated.
+- Performance improvements.
+
 ## 1.0.2 - 2021-05-22
 
 - Validation message will now include field name.
