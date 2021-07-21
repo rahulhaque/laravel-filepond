@@ -2,6 +2,7 @@
 
 namespace RahulHaque\Filepond;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use RahulHaque\Filepond\Console\FilepondClear;
 
@@ -19,9 +20,9 @@ class FilepondServiceProvider extends ServiceProvider
                 __DIR__ . '/../config/filepond.php' => base_path('config/filepond.php'),
             ], 'filepond-config');
 
-            if (!class_exists('CreateFilepondsTable')) {
+            if (!Schema::hasTable('fileponds')) {
                 $this->publishes([
-                    __DIR__ . '/../database/migrations/create_fileponds_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_fileponds_table.php'),
+                    __DIR__.'/../database/migrations/create_fileponds_table.php.stub' => database_path('migrations/'.date('Y_m_d', time()).'_000000_create_fileponds_table.php'),
                 ], 'filepond-migrations');
             }
 
@@ -36,7 +37,6 @@ class FilepondServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        // Automatically apply the package configuration
         $this->mergeConfigFrom(__DIR__ . '/../config/filepond.php', 'filepond');
 
         $this->app->config['filesystems.disks.' . config('filepond.disk', 'filepond')] = config('filepond.storage', [
@@ -44,7 +44,6 @@ class FilepondServiceProvider extends ServiceProvider
             'root' => storage_path('app/filepond'),
         ]);
 
-        // Register the main class to use with the facade
         $this->app->singleton('filepond', function () {
             return new Filepond;
         });

@@ -46,16 +46,12 @@ abstract class AbstractFilepond
     }
 
     /**
-     * @return mixed
+     * @return boolean
      */
     protected function getIsMultiple()
     {
         return $this->isMultiple;
     }
-
-    /**
-     * @return $this
-     */
 
     /**
      * Set if the upload type is multiple
@@ -104,7 +100,6 @@ abstract class AbstractFilepond
                 $query->where('created_by', auth()->id());
             })
             ->first();
-
         return $this;
     }
 
@@ -152,7 +147,9 @@ abstract class AbstractFilepond
         return new UploadedFile(
             Storage::disk($filepond->disk)->path($filepond->filepath),
             $filepond->filename,
-            $filepond->mimetypes
+            $filepond->mimetypes,
+            \UPLOAD_ERR_OK,
+            true
         );
     }
 

@@ -16,6 +16,7 @@ class FilepondModelTest extends TestCase
     {
         $data = [
             'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'fieldname' => 'avatar',
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -34,6 +35,7 @@ class FilepondModelTest extends TestCase
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'fieldname' => 'avatar',
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -55,6 +57,7 @@ class FilepondModelTest extends TestCase
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'fieldname' => 'avatar',
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -73,6 +76,7 @@ class FilepondModelTest extends TestCase
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'fieldname' => 'avatar',
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',

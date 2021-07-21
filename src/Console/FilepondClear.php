@@ -61,8 +61,8 @@ class FilepondClear extends Command
         $expiredFiles = Filepond::where('expires_at', '<=', now());
         $this->info('Total expired files: ' . $expiredFiles->count());
         if (Storage::disk($disk)->delete($expiredFiles->pluck('filepath')->toArray())) {
-            $expiredFiles->forceDelete();
             $this->info('Deleted expired files: ' . $expiredFiles->count());
+            $expiredFiles->forceDelete();
             return 0;
         }
         $this->info('Could not delete files.');

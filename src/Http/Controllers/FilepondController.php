@@ -4,7 +4,6 @@ namespace RahulHaque\Filepond\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Response;
 use RahulHaque\Filepond\Services\FilepondService;
 
@@ -15,11 +14,10 @@ class FilepondController extends Controller
      *
      * @param  Request  $request
      * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function process(Request $request, FilepondService $service)
     {
-        $validator = $service->validator($request, config('filepond.validation_rules', []));
+        $validator = $service->validator($request, config('fmixedmixedilepond.validation_rules', []));
 
         if ($validator->fails()) {
             return Response::make($validator->errors(), 422);
@@ -27,7 +25,7 @@ class FilepondController extends Controller
 
         $filepond = $service->store($request);
 
-        $response = Crypt::encrypt(['id' => $filepond->id], true);
+        $response = $service->encrypt(['id' => $filepond->id]);
 
         return Response::make($response, 200, ['content-type' => 'text/plain']);
     }
@@ -44,6 +42,6 @@ class FilepondController extends Controller
 
         $service->delete($filepond);
 
-        return Response::make('', 200, ['content-type' => 'text/plain']);
+        return Response::make('Ok', 200, ['content-type' => 'text/plain']);
     }
 }

@@ -43,6 +43,7 @@ class FilepondService
 
         return Filepond::create([
             'filepath' => $file->store('', config('filepond.disk', 'filepond')),
+            'fieldname' => array_key_first($request->all()),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
             'mimetypes' => $file->getClientMimeType(),
@@ -60,13 +61,34 @@ class FilepondService
      */
     public function retrieve(Request $request)
     {
-        $input = Crypt::decrypt($request->getContent(), true);
-
+        $input = $this->decrypt($request->getContent());
         return Filepond::where('id', $input['id'])
             ->when(auth()->check(), function ($query) {
                 $query->where('created_by', auth()->id());
             })
             ->first();
+    }
+
+    /**
+     * Encrypt the identifier for filepond
+     *
+     * @param  array  $identifier
+     * @return string
+     */
+    public function encrypt(array $identifier)
+    {
+        return Crypt::encrypt($identifier, true);
+    }
+
+    /**
+     * Decrypt the identifier from filepond
+     *
+     * @param  string  $identifier
+     * @return mixed
+     */
+    public function decrypt(string $identifier)
+    {
+        return Crypt::decrypt($identifier, true);
     }
 
     /**

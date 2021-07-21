@@ -31,9 +31,7 @@ class FilepondProcessRouteTest extends TestCase
                 'accept' => 'application/json'
             ]);
 
-        $response->assertJsonValidationErrors([
-            'avatar' => 'The avatar field does not contain any file.'
-        ], 'errors');
+        $response->assertJson(["avatar" => ["The avatar field is required."]]);
     }
 
     /** @test */

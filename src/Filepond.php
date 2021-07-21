@@ -2,9 +2,9 @@
 
 namespace RahulHaque\Filepond;
 
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class Filepond extends AbstractFilepond
 {
@@ -27,7 +27,7 @@ class Filepond extends AbstractFilepond
     /**
      * Return file object from the field
      *
-     * @return array|UploadedFile
+     * @return array|\Illuminate\Http\UploadedFile
      */
     public function getFile()
     {
@@ -63,15 +63,13 @@ class Filepond extends AbstractFilepond
     public function copyTo(string $path)
     {
         if ($this->getIsMultiple()) {
-            $i = 1;
             $response = [];
             $fileponds = $this->getFieldModel();
-            foreach ($fileponds as $filepond) {
+            foreach ($fileponds as $index => $filepond) {
                 $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path . '-' . $i . '.' . $filepond->extension;
+                $to = $path . '-' . ($index + 1) . '.' . $filepond->extension;
                 File::copy($from, $to);
                 $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
-                $i++;
             }
             return $response;
         }
@@ -92,16 +90,14 @@ class Filepond extends AbstractFilepond
     public function moveTo(string $path)
     {
         if ($this->getIsMultiple()) {
-            $i = 1;
             $response = [];
             $fileponds = $this->getFieldModel();
-            foreach ($fileponds as $filepond) {
+            foreach ($fileponds as $index => $filepond) {
                 $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path . '-' . $i . '.' . $filepond->extension;
+                $to = $path . '-' . ($index + 1) . '.' . $filepond->extension;
                 File::copy($from, $to);
                 $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
                 $this->getSoftDelete() ? $filepond->delete() : $filepond->forceDelete();
-                $i++;
             }
             return $response;
         }
@@ -112,6 +108,21 @@ class Filepond extends AbstractFilepond
         File::copy($from, $to);
         $this->getSoftDelete() ? $filepond->delete() : $filepond->forceDelete();
         return array_merge(['id' => $filepond->id], pathinfo($to));
+    }
+
+    /**
+     * Validate a file from temporary storage
+     *
+     * @param  array  $rules
+     * @param  array  $messages
+     * @param  array  $customAttributes
+     * @return array
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function validate(array $rules, array $messages = [], array $customAttributes = [])
+    {
+        $field = $this->getIsMultiple() ? $this->getModel()->first()->fieldname : $this->getModel()->fieldname;
+        return Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
     }
 
     /**

@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads along with server side validation. It also comes with an artisan command to clean up temporary files after they have expired.
+A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads. Has options for global server side validation for temporary files along with controller level validation before movine the files to final location. It also comes with an artisan command to clean up temporary files after they have expired.
 
 ## Installation
 
@@ -25,19 +25,27 @@ Run the migration.
 php artisan migrate
 ```
 
+## Upgrade
+
+- Do a clean install if you're upgrading from less than or equal v1.1.2.
+- Run `php artisan filepond:clear --all`
+
 ## Quickstart
 
 Before we begin, first install and integrate the [FilePond](https://pqina.nl/filepond/docs/) library in your project any way you prefer.
 
 We will make up a scenario for the new-comers to get them started with FilePond right away.
 
-Let's assume we are updating user avatar like the form below.
+Let's assume we are updating a user avatar and his/her gallery like the form below.
 
 ```html
 <form action="{{ route('avatar') }}" method="post">
     @csrf
-    
+    <!--  For single file upload  -->
     <intput type="file" name="avatar" required/>
+
+    <!--  For multiple file uploads  -->
+    <intput type="file" name="gallery[]" multiple required/>
 
     <button type="submit">Submit</button>
 </form>
@@ -55,7 +63,8 @@ Let's assume we are updating user avatar like the form below.
     });
 
     // Create the FilePond instance
-    FilePond.create(document.querySelector('input[type="file"]'));
+    FilePond.create(document.querySelector('input[name="avatar"]'));
+    FilePond.create(document.querySelector('input[name="gallery[]"]'));
 </script>
 ```
 
@@ -66,7 +75,6 @@ In `UserAvatarController.php` get and process the submitted file by calling the 
 ```php
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Facades\Filepond;
 
 class UserAvatarController extends Controller
@@ -79,13 +87,17 @@ class UserAvatarController extends Controller
      */
     public function update(Request $request)
     {
-        $this->validate($request, ['avatar' => 'required']);
+        // For single file validation
+        Filepond::field($request->avatar)->validate(['avatar' => 'required|image|max:2000']);
+
+        // For multiple file validation
+        Filepond::field($request->gallery)->validate(['gallery.*' => 'required|image|max:2000']);
     
-        $filename = 'avatar-' . auth()->id();
+        $avatarName = 'avatar-' . auth()->id();
     
         $fileInfo = Filepond::field($request->avatar)
-            ->moveTo(Storage::disk('avatar')->path($filename));
-            
+            ->moveTo('/filepath/storage/app/public/avatars/' . $avatarName);
+
         // dd($fileInfo);
         // [
         //     "id" => 1,
@@ -94,10 +106,36 @@ class UserAvatarController extends Controller
         //     "extension" => "png",
         //     "filename" => "avatar-1",
         // ];
+
+        $galleryName = 'gallery-' . auth()->id();
+
+        $fileInfos = Filepond::field($request->gallery)
+            ->moveTo('/filepath/storage/app/public/galleries/' . $galleryName);
     
-        auth()->user()->update([
-            'avatar' => $fileInfo['basename']
-        ]);
+        // dd($fileInfos);
+        // [
+        //     [
+        //         "id" => 1,
+        //         "dirname" => "/filepath/storage/app/public/galleries",
+        //         "basename" => "gallery-1-1.png",
+        //         "extension" => "png",
+        //         "filename" => "gallery-1-1",
+        //     ],
+        //     [
+        //         "id" => 2,
+        //         "dirname" => "/filepath/storage/app/public/galleries",
+        //         "basename" => "gallery-1-2.jpg",
+        //         "extension" => "jpg",
+        //         "filename" => "gallery-1-2",
+        //     ],
+        //     [
+        //         "id" => 3,
+        //         "dirname" => "/filepath/storage/app/public/galleries",
+        //         "basename" => "gallery-1-3.jpg",
+        //         "extension" => "jpg",
+        //         "filename" => "gallery-1-3",
+        //     ],
+        // ]
     }
 }
 ```
@@ -110,11 +148,11 @@ This is the quickest way to get started. This package has already implemented al
 
 First have a look at the `./config/filepond.php` to know about all the options available out of the box. Some important ones mentioned below.
 
-### Validation Rules
+#### Validation Rules
 
-Default server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`
+Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to FilePond's `/process` route.
 
-### Temporary Storage
+#### Temporary Storage
 
 This package adds a disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory for temporary file storage. Set your own if needed.
 
@@ -130,15 +168,9 @@ This command takes `--all` option which will truncate the `Filepond` model and d
 
 `Filepond::field($field)` is a required method which tell the library which FilePond form field to work with. Chain the rest of the methods as required.
 
-#### getFile()
+#### validate()
 
-`Filepond::field()->getFile()` method returns the file object same as the Laravel's `$request->file()` object. For multiple uploads, it will return an array of uploaded file objects. You can then process the file manually any way you want.
-
-> *Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
-
-#### getModel()
-
-`Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
+Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before processing the file further. Supports both single and multiple files validation just as Laravel's default validation for forms.
 
 #### copyTo()
 
@@ -151,6 +183,20 @@ Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same
 #### delete()
 
 Calling the `Filepond::field()->delete()` method will delete the temporary file respecting the soft delete configuration for `Filepond` model. This method is useful when you're manually handling the file processing using `getFile()` method.
+
+### APIs
+
+If you need more granular approach and know the ins and outs of this package, you may use the below APIs to get the underneath file object and file model to interact with them further. 
+
+#### getFile()
+
+`Filepond::field()->getFile()` method returns the file object same as the Laravel's `$request->file()` object. For multiple uploads, it will return an array of uploaded file objects. You can then process the file manually any way you want.
+
+> *Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
+
+#### getModel()
+
+`Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
 
 ### Traits
 
@@ -168,7 +214,7 @@ class User extends Authenticatable
 }
 ```
 
-Now you can get all the file info uploaded by a single user like this.
+Now you can get all the files info uploaded by a single user like this.
 
 ```php
 User::find(1)->fileponds;

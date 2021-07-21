@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static \RahulHaque\Filepond\Filepond getModel()
  * @method static \RahulHaque\Filepond\Filepond copyTo(string $path)
  * @method static \RahulHaque\Filepond\Filepond moveTo(string $path)
+ * @method static \RahulHaque\Filepond\Filepond validate(array $rules, array $messages = [], array $customAttributes = [])
  * @method static \RahulHaque\Filepond\Filepond delete()
  *
  * @see \RahulHaque\Filepond\Filepond
