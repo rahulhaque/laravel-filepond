@@ -31,6 +31,8 @@ class Filepond extends AbstractFilepond
      */
     public function getFile()
     {
+        if (!$this->getField()) return null;
+
         if ($this->getIsMultiple()) {
             $response = [];
             $fileponds = $this->getFieldModel();
@@ -62,6 +64,8 @@ class Filepond extends AbstractFilepond
      */
     public function copyTo(string $path)
     {
+        if (!$this->getField()) return null;
+
         if ($this->getIsMultiple()) {
             $response = [];
             $fileponds = $this->getFieldModel();
@@ -89,6 +93,8 @@ class Filepond extends AbstractFilepond
      */
     public function moveTo(string $path)
     {
+        if (!$this->getField()) return null;
+
         if ($this->getIsMultiple()) {
             $response = [];
             $fileponds = $this->getFieldModel();
@@ -116,13 +122,25 @@ class Filepond extends AbstractFilepond
      * @param  array  $rules
      * @param  array  $messages
      * @param  array  $customAttributes
-     * @return array
+     * @return void
      * @throws \Illuminate\Validation\ValidationException
      */
     public function validate(array $rules, array $messages = [], array $customAttributes = [])
     {
-        $field = $this->getIsMultiple() ? $this->getModel()->first()->fieldname : $this->getModel()->fieldname;
-        return Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
+        if (!$this->getField()) {
+            $old = array_key_first($rules);
+            $field = explode('.', $old)[0];
+            if ($old != $field) {
+                $rules[$field] = $rules[$old];
+                unset($rules[$old]);
+            }
+        }
+
+        if ($this->getField()) {
+            $field = $this->getIsMultiple() ? $this->getModel()->first()->fieldname : $this->getModel()->fieldname;
+        }
+
+        Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
     }
 
     /**
@@ -132,6 +150,8 @@ class Filepond extends AbstractFilepond
      */
     public function delete()
     {
+        if (!$this->getField()) return null;
+
         if ($this->getIsMultiple()) {
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $filepond) {

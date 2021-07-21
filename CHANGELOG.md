@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.2.3 - 2021-07-22
+
+- Added null value validation support for filepond fields.
+
 ## 1.2.2 - 2021-07-21
 
 - Added controller level validation to validate files before moving from temporary storage. ✨

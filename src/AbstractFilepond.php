@@ -30,17 +30,23 @@ abstract class AbstractFilepond
     /**
      * Set the FilePond field data
      *
-     * @param string|array $field
+     * @param  string|array  $field
      * @return $this
      */
     protected function setField($field)
     {
+        if (!$field) {
+            $this->field = null;
+            return $this;
+        }
+
         if ($this->getIsMultiple()) {
             $this->field = array_map(function ($input) {
                 return $this->decrypt($input);
             }, $field);
             return $this;
         }
+
         $this->field = $this->decrypt($field);
         return $this;
     }
@@ -56,7 +62,7 @@ abstract class AbstractFilepond
     /**
      * Set if the upload type is multiple
      *
-     * @param string|array $field
+     * @param  string|array  $field
      * @return $this
      */
     protected function setIsMultiple($field)
@@ -82,6 +88,11 @@ abstract class AbstractFilepond
      */
     protected function setFieldModel()
     {
+        if (!$this->getField()) {
+            $this->fieldModel = null;
+            return $this;
+        }
+
         if ($this->getIsMultiple()) {
             $input = new Collection($this->getField());
             $fileponds = FilepondModel::whereIn('id', $input->pluck('id'))
@@ -116,7 +127,7 @@ abstract class AbstractFilepond
     /**
      * Set the soft delete value from filepond config
      *
-     * @param bool $softDelete
+     * @param  bool  $softDelete
      * @return $this
      */
     protected function setSoftDelete(bool $softDelete)
@@ -128,7 +139,7 @@ abstract class AbstractFilepond
     /**
      * Decrypt the FilePond field data
      *
-     * @param string $data
+     * @param  string  $data
      * @return mixed
      */
     protected function decrypt(string $data)
@@ -139,7 +150,7 @@ abstract class AbstractFilepond
     /**
      * Create file object from filepond model
      *
-     * @param FilepondModel $filepond
+     * @param  FilepondModel  $filepond
      * @return UploadedFile
      */
     protected function createFileObject(FilepondModel $filepond)
