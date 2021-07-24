@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.2.4 - 2021-07-24
+
+- Code refactor and performance improvement.
+- Package footprint reduction.
+
 ## 1.2.3 - 2021-07-22
 
 - Added null value validation support for filepond fields.

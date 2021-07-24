@@ -17,7 +17,7 @@ class FilepondController extends Controller
      */
     public function process(Request $request, FilepondService $service)
     {
-        $validator = $service->validator($request, config('fmixedmixedilepond.validation_rules', []));
+        $validator = $service->validator($request, config('filepond.validation_rules', []));
 
         if ($validator->fails()) {
             return Response::make($validator->errors(), 422);

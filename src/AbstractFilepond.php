@@ -12,63 +12,53 @@ use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
 abstract class AbstractFilepond
 {
-    private $field;
-    private $isMultiple;
+    private $fieldValue;
+    private $isMultipleUpload;
     private $fieldModel;
-    private $softDelete;
+    private $isSoftDeletable;
 
     /**
-     * Decrypt the FilePond field data
+     * Decrypt the FilePond field value data
      *
      * @return array
      */
-    protected function getField()
+    protected function getFieldValue()
     {
-        return $this->field;
+        return $this->fieldValue;
     }
 
     /**
-     * Set the FilePond field data
+     * Set the FilePond field value data
      *
-     * @param  string|array  $field
+     * @param  string|array  $fieldValue
      * @return $this
      */
-    protected function setField($field)
+    protected function setFieldValue($fieldValue)
     {
-        if (!$field) {
-            $this->field = null;
+        if (!$fieldValue) {
+            $this->fieldValue = null;
             return $this;
         }
 
-        if ($this->getIsMultiple()) {
-            $this->field = array_map(function ($input) {
+        $this->isMultipleUpload = is_array($fieldValue);
+
+        if ($this->getIsMultipleUpload()) {
+            $this->fieldValue = array_map(function ($input) {
                 return $this->decrypt($input);
-            }, $field);
+            }, $fieldValue);
             return $this;
         }
 
-        $this->field = $this->decrypt($field);
+        $this->fieldValue = $this->decrypt($fieldValue);
         return $this;
     }
 
     /**
      * @return boolean
      */
-    protected function getIsMultiple()
+    protected function getIsMultipleUpload()
     {
-        return $this->isMultiple;
-    }
-
-    /**
-     * Set if the upload type is multiple
-     *
-     * @param  string|array  $field
-     * @return $this
-     */
-    protected function setIsMultiple($field)
-    {
-        $this->isMultiple = is_array($field);
-        return $this;
+        return $this->isMultipleUpload;
     }
 
     /**
@@ -88,24 +78,21 @@ abstract class AbstractFilepond
      */
     protected function setFieldModel()
     {
-        if (!$this->getField()) {
+        if (!$this->getFieldValue()) {
             $this->fieldModel = null;
             return $this;
         }
 
-        if ($this->getIsMultiple()) {
-            $input = new Collection($this->getField());
-            $fileponds = FilepondModel::whereIn('id', $input->pluck('id'))
+        if ($this->getIsMultipleUpload()) {
+            $this->fieldModel = FilepondModel::whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
                 ->when(auth()->check(), function ($query) {
                     $query->where('created_by', auth()->id());
                 })
                 ->get();
-
-            $this->fieldModel = $fileponds->count() > 0 ? $fileponds : null;
             return $this;
         }
 
-        $input = $this->getField();
+        $input = $this->getFieldValue();
         $this->fieldModel = FilepondModel::where('id', $input['id'])
             ->when(auth()->check(), function ($query) {
                 $query->where('created_by', auth()->id());
@@ -119,25 +106,25 @@ abstract class AbstractFilepond
      *
      * @return boolean
      */
-    protected function getSoftDelete()
+    protected function getIsSoftDeletable()
     {
-        return $this->softDelete;
+        return $this->isSoftDeletable;
     }
 
     /**
      * Set the soft delete value from filepond config
      *
-     * @param  bool  $softDelete
+     * @param  bool  $isSoftDeletable
      * @return $this
      */
-    protected function setSoftDelete(bool $softDelete)
+    protected function setIsSoftDeletable(bool $isSoftDeletable)
     {
-        $this->softDelete = $softDelete;
+        $this->isSoftDeletable = $isSoftDeletable;
         return $this;
     }
 
     /**
-     * Decrypt the FilePond field data
+     * Decrypt the FilePond field value data
      *
      * @param  string  $data
      * @return mixed
@@ -163,6 +150,4 @@ abstract class AbstractFilepond
             true
         );
     }
-
-
 }

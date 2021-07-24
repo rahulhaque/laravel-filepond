@@ -25,11 +25,6 @@ Run the migration.
 php artisan migrate
 ```
 
-## Upgrade
-
-- Do a clean install if you're upgrading from less than or equal v1.1.2.
-- Run `php artisan filepond:clear --all`
-
 ## Quickstart
 
 Before we begin, first install and integrate the [FilePond](https://pqina.nl/filepond/docs/) library in your project any way you prefer.

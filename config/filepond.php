@@ -75,7 +75,8 @@ return [
     | Default Validation Rules
     |--------------------------------------------------------------------------
     |
-    | Set the default validation for uploaded files.
+    | Set the default validation for filepond's ./process route. In other words
+    | temporary file upload validation.
     |
     */
     'validation_rules' => [

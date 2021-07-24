@@ -11,14 +11,13 @@ class Filepond extends AbstractFilepond
     /**
      * Set the FilePond field name
      *
-     * @param string|array $field
+     * @param  string|array  $field
      * @return $this
      */
     public function field($field)
     {
-        $this->setIsMultiple($field)
-            ->setField($field)
-            ->setSoftDelete(config('filepond.soft_delete', true))
+        $this->setFieldValue($field)
+            ->setIsSoftDeletable(config('filepond.soft_delete', true))
             ->setFieldModel();
 
         return $this;
@@ -31,19 +30,17 @@ class Filepond extends AbstractFilepond
      */
     public function getFile()
     {
-        if (!$this->getField()) return null;
-
-        if ($this->getIsMultiple()) {
-            $response = [];
-            $fileponds = $this->getFieldModel();
-            foreach ($fileponds as $filepond) {
-                $response[] = $this->createFileObject($filepond);
-            }
-            return $response;
+        if (!$this->getFieldValue()) {
+            return null;
         }
 
-        $filepond = $this->getFieldModel();
-        return $this->createFileObject($filepond);
+        if ($this->getIsMultipleUpload()) {
+            return $this->getFieldModel()->map(function ($filepond) {
+                return $this->createFileObject($filepond);
+            })->toArray();
+        }
+
+        return $this->createFileObject($this->getFieldModel());
     }
 
     /**
@@ -59,19 +56,21 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination
      *
-     * @param string $path
+     * @param  string  $path
      * @return array
      */
     public function copyTo(string $path)
     {
-        if (!$this->getField()) return null;
+        if (!$this->getFieldValue()) {
+            return null;
+        }
 
-        if ($this->getIsMultiple()) {
+        if ($this->getIsMultipleUpload()) {
             $response = [];
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path . '-' . ($index + 1) . '.' . $filepond->extension;
+                $to = $path.'-'.($index + 1).'.'.$filepond->extension;
                 File::copy($from, $to);
                 $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
             }
@@ -80,7 +79,7 @@ class Filepond extends AbstractFilepond
 
         $filepond = $this->getFieldModel();
         $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-        $to = $path . '.' . $filepond->extension;
+        $to = $path.'.'.$filepond->extension;
         File::copy($from, $to);
         return array_merge(['id' => $filepond->id], pathinfo($to));
     }
@@ -88,31 +87,33 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination and delete
      *
-     * @param string $path
+     * @param  string  $path
      * @return array
      */
     public function moveTo(string $path)
     {
-        if (!$this->getField()) return null;
+        if (!$this->getFieldValue()) {
+            return null;
+        }
 
-        if ($this->getIsMultiple()) {
+        if ($this->getIsMultipleUpload()) {
             $response = [];
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path . '-' . ($index + 1) . '.' . $filepond->extension;
+                $to = $path.'-'.($index + 1).'.'.$filepond->extension;
                 File::copy($from, $to);
                 $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
-                $this->getSoftDelete() ? $filepond->delete() : $filepond->forceDelete();
+                $this->getIsSoftDeletable() ? $filepond->delete() : $filepond->forceDelete();
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
         $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-        $to = $path . '.' . $filepond->extension;
+        $to = $path.'.'.$filepond->extension;
         File::copy($from, $to);
-        $this->getSoftDelete() ? $filepond->delete() : $filepond->forceDelete();
+        $this->getIsSoftDeletable() ? $filepond->delete() : $filepond->forceDelete();
         return array_merge(['id' => $filepond->id], pathinfo($to));
     }
 
@@ -127,17 +128,12 @@ class Filepond extends AbstractFilepond
      */
     public function validate(array $rules, array $messages = [], array $customAttributes = [])
     {
-        if (!$this->getField()) {
-            $old = array_key_first($rules);
-            $field = explode('.', $old)[0];
-            if ($old != $field) {
-                $rules[$field] = $rules[$old];
-                unset($rules[$old]);
-            }
-        }
+        $old = array_key_first($rules);
+        $field = explode('.', $old)[0];
 
-        if ($this->getField()) {
-            $field = $this->getIsMultiple() ? $this->getModel()->first()->fieldname : $this->getModel()->fieldname;
+        if (!$this->getFieldValue() && ($old != $field)) {
+            $rules[$field] = $rules[$old];
+            unset($rules[$old]);
         }
 
         Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
@@ -150,12 +146,14 @@ class Filepond extends AbstractFilepond
      */
     public function delete()
     {
-        if (!$this->getField()) return null;
+        if (!$this->getFieldValue()) {
+            return null;
+        }
 
-        if ($this->getIsMultiple()) {
+        if ($this->getIsMultipleUpload()) {
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $filepond) {
-                if ($this->getSoftDelete()) {
+                if ($this->getIsSoftDeletable()) {
                     $filepond->delete();
                 } else {
                     Storage::disk($filepond->disk)->delete($filepond->filepath);
@@ -165,7 +163,7 @@ class Filepond extends AbstractFilepond
         }
 
         $filepond = $this->getFieldModel();
-        if ($this->getSoftDelete()) {
+        if ($this->getIsSoftDeletable()) {
             $filepond->delete();
         } else {
             Storage::disk($filepond->disk)->delete($filepond->filepath);

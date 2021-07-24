@@ -43,7 +43,6 @@ class FilepondService
 
         return Filepond::create([
             'filepath' => $file->store('', config('filepond.disk', 'filepond')),
-            'fieldname' => array_key_first($request->all()),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
             'mimetypes' => $file->getClientMimeType(),
