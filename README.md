@@ -37,10 +37,12 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
 <form action="{{ route('avatar') }}" method="post">
     @csrf
     <!--  For single file upload  -->
-    <intput type="file" name="avatar" required/>
+    <input type="file" name="avatar" required/>
+    <p class="help-block">{{$errors->first('avatar')}}</p>
 
     <!--  For multiple file uploads  -->
-    <intput type="file" name="gallery[]" multiple required/>
+    <input type="file" name="gallery[]" multiple required/>
+    <p class="help-block">{{$errors->first('gallery.*')}}</p>
 
     <button type="submit">Submit</button>
 </form>
