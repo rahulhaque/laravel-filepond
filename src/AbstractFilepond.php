@@ -43,6 +43,11 @@ abstract class AbstractFilepond
         $this->isMultipleUpload = is_array($fieldValue);
 
         if ($this->getIsMultipleUpload()) {
+            if (!$fieldValue[0]) {
+                $this->fieldValue = null;
+                return $this;
+            }
+
             $this->fieldValue = array_map(function ($input) {
                 return $this->decrypt($input);
             }, $fieldValue);

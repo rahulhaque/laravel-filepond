@@ -38,11 +38,11 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
     @csrf
     <!--  For single file upload  -->
     <input type="file" name="avatar" required/>
-    <p class="help-block">{{$errors->first('avatar')}}</p>
+    <p class="help-block">{{ $errors->first('avatar') }}</p>
 
     <!--  For multiple file uploads  -->
     <input type="file" name="gallery[]" multiple required/>
-    <p class="help-block">{{$errors->first('gallery.*')}}</p>
+    <p class="help-block">{{ $errors->first('gallery.*') }}</p>
 
     <button type="submit">Submit</button>
 </form>

@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.2.5 - 2021-08-05
+
+- Added null value validation support for multiple file uploads using filepond.
+- Readme updated with validation example.
+
 ## 1.2.4 - 2021-07-24
 
 - Code refactor and performance improvement.
