@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.2.6 - 2021-09-18
+
+- Fixed install error in fresh laravel setup with no database connection config.
+
 ## 1.2.5 - 2021-08-05
 
 - Added null value validation support for multiple file uploads using filepond.

@@ -1,10 +1,10 @@
 name: run-tests
 
 on:
-    push:
-        branches: [master]
-    pull_request:
-        branches: [master]
+#    push:
+#        branches: [master]
+#    pull_request:
+#        branches: [master]
 
 jobs:
     test:
@@ -12,15 +12,13 @@ jobs:
         strategy:
             fail-fast: true
             matrix:
-                os: [ubuntu-latest, windows-latest]
-                php: [7.4, 8.0]
-                laravel: [8.*, 7.*]
+                os: [ubuntu-latest]
+                php: [7.4]
+                laravel: [8.*]
                 stability: [prefer-stable]
                 include:
                     - laravel: 8.*
                       testbench: 6.*
-                    - laravel: 7.*
-                      testbench: 5.*
 
         name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ${{ matrix.os }}
 
@@ -34,11 +32,10 @@ jobs:
                   php-version: ${{ matrix.php }}
                   extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
                   coverage: none
-                  tools: composer:v2
-                  
+
             - name: Install dependencies
               run: |
-                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+                  composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:6.*" --no-interaction --no-update
                   composer update --${{ matrix.stability }} --prefer-dist --no-interaction
                   
             - name: Execute tests
