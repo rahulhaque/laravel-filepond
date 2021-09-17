@@ -13,14 +13,14 @@ class FilepondServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__ . '/../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../config/filepond.php' => base_path('config/filepond.php'),
+                __DIR__.'/../config/filepond.php' => base_path('config/filepond.php'),
             ], 'filepond-config');
 
-            if (!Schema::hasTable('fileponds')) {
+            if (!class_exists('CreateFilepondsTable')) {
                 $this->publishes([
                     __DIR__.'/../database/migrations/create_fileponds_table.php.stub' => database_path('migrations/'.date('Y_m_d', time()).'_000000_create_fileponds_table.php'),
                 ], 'filepond-migrations');
@@ -37,9 +37,9 @@ class FilepondServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/filepond.php', 'filepond');
+        $this->mergeConfigFrom(__DIR__.'/../config/filepond.php', 'filepond');
 
-        $this->app->config['filesystems.disks.' . config('filepond.disk', 'filepond')] = config('filepond.storage', [
+        $this->app->config['filesystems.disks.'.config('filepond.disk', 'filepond')] = config('filepond.storage', [
             'driver' => 'local',
             'root' => storage_path('app/filepond'),
         ]);
