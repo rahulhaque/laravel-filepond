@@ -3,14 +3,14 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads. Has options for global server side validation for temporary files along with controller level validation before movine the files to final location. It also comes with an artisan command to clean up temporary files after they have expired.
+A straight forward backend support for Laravel 7 application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads. Has options for global server side validation for temporary files along with controller level validation before movine the files to final location. It also comes with an artisan command to clean up temporary files after they have expired.
 
 ## Installation
 
 Install the package via composer:
 
 ```bash
-composer require rahulhaque/laravel-filepond
+composer require rahulhaque/laravel-filepond "~7.x-dev"
 ```
 
 Publish the configuration and migration files.

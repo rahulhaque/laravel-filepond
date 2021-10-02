@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 7.x-dev - 2021-10-02
+
+- Added Laravel 7 support.
+
 ## 1.2.6 - 2021-09-18
 
 - Fixed install error in fresh laravel setup with no database connection config.

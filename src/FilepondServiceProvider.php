@@ -2,7 +2,6 @@
 
 namespace RahulHaque\Filepond;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use RahulHaque\Filepond\Console\FilepondClear;
 
