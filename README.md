@@ -13,6 +13,12 @@ Install the package via composer:
 composer require rahulhaque/laravel-filepond
 ```
 
+Laravel 7 users use the 7.x-dev version.
+
+```bash
+composer require rahulhaque/laravel-filepond "~7.x-dev"
+```
+
 Publish the configuration and migration files.
 
 ```bash
