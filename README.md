@@ -159,11 +159,13 @@ Default global server side validation rules can be changed by modifying `validat
 
 This package adds a disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory for temporary file storage. Set your own if needed.
 
-## Command
+## Commands (Cleanup)
 
 This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File expiration minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
 
 This command takes `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
+
+> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional).
 
 ### Methods
 
