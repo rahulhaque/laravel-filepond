@@ -160,6 +160,7 @@ class Filepond extends AbstractFilepond
                     $filepond->forceDelete();
                 }
             }
+            return;
         }
 
         $filepond = $this->getFieldModel();

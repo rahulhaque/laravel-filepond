@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.2.7 - 2021-10-31
+
+- Fixed delete method call error for multiple upload.
+
 ## 1.2.6 - 2021-09-18
 
 - Fixed install error in fresh laravel setup with no database connection config.
