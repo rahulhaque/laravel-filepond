@@ -10,13 +10,13 @@ A straight forward backend support for Laravel 7 application to work with [FileP
 Install the package via composer:
 
 ```bash
-composer require rahulhaque/laravel-filepond "~7.x-dev"
+composer require rahulhaque/laravel-filepond
 ```
 
-Laravel 7 users use the 7.x-dev version.
+Laravel 7 users use version less than 1.
 
 ```bash
-composer require rahulhaque/laravel-filepond "~7.x-dev"
+composer require rahulhaque/laravel-filepond "~0"
 ```
 
 Publish the configuration and migration files.

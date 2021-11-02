@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 7.x-dev - 2021-10-02
+## 0.1.0 - 2021-10-31
 
 - Added Laravel 7 support.
 
