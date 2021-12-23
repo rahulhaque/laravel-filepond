@@ -39,11 +39,6 @@ class FilepondServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/filepond.php', 'filepond');
 
-        $this->app->config['filesystems.disks.'.config('filepond.disk', 'filepond')] = config('filepond.storage', [
-            'driver' => 'local',
-            'root' => storage_path('app/filepond'),
-        ]);
-
         $this->app->singleton('filepond', function () {
             return new Filepond;
         });

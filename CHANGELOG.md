@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.3.7 - 2021-12-24
+
+- Added support for third party storage. ✨
+- File submit response now contains file location and URL for better management.
+- Code base restructure and performance improvement.
+
 ## 1.2.7 - 2021-10-31
 
 - Fixed delete method call error for multiple upload.

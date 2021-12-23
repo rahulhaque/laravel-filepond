@@ -1,6 +1,6 @@
 <?php
 
-namespace RahulHaque\Filepond\Tests\Feature;
+namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -15,7 +15,7 @@ class FilepondModelTest extends TestCase
     function can_insert_to_filepond_model()
     {
         $data = [
-            'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -33,7 +33,7 @@ class FilepondModelTest extends TestCase
     function can_update_filepond_model()
     {
         $filepond = Filepond::create([
-            'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -54,7 +54,7 @@ class FilepondModelTest extends TestCase
     function can_soft_delete_filepond_model()
     {
         $filepond = Filepond::create([
-            'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',
@@ -72,7 +72,7 @@ class FilepondModelTest extends TestCase
     function can_force_delete_filepond_model()
     {
         $filepond = Filepond::create([
-            'filepath' => Storage::disk('filepond')->path('fake_filename.png'),
+            'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
             'mimetypes' => 'image/png',

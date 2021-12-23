@@ -1,6 +1,6 @@
 <?php
 
-namespace RahulHaque\Filepond\Tests\Feature;
+namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -17,8 +17,7 @@ class FilepondProcessRouteTest extends TestCase
     /** @test */
     function can_validate_filepond_file_upload_request()
     {
-        $allFiles = Storage::disk(config('filepond.disk'))->allFiles();
-        Storage::disk(config('filepond.disk'))->delete($allFiles);
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
         $user = User::factory()->create();
 
@@ -37,8 +36,7 @@ class FilepondProcessRouteTest extends TestCase
     /** @test */
     function can_process_filepond_file_upload_request()
     {
-        $allFiles = Storage::disk(config('filepond.disk'))->allFiles();
-        Storage::disk(config('filepond.disk'))->delete($allFiles);
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
         $user = User::factory()->create();
 
@@ -55,7 +53,6 @@ class FilepondProcessRouteTest extends TestCase
 
         $fileById = Filepond::find($data['id']);
 
-        Storage::disk(config('filepond.disk'))->assertExists($fileById->filepath);
-
+        Storage::disk(config('filepond.temp_disk', 'local'))->assertExists($fileById->filepath);
     }
 }

@@ -3,7 +3,15 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. Supports both single and multiple file uploads. Has options for global server side validation for temporary files along with controller level validation before movine the files to final location. It also comes with an artisan command to clean up temporary files after they have expired.
+A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. It currently features - 
+
+- Single and multiple file uploads.
+- Third party storage support.
+- Global server side validation for temporary files.
+- Controller level validation before moving the files to permanent location (Local storage only).
+- Artisan command to clean up temporary files after they have expired.
+
+**Attention:** People who are already using version less than < 1.3.7 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
 
 ## Installation
 
@@ -91,52 +99,62 @@ class UserAvatarController extends Controller
     public function update(Request $request)
     {
         // For single file validation
-        Filepond::field($request->avatar)->validate(['avatar' => 'required|image|max:2000']);
+        Filepond::field($request->avatar)
+            ->validate(['avatar' => 'required|image|max:2000']);
 
         // For multiple file validation
-        Filepond::field($request->gallery)->validate(['gallery.*' => 'required|image|max:2000']);
+        Filepond::field($request->gallery)
+            ->validate(['gallery.*' => 'required|image|max:2000']);
     
         $avatarName = 'avatar-' . auth()->id();
     
         $fileInfo = Filepond::field($request->avatar)
-            ->moveTo('/filepath/storage/app/public/avatars/' . $avatarName);
+            ->moveTo('avatars/' . $avatarName);
 
         // dd($fileInfo);
         // [
         //     "id" => 1,
-        //     "dirname" => "/filepath/storage/app/public/avatars",
+        //     "dirname" => "avatars",
         //     "basename" => "avatar-1.png",
         //     "extension" => "png",
         //     "filename" => "avatar-1",
+        //     "location" => "avatars/avatar-1.png",
+        //     "url" => "http://localhost/storage/avatars/avatar-1.png",
         // ];
 
         $galleryName = 'gallery-' . auth()->id();
 
         $fileInfos = Filepond::field($request->gallery)
-            ->moveTo('/filepath/storage/app/public/galleries/' . $galleryName);
+            ->moveTo('galleries/' . $galleryName);
     
         // dd($fileInfos);
         // [
         //     [
         //         "id" => 1,
-        //         "dirname" => "/filepath/storage/app/public/galleries",
+        //         "dirname" => "galleries",
         //         "basename" => "gallery-1-1.png",
         //         "extension" => "png",
         //         "filename" => "gallery-1-1",
+        //         "location" => "galleries/gallery-1-1.png",
+        //         "url" => "http://localhost/storage/galleries/gallery-1-1.png",
         //     ],
         //     [
         //         "id" => 2,
-        //         "dirname" => "/filepath/storage/app/public/galleries",
-        //         "basename" => "gallery-1-2.jpg",
-        //         "extension" => "jpg",
+        //         "dirname" => "galleries",
+        //         "basename" => "gallery-1-2.png",
+        //         "extension" => "png",
         //         "filename" => "gallery-1-2",
+        //         "location" => "galleries/gallery-1-2.png",
+        //         "url" => "http://localhost/storage/galleries/gallery-1-2.png",
         //     ],
         //     [
         //         "id" => 3,
-        //         "dirname" => "/filepath/storage/app/public/galleries",
-        //         "basename" => "gallery-1-3.jpg",
-        //         "extension" => "jpg",
+        //         "dirname" => "galleries",
+        //         "basename" => "gallery-1-3.png",
+        //         "extension" => "png",
         //         "filename" => "gallery-1-3",
+        //         "location" => "galleries/gallery-1-3.png",
+        //         "url" => "http://localhost/storage/galleries/gallery-1-3.png",
         //     ],
         // ]
     }
@@ -151,13 +169,19 @@ This is the quickest way to get started. This package has already implemented al
 
 First have a look at the `./config/filepond.php` to know about all the options available out of the box. Some important ones mentioned below.
 
-#### Validation Rules
+#### Permanent Storage
 
-Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to FilePond's `/process` route.
+This package uses Laravel's public filesystem driver for permanent file storage by default. Change the `disk` option to anything you prefer for permanent storage.
 
 #### Temporary Storage
 
-This package adds a disk to Laravel's filesystem config named `filepond` which points towards `./storage/app/filepond` directory for temporary file storage. Set your own if needed.
+This package uses Laravel's local filesystem driver for temporary file storage by default. Change the `temp_disk` and `temp_folder` name to points towards directory for temporary file storage.
+
+> **Tip:** Setting both permanent and temporary file storage to third party will save bandwidth as the files are directly uploaded to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
+
+#### Validation Rules
+
+Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to FilePond's `/process` route.
 
 ## Commands (Cleanup)
 
@@ -175,15 +199,17 @@ This command takes `--all` option which will truncate the `Filepond` model and d
 
 #### validate()
 
-Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before processing the file further. Supports both single and multiple files validation just as Laravel's default validation for forms.
+Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before moving or copying further. Supports both single and multiple files validation just as Laravel's default form validation does.
+
+> **Note:** This method is not available when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
 
 #### copyTo()
 
-Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the file from the temporary storage to the path provided along with the filename and will set the file extension automatically. This method will return the copied file info along with filepond model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with trailing incremental values like `$filename-{$i}`.
+Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the file from the temporary storage to the path provided along with the filename and it will set the file extension **automatically**. This method will return the copied file info along with `Filepond` model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with **trailing incremental** values like `$filename-{$i}`.
 
 #### moveTo()
 
-Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as copy method. One thing it does extra for you is delete the file after copying, respecting the value of `soft_delete` configuration for `Filepond` model. 
+Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as `copyTo()` method. One thing it does extra for you is delete the temporary file after copying, respecting the value of `soft_delete` configuration for `Filepond` model.
 
 #### delete()
 
@@ -197,7 +223,9 @@ If you need more granular approach and know the ins and outs of this package, yo
 
 `Filepond::field()->getFile()` method returns the file object same as the Laravel's `$request->file()` object. For multiple uploads, it will return an array of uploaded file objects. You can then process the file manually any way you want.
 
-> *Note:* Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
+Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
+
+> **Note:** This method is not available when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
 
 #### getModel()
 

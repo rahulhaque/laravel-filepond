@@ -42,11 +42,11 @@ class FilepondService
         $file = $this->getUploadedFile($request);
 
         return Filepond::create([
-            'filepath' => $file->store('', config('filepond.disk', 'filepond')),
+            'filepath' => $file->store(config('filepond.temp_folder', 'filepond/temp'), config('filepond.temp_disk', 'local')),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
             'mimetypes' => $file->getClientMimeType(),
-            'disk' => config('filepond.disk', 'filepond'),
+            'disk' => config('filepond.disk', 'public'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30))
         ]);
@@ -60,34 +60,12 @@ class FilepondService
      */
     public function retrieve(Request $request)
     {
-        $input = $this->decrypt($request->getContent());
+        $input = Crypt::decrypt($request->getContent());
         return Filepond::where('id', $input['id'])
             ->when(auth()->check(), function ($query) {
                 $query->where('created_by', auth()->id());
             })
             ->first();
-    }
-
-    /**
-     * Encrypt the identifier for filepond
-     *
-     * @param  array  $identifier
-     * @return string
-     */
-    public function encrypt(array $identifier)
-    {
-        return Crypt::encrypt($identifier, true);
-    }
-
-    /**
-     * Decrypt the identifier from filepond
-     *
-     * @param  string  $identifier
-     * @return mixed
-     */
-    public function decrypt(string $identifier)
-    {
-        return Crypt::decrypt($identifier, true);
     }
 
     /**
@@ -101,7 +79,7 @@ class FilepondService
             return $filepond->delete();
         }
 
-        Storage::disk($filepond->disk)->delete($filepond->filepath);
+        Storage::disk(config('filepond.temp_disk', 'local'))->delete($filepond->filepath);
         return $filepond->forceDelete();
     }
 }

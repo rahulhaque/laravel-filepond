@@ -39,16 +39,17 @@ class FilepondClear extends Command
      */
     public function handle()
     {
-        $disk = config('filepond.disk', 'filepond');
+        $tempDisk = config('filepond.temp_disk', 'local');
+        $tempFolder = config('filepond.temp_folder', 'filepond/temp');
 
         if ($this->option('all')) {
             if ($this->confirm('Are you sure?', true)) {
                 Filepond::truncate();
                 $this->info('Fileponds table truncated.');
-                $temporaryFiles = Storage::disk($disk)->allFiles();
-                $this->info('Total temporary files: ' . count($temporaryFiles));
-                if (Storage::disk($disk)->delete($temporaryFiles)) {
-                    $this->info('Deleted temporary files: ' . count($temporaryFiles));
+                $tempFiles = Storage::disk($tempDisk)->allFiles($tempFolder);
+                $this->info('Total temporary files: ' . count($tempFiles));
+                if (Storage::disk($tempDisk)->deleteDirectory($tempFolder)) {
+                    $this->info('Deleted temporary files: ' . count($tempFiles));
                     return 0;
                 }
                 $this->info('Could not delete files.');
@@ -60,7 +61,7 @@ class FilepondClear extends Command
 
         $expiredFiles = Filepond::where('expires_at', '<=', now());
         $this->info('Total expired files: ' . $expiredFiles->count());
-        if (Storage::disk($disk)->delete($expiredFiles->pluck('filepath')->toArray())) {
+        if (Storage::disk($tempDisk)->delete($expiredFiles->pluck('filepath')->toArray())) {
             $this->info('Deleted expired files: ' . $expiredFiles->count());
             $expiredFiles->forceDelete();
             return 0;

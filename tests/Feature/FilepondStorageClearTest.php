@@ -16,8 +16,7 @@ class FilepondStorageClearTest extends TestCase
     /** @test */
     function can_clear_expired_files_from_storage()
     {
-        $allFiles = Storage::disk(config('filepond.disk'))->allFiles();
-        Storage::disk(config('filepond.disk'))->delete($allFiles);
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
         $user = User::factory()->create();
         // Create 5 temporary file uploads
@@ -45,8 +44,7 @@ class FilepondStorageClearTest extends TestCase
     /** @test */
     function can_force_clear_all_files_from_storage()
     {
-        $allFiles = Storage::disk(config('filepond.disk'))->allFiles();
-        Storage::disk(config('filepond.disk'))->delete($allFiles);
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
         $user = User::factory()->create();
         // Create 5 temporary file uploads
