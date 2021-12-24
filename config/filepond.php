@@ -3,28 +3,30 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | FilePond Temporary Disk
+    | FilePond Permanent Disk
     |--------------------------------------------------------------------------
     |
-    | Set the FilePond default disk to be used for temporary file storage and
-    | cleanup. This disk will be used for temporary file storage and cleared
-    | upon running the "artisan filepond:clear" command.
+    | Set the FilePond default disk to be used for permanent file storage.
     |
     */
-    'disk' => env('FILEPOND_DISK', 'filepond'),
+    'disk' => env('FILEPOND_DISK', 'public'),
 
     /*
     |--------------------------------------------------------------------------
-    | Laravel Disks Config
+    | FilePond Temporary Disk
     |--------------------------------------------------------------------------
     |
-    | This is disk configuration for Laravel ./config/filesystem.php
+    | Set the FilePond temporary disk and folder name to be used for temporary
+    | storage. This disk will be used for temporary file storage and cleared
+    | upon running the "artisan filepond:clear" command. It is recommended to
+    | use local disk for temporary storage when you want to take advantage of
+    | controller level validation. File validation from third party storage is
+    | not yet supported. However global 'validation_rules' defined in this
+    | config will work fine.
     |
     */
-    'storage' => [
-        'driver' => 'local',
-        'root' => storage_path('app/filepond'),
-    ],
+    'temp_disk' => 'local',
+    'temp_folder' => 'filepond/temp',
 
     /*
     |--------------------------------------------------------------------------
@@ -53,8 +55,8 @@ return [
     | File Delete After (Minutes)
     |--------------------------------------------------------------------------
     |
-    | Set the minutes after which the FilePond temporary storage files will
-    | be deleted while running 'artisan filepond:clear' command.
+    | Set the minutes after which the FilePond temporary storage files will be
+    | deleted while running 'artisan filepond:clear' command.
     |
     */
     'expiration' => 30,
@@ -72,7 +74,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default Validation Rules
+    | Global Validation Rules
     |--------------------------------------------------------------------------
     |
     | Set the default validation for filepond's ./process route. In other words

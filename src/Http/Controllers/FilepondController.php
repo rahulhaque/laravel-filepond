@@ -4,6 +4,7 @@ namespace RahulHaque\Filepond\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Response;
 use RahulHaque\Filepond\Services\FilepondService;
 
@@ -25,7 +26,7 @@ class FilepondController extends Controller
 
         $filepond = $service->store($request);
 
-        $response = $service->encrypt(['id' => $filepond->id]);
+        $response = Crypt::encrypt(['id' => $filepond->id]);
 
         return Response::make($response, 200, ['content-type' => 'text/plain']);
     }

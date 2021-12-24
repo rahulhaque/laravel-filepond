@@ -2,9 +2,9 @@
 
 namespace RahulHaque\Filepond;
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
 class Filepond extends AbstractFilepond
 {
@@ -69,19 +69,14 @@ class Filepond extends AbstractFilepond
             $response = [];
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
-                $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path.'-'.($index + 1).'.'.$filepond->extension;
-                File::copy($from, $to);
-                $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
+                $to = $path.'-'.($index + 1);
+                $response[] = $this->putFile($filepond, $to);
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-        $to = $path.'.'.$filepond->extension;
-        File::copy($from, $to);
-        return array_merge(['id' => $filepond->id], pathinfo($to));
+        return $this->putFile($filepond, $path);
     }
 
     /**
@@ -100,21 +95,17 @@ class Filepond extends AbstractFilepond
             $response = [];
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
-                $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-                $to = $path.'-'.($index + 1).'.'.$filepond->extension;
-                File::copy($from, $to);
-                $response[] = array_merge(['id' => $filepond->id], pathinfo($to));
-                $this->getIsSoftDeletable() ? $filepond->delete() : $filepond->forceDelete();
+                $to = $path.'-'.($index + 1);
+                $response[] = $this->putFile($filepond, $to);
+                $this->delete();
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        $from = Storage::disk($filepond->disk)->path($filepond->filepath);
-        $to = $path.'.'.$filepond->extension;
-        File::copy($from, $to);
-        $this->getIsSoftDeletable() ? $filepond->delete() : $filepond->forceDelete();
-        return array_merge(['id' => $filepond->id], pathinfo($to));
+        $response = $this->putFile($filepond, $path);
+        $this->delete();
+        return $response;
     }
 
     /**
@@ -123,7 +114,7 @@ class Filepond extends AbstractFilepond
      * @param  array  $rules
      * @param  array  $messages
      * @param  array  $customAttributes
-     * @return void
+     * @return array
      * @throws \Illuminate\Validation\ValidationException
      */
     public function validate(array $rules, array $messages = [], array $customAttributes = [])
@@ -136,7 +127,7 @@ class Filepond extends AbstractFilepond
             unset($rules[$old]);
         }
 
-        Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
+        return Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
     }
 
     /**
@@ -156,7 +147,7 @@ class Filepond extends AbstractFilepond
                 if ($this->getIsSoftDeletable()) {
                     $filepond->delete();
                 } else {
-                    Storage::disk($filepond->disk)->delete($filepond->filepath);
+                    Storage::disk(config('filepond.temp_disk', 'local'))->delete($filepond->filepath);
                     $filepond->forceDelete();
                 }
             }
@@ -167,8 +158,30 @@ class Filepond extends AbstractFilepond
         if ($this->getIsSoftDeletable()) {
             $filepond->delete();
         } else {
-            Storage::disk($filepond->disk)->delete($filepond->filepath);
+            Storage::disk(config('filepond.temp_disk', 'local'))->delete($filepond->filepath);
             $filepond->forceDelete();
         }
+    }
+
+    /**
+     * Put the file in permanent storage and return response
+     *
+     * @param  FilepondModel  $filepond
+     * @param  string  $path
+     * @return array
+     */
+    private function putFile(FilepondModel $filepond, string $path)
+    {
+        Storage::disk($filepond->disk)->put($path.'.'.$filepond->extension, Storage::disk(config('filepond.temp_disk', 'local'))->get($filepond->filepath));
+
+        return [
+            "id" => $filepond->id,
+            "dirname" => dirname($path.'.'.$filepond->extension),
+            "basename" => basename($path.'.'.$filepond->extension),
+            "extension" => $filepond->extension,
+            "filename" => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
+            "location" => $path.'.'.$filepond->extension,
+            "url" => Storage::disk($filepond->disk)->url($path.'.'.$filepond->extension)
+        ];
     }
 }

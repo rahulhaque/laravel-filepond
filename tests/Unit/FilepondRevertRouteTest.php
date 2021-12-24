@@ -1,6 +1,6 @@
 <?php
 
-namespace RahulHaque\Filepond\Tests\Feature;
+namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -15,10 +15,9 @@ class FilepondRevertRouteTest extends TestCase
     /** @test */
     function can_revert_filepond_file_upload_request()
     {
-        $allFiles = Storage::disk(config('filepond.disk'))->allFiles();
-        Storage::disk(config('filepond.disk'))->delete($allFiles);
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $responseAfterProcess = $this
             ->actingAs($user)

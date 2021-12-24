@@ -8,7 +8,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use RahulHaque\Filepond\Models\Filepond as FilepondModel;
+use RahulHaque\Filepond\Models\Filepond;
 
 abstract class AbstractFilepond
 {
@@ -89,19 +89,15 @@ abstract class AbstractFilepond
         }
 
         if ($this->getIsMultipleUpload()) {
-            $this->fieldModel = FilepondModel::whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
-                ->when(auth()->check(), function ($query) {
-                    $query->where('created_by', auth()->id());
-                })
+            $this->fieldModel = Filepond::owned()
+                ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
                 ->get();
             return $this;
         }
 
         $input = $this->getFieldValue();
-        $this->fieldModel = FilepondModel::where('id', $input['id'])
-            ->when(auth()->check(), function ($query) {
-                $query->where('created_by', auth()->id());
-            })
+        $this->fieldModel = Filepond::owned()
+            ->where('id', $input['id'])
             ->first();
         return $this;
     }
@@ -142,13 +138,13 @@ abstract class AbstractFilepond
     /**
      * Create file object from filepond model
      *
-     * @param  FilepondModel  $filepond
+     * @param  Filepond  $filepond
      * @return UploadedFile
      */
-    protected function createFileObject(FilepondModel $filepond)
+    protected function createFileObject(Filepond $filepond)
     {
         return new UploadedFile(
-            Storage::disk($filepond->disk)->path($filepond->filepath),
+            Storage::disk(config('filepond.temp_disk', 'local'))->path($filepond->filepath),
             $filepond->filename,
             $filepond->mimetypes,
             \UPLOAD_ERR_OK,

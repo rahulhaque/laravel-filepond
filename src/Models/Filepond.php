@@ -12,6 +12,13 @@ class Filepond extends Model
 
     protected $guarded = [];
 
+    public function scopeOwned($query)
+    {
+        $query->when(auth()->check(), function ($query) {
+            $query->where('created_by', auth()->id());
+        });
+    }
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
