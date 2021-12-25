@@ -57,9 +57,10 @@ class Filepond extends AbstractFilepond
      * Copy the FilePond files to destination
      *
      * @param  string  $path
+     * @param  string  $disk
      * @return array
      */
-    public function copyTo(string $path)
+    public function copyTo(string $path, string $disk = '')
     {
         if (!$this->getFieldValue()) {
             return null;
@@ -70,22 +71,23 @@ class Filepond extends AbstractFilepond
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $to = $path.'-'.($index + 1);
-                $response[] = $this->putFile($filepond, $to);
+                $response[] = $this->putFile($filepond, $to, $disk);
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        return $this->putFile($filepond, $path);
+        return $this->putFile($filepond, $path, $disk);
     }
 
     /**
      * Copy the FilePond files to destination and delete
      *
      * @param  string  $path
+     * @param  string  $disk
      * @return array
      */
-    public function moveTo(string $path)
+    public function moveTo(string $path, string $disk = '')
     {
         if (!$this->getFieldValue()) {
             return null;
@@ -96,14 +98,14 @@ class Filepond extends AbstractFilepond
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $to = $path.'-'.($index + 1);
-                $response[] = $this->putFile($filepond, $to);
+                $response[] = $this->putFile($filepond, $to, $disk);
                 $this->delete();
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        $response = $this->putFile($filepond, $path);
+        $response = $this->putFile($filepond, $path, $disk);
         $this->delete();
         return $response;
     }
@@ -170,9 +172,11 @@ class Filepond extends AbstractFilepond
      * @param  string  $path
      * @return array
      */
-    private function putFile(FilepondModel $filepond, string $path)
+    private function putFile(FilepondModel $filepond, string $path, string $disk)
     {
-        Storage::disk($filepond->disk)->put($path.'.'.$filepond->extension, Storage::disk(config('filepond.temp_disk', 'local'))->get($filepond->filepath));
+        $permanentDisk = $disk == '' ? $filepond->disk : $disk;
+
+        Storage::disk($permanentDisk)->put($path.'.'.$filepond->extension, Storage::disk(config('filepond.temp_disk', 'local'))->get($filepond->filepath));
 
         return [
             "id" => $filepond->id,
@@ -181,7 +185,7 @@ class Filepond extends AbstractFilepond
             "extension" => $filepond->extension,
             "filename" => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
             "location" => $path.'.'.$filepond->extension,
-            "url" => Storage::disk($filepond->disk)->url($path.'.'.$filepond->extension)
+            "url" => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension)
         ];
     }
 }

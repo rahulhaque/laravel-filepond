@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.3.8 - 2021-12-25
+
+- Added option to override permanent storage disk during copying/moving file.
+
 ## 1.3.7 - 2021-12-24
 
 - Added support for third party storage. ✨

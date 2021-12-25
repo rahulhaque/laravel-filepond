@@ -171,7 +171,7 @@ First have a look at the `./config/filepond.php` to know about all the options a
 
 #### Permanent Storage
 
-This package uses Laravel's public filesystem driver for permanent file storage by default. Change the `disk` option to anything you prefer for permanent storage.
+This package uses Laravel's public filesystem driver for permanent file storage by default. Change the `disk` option to anything you prefer for permanent storage. Hold up! But I am using different disks for different uploads. Don't worry. You will be able to change the disk name on the fly with [copyTo()](https://github.com/rahulhaque/laravel-filepond#copyto) and [moveTo()](https://github.com/rahulhaque/laravel-filepond#moveto) methods.
 
 #### Temporary Storage
 
@@ -181,7 +181,7 @@ This package uses Laravel's local filesystem driver for temporary file storage b
 
 #### Validation Rules
 
-Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to FilePond's `/process` route.
+Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to all file uploads by FilePond's `/process` route.
 
 ## Commands (Cleanup)
 
@@ -189,7 +189,7 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 
 This command takes `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
-> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional).
+> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
 
 ### Methods
 
@@ -205,11 +205,11 @@ Calling the `Filepond::field()->validate($rules)` method will validate the tempo
 
 #### copyTo()
 
-Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the file from the temporary storage to the path provided along with the filename and it will set the file extension **automatically**. This method will return the copied file info along with `Filepond` model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with **trailing incremental** values like `$filename-{$i}`.
+Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the file from the temporary storage to the path provided along with the filename. It will set the file extension **automatically**. By default the files will be copied to directory relative to config's `disk` option. You can also pass a disk name as **second parameter** if you want to override that. This method will return the copied file info along with `Filepond` model id. For multiple file upload, it will return an array of copied files info. Also note that multiple files will be copied with **trailing incremental** values like `$filename-{$i}`.
 
 #### moveTo()
 
-Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as `copyTo()` method. One thing it does extra for you is delete the temporary file after copying, respecting the value of `soft_delete` configuration for `Filepond` model.
+Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as `copyTo()` method. By default the files will be moved to directory relative to config's `disk` option. You can also pass a disk name as **second parameter** if you want to override that. One thing it does extra for you is delete the temporary file after copying, respecting the value of config's `soft_delete` option for `Filepond` model.
 
 #### delete()
 
