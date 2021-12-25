@@ -106,7 +106,7 @@ class FilepondFacadeTest extends TestCase
         $fileInfos = Filepond::field($request)->copyTo('galleries/gallery');
 
         foreach ($fileInfos as $fileInfo) {
-            $this->assertTrue(Storage::disk(config('filepond.disk', 'local'))->exists($fileInfo['location']));
+            Storage::disk(config('filepond.disk', 'local'))->exists($fileInfo['location']);
         }
     }
 }
