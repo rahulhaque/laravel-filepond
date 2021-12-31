@@ -36,8 +36,8 @@ class FilepondStorageClearTest extends TestCase
         ]);
 
         $this->artisan('filepond:clear')
-            ->expectsOutput('Total expired files: 5')
-            ->expectsOutput('Deleted expired files: 5')
+            ->expectsOutput('Total expired files and folders: 5')
+            ->expectsOutput('Temporary files and folders deleted.')
             ->assertExitCode(0);
     }
 

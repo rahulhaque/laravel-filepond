@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.4.8 - 2021-12-31
+
+- Added support for chunk upload with resume capability. ✨
+- Added option to change visibility when using third party storage.
+- Updated quickstart example in readme.
+- Updated `./filepond/config.php` to change url from one place. 
+
 ## 1.3.8 - 2021-12-25
 
 - Added option to override permanent storage disk during copying/moving file.

@@ -17,6 +17,7 @@ class Filepond extends AbstractFilepond
     public function field($field)
     {
         $this->setFieldValue($field)
+            ->setTempDisk(config('filepond.temp_disk', 'local'))
             ->setIsSoftDeletable(config('filepond.soft_delete', true))
             ->setFieldModel();
 
@@ -60,7 +61,7 @@ class Filepond extends AbstractFilepond
      * @param  string  $disk
      * @return array
      */
-    public function copyTo(string $path, string $disk = '')
+    public function copyTo(string $path, string $disk = '', string $visibility = '')
     {
         if (!$this->getFieldValue()) {
             return null;
@@ -71,13 +72,13 @@ class Filepond extends AbstractFilepond
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $to = $path.'-'.($index + 1);
-                $response[] = $this->putFile($filepond, $to, $disk);
+                $response[] = $this->putFile($filepond, $to, $disk, $visibility);
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        return $this->putFile($filepond, $path, $disk);
+        return $this->putFile($filepond, $path, $disk, $visibility);
     }
 
     /**
@@ -87,7 +88,7 @@ class Filepond extends AbstractFilepond
      * @param  string  $disk
      * @return array
      */
-    public function moveTo(string $path, string $disk = '')
+    public function moveTo(string $path, string $disk = '', string $visibility = '')
     {
         if (!$this->getFieldValue()) {
             return null;
@@ -98,14 +99,14 @@ class Filepond extends AbstractFilepond
             $fileponds = $this->getFieldModel();
             foreach ($fileponds as $index => $filepond) {
                 $to = $path.'-'.($index + 1);
-                $response[] = $this->putFile($filepond, $to, $disk);
+                $response[] = $this->putFile($filepond, $to, $disk, $visibility);
                 $this->delete();
             }
             return $response;
         }
 
         $filepond = $this->getFieldModel();
-        $response = $this->putFile($filepond, $path, $disk);
+        $response = $this->putFile($filepond, $path, $disk, $visibility);
         $this->delete();
         return $response;
     }
@@ -149,7 +150,7 @@ class Filepond extends AbstractFilepond
                 if ($this->getIsSoftDeletable()) {
                     $filepond->delete();
                 } else {
-                    Storage::disk(config('filepond.temp_disk', 'local'))->delete($filepond->filepath);
+                    Storage::disk($this->getTempDisk())->delete($filepond->filepath);
                     $filepond->forceDelete();
                 }
             }
@@ -160,7 +161,7 @@ class Filepond extends AbstractFilepond
         if ($this->getIsSoftDeletable()) {
             $filepond->delete();
         } else {
-            Storage::disk(config('filepond.temp_disk', 'local'))->delete($filepond->filepath);
+            Storage::disk($this->getTempDisk())->delete($filepond->filepath);
             $filepond->forceDelete();
         }
     }
@@ -172,11 +173,11 @@ class Filepond extends AbstractFilepond
      * @param  string  $path
      * @return array
      */
-    private function putFile(FilepondModel $filepond, string $path, string $disk)
+    private function putFile(FilepondModel $filepond, string $path, string $disk, string $visibility)
     {
         $permanentDisk = $disk == '' ? $filepond->disk : $disk;
 
-        Storage::disk($permanentDisk)->put($path.'.'.$filepond->extension, Storage::disk(config('filepond.temp_disk', 'local'))->get($filepond->filepath));
+        Storage::disk($permanentDisk)->put($path.'.'.$filepond->extension, Storage::disk($this->getTempDisk())->get($filepond->filepath), $visibility);
 
         return [
             "id" => $filepond->id,
