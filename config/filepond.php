@@ -97,7 +97,6 @@ return [
     |
     */
     'server' => [
-        'process' => env('FILEPOND_PROCESS_URL', '/filepond'),
-        'revert' => env('FILEPOND_REVERT_URL', '/filepond'),
+        'url' => env('FILEPOND_URL', '/filepond'),
     ]
 ];

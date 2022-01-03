@@ -7,11 +7,12 @@ A straight forward backend support for Laravel application to work with [FilePon
 
 - Single and multiple file uploads.
 - Third party storage support.
+- Chunk upload with upload resume capability.
 - Global server side validation for temporary files.
-- Controller level validation before moving the files to permanent location (Local storage only).
-- Artisan command to clean up temporary files after they have expired.
+- Controller level validation before moving the files to permanent location.
+- Artisan command to clean up temporary files and folders after they have expired.
 
-**Attention:** People who are already using version less than < 0.1.0 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
+**Attention:** People who are already using version less than < 0.2.1 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
 
 ## Installation
 
@@ -65,8 +66,7 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
     // Set default FilePond options
     FilePond.setOptions({
         server: {
-            process: "{{ config('filepond.server.process') }}",
-            revert: "{{ config('filepond.server.revert') }}",
+            url: "{{ config('filepond.server.url') }}",
             headers: {
                 'X-CSRF-TOKEN': "{{ @csrf_token() }}",
             }
@@ -75,7 +75,7 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
 
     // Create the FilePond instance
     FilePond.create(document.querySelector('input[name="avatar"]'));
-    FilePond.create(document.querySelector('input[name="gallery[]"]'));
+    FilePond.create(document.querySelector('input[name="gallery[]"]'), {chunkUploads: true});
 </script>
 ```
 
@@ -177,19 +177,27 @@ This package uses Laravel's public filesystem driver for permanent file storage 
 
 This package uses Laravel's local filesystem driver for temporary file storage by default. Change the `temp_disk` and `temp_folder` name to points towards directory for temporary file storage.
 
-> **Tip:** Setting both permanent and temporary file storage to third party will save bandwidth as the files are directly uploaded to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
+> **Note:** Setting temporary file storage to third party will upload the files directly to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
 
 #### Validation Rules
 
 Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to all file uploads by FilePond's `/process` route.
 
+#### Middleware
+
+By default all filepond's routes are protected by `web` and `auth` middleware. Change it if necessary.
+
+#### Soft Delete
+
+By default `soft_delete` is set to `true` to keep track of all the files uploaded by the users. Set it to false if you want to delete the files with delete request.
+
 ## Commands (Cleanup)
 
-This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File expiration minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
+This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File `expiration` minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
 
-This command takes `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
+This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
-> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
 
 ### Methods
 

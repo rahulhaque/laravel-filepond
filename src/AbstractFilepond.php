@@ -13,6 +13,7 @@ use RahulHaque\Filepond\Models\Filepond;
 abstract class AbstractFilepond
 {
     private $fieldValue;
+    private $tempDisk;
     private $isMultipleUpload;
     private $fieldModel;
     private $isSoftDeletable;
@@ -55,6 +56,23 @@ abstract class AbstractFilepond
         }
 
         $this->fieldValue = $this->decrypt($fieldValue);
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTempDisk()
+    {
+        return $this->tempDisk;
+    }
+
+    /**
+     * @param  string  $tempDisk
+     */
+    public function setTempDisk(string $tempDisk)
+    {
+        $this->tempDisk = $tempDisk;
         return $this;
     }
 
@@ -144,7 +162,7 @@ abstract class AbstractFilepond
     protected function createFileObject(Filepond $filepond)
     {
         return new UploadedFile(
-            Storage::disk(config('filepond.temp_disk', 'local'))->path($filepond->filepath),
+            Storage::disk($this->tempDisk)->path($filepond->filepath),
             $filepond->filename,
             $filepond->mimetypes,
             \UPLOAD_ERR_OK,
