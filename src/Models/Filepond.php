@@ -13,6 +13,12 @@ class Filepond extends Model
 
     protected $guarded = [];
 
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('filepond.table', 'fileponds');
+    }
+
     public function scopeOwned($query)
     {
         $query->when(auth()->check(), function ($query) {

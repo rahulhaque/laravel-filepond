@@ -191,6 +191,10 @@ By default all filepond's routes are protected by `web` and `auth` middleware. C
 
 By default `soft_delete` is set to `true` to keep track of all the files uploaded by the users. Set it to false if you want to delete the files with delete request.
 
+#### Table
+
+By default Filepond model maps to table `fileponds`. Change it if you created a table with a different name in your database migration.
+
 ## Commands (Cleanup)
 
 This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File `expiration` minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
