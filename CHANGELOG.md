@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.5.8 - 2022-02-15
+
+- Added Laravel 9 support.
+
 ## 1.4.8 - 2021-12-31
 
 - Added support for chunk upload with resume capability. ✨
