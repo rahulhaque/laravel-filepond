@@ -169,4 +169,17 @@ abstract class AbstractFilepond
             true
         );
     }
+
+    /**
+     * Create Data URL from filepond model
+     * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+     *
+     * @param  Filepond  $filepond
+     * @return string
+     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
+     */
+    protected function createDataUrl(Filepond $filepond)
+    {
+        return 'data:'.$filepond->mimetypes.';base64,'.base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
+    }
 }

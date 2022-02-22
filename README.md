@@ -239,6 +239,10 @@ Processing the file object manually will not update the associated `Filepond` mo
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
 
+#### getDataURL()
+
+`Filepond::field()->getDataURL()` method returns the Data URL of uploaded file for the given field just like [HTTP Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs). This is useful when you need to store the raw content along with encryption, such as - user signature.
+
 ### Traits
 
 There is a `HasFilepond` trait available to get the temporary files uploaded by the users.

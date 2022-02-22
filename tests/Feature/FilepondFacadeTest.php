@@ -61,6 +61,30 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
+    function can_get_data_url_after_filepond_file_upload()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $uploadedFile = UploadedFile::fake()->image('avatar.png', 50, 50);
+        $uploadEncoded = base64_encode($uploadedFile->getContent());
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'avatar' => $uploadedFile
+            ], [
+                'Content-Type' => 'multipart/form-data',
+                'accept' => 'application/json'
+            ]);
+
+        $dataUrl = Filepond::field($response->content())->getDataURL();
+
+        $this->assertEquals($uploadEncoded, last(explode(',', $dataUrl)));
+    }
+
+    /** @test */
     function can_copy_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));

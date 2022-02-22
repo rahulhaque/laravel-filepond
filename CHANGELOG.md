@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.6.8 - 2022-02-22
+
+- Added option to `getDataURL()` from file. Know more about the format [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).
+
 ## 1.5.8 - 2022-02-15
 
 - Added Laravel 9 support.

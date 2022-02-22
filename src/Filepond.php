@@ -45,6 +45,27 @@ class Filepond extends AbstractFilepond
     }
 
     /**
+     * Get the filepond file as Data URL string
+     * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
+     *
+     * @return array|string
+     */
+    public function getDataURL()
+    {
+        if (!$this->getFieldValue()) {
+            return null;
+        }
+
+        if ($this->getIsMultipleUpload()) {
+            return $this->getFieldModel()->map(function ($filepond) {
+                return $this->createDataUrl($filepond);
+            })->toArray();
+        }
+
+        return $this->createDataUrl($this->getFieldModel());
+    }
+
+    /**
      * Get the filepond database model for the FilePond field
      *
      * @return mixed
