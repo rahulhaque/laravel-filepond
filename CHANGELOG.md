@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.7.8 - 2022-04-30
+
+- Added custom `Rule::filepond()` to validate uploaded files. ✨
+- Readme updated with new validation example.
+
 ## 1.6.8 - 2022-02-22
 
 - Added option to `getDataURL()` from file. Know more about the format [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs).

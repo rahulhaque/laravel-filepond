@@ -9,7 +9,7 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Third party storage support.
 - Chunk upload with upload resume capability.
 - Global server side validation for temporary files.
-- Controller level validation before moving the files to permanent location.
+- Controller level validation before moving the temporary files to permanent location.
 - Artisan command to clean up temporary files and folders after they have expired.
 
 **Attention:** People who are already using version less than < 1.3.8 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
@@ -86,6 +86,7 @@ In `UserAvatarController.php` get and process the submitted file by calling the 
 ```php
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Validation\Rule;
 use RahulHaque\Filepond\Facades\Filepond;
 
 class UserAvatarController extends Controller
@@ -98,16 +99,25 @@ class UserAvatarController extends Controller
      */
     public function update(Request $request)
     {
-        // For single file validation
-        Filepond::field($request->avatar)
-            ->validate(['avatar' => 'required|image|max:2000']);
-
-        // For multiple file validation
-        Filepond::field($request->gallery)
-            ->validate(['gallery.*' => 'required|image|max:2000']);
+        // Single and multiple file validation
+        $this->validate($request, [
+            'avatar' => Rule::filepond([
+                'required',
+                'image',
+                'max:2000'
+            ]),
+            'gallery.*' => Rule::filepond([
+                'required',
+                'image',
+                'max:2000'
+            ])
+        ]);
     
+        // Set filename
         $avatarName = 'avatar-' . auth()->id();
     
+        // Move the file to permanent storage
+        // Automatic file extension set
         $fileInfo = Filepond::field($request->avatar)
             ->moveTo('avatars/' . $avatarName);
 
@@ -181,7 +191,9 @@ This package uses Laravel's local filesystem driver for temporary file storage b
 
 #### Validation Rules
 
-Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to all file uploads by FilePond's `/process` route.
+Default global server side validation rules can be changed by modifying `validation_rules` array in `./config/filepond.php`. These rules will be applicable to all file uploads by FilePond's `/process` endpoint.
+
+There is also a custom validation rule `Rule::filepond($rules)` is available to validate temporary files before moving them to desired location. Use it with your `FormRequest` class or directly in the controller, whichever you prefer.
 
 #### Middleware
 
@@ -205,11 +217,13 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 `Filepond::field($field)` is a required method which tell the library which FilePond form field to work with. Chain the rest of the methods as required.
 
-#### validate()
+#### ~~validate()~~
 
-Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before moving or copying further. Supports both single and multiple files validation just as Laravel's default form validation does.
+~~Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before moving or copying further. Supports both single and multiple files validation just as Laravel's default form validation does.~~
 
-> **Note:** This method is not available when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
+Depricated method `validate()`. Will be removed in future. Use `Rule::filepond($rules)` for better validation management with other fields. See the example.
+
+> **Note:** This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
 
 #### copyTo()
 

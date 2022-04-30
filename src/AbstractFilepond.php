@@ -1,8 +1,6 @@
 <?php
 
-
 namespace RahulHaque\Filepond;
-
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;

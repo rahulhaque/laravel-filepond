@@ -3,7 +3,9 @@
 namespace RahulHaque\Filepond;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rule;
 use RahulHaque\Filepond\Console\FilepondClear;
+use RahulHaque\Filepond\Rules\FilepondRule;
 
 class FilepondServiceProvider extends ServiceProvider
 {
@@ -13,6 +15,10 @@ class FilepondServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        Rule::macro('filepond', function ($args) {
+            return new FilepondRule($args);
+        });
 
         if ($this->app->runningInConsole()) {
             $this->publishes([

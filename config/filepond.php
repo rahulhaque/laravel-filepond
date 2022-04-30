@@ -21,7 +21,7 @@ return [
     | upon running the "artisan filepond:clear" command. It is recommended to
     | use local disk for temporary storage when you want to take advantage of
     | controller level validation. File validation from third party storage is
-    | not yet supported. However global 'validation_rules' defined in this
+    | not yet supported. However, global 'validation_rules' defined in this
     | config will work fine.
     |
     */
