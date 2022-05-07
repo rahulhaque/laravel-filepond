@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.7.9 - 2022-05-07
+
+- `Rule::filepond($rules)` documentation added.
+- Code cleanup and improvement.
+
 ## 1.7.8 - 2022-04-30
 
 - Added custom `Rule::filepond()` to validate uploaded files. ✨

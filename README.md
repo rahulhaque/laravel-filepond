@@ -221,7 +221,11 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 ~~Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before moving or copying further. Supports both single and multiple files validation just as Laravel's default form validation does.~~
 
-Depricated method `validate()`. Will be removed in future. Use `Rule::filepond($rules)` for better validation management with other fields. See the example.
+Depricated method `validate()`. Will be removed in future. Use `Rule::filepond($rules)` for better validation management with other fields.
+
+#### Rule::filepond($rules)
+
+Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
 
 > **Note:** This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
 
