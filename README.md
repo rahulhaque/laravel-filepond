@@ -3,16 +3,18 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the user to interact with the files. It currently features - 
+A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them. It currently features - 
 
 - Single and multiple file uploads.
+- Chunk uploads with resume.
 - Third party storage support.
-- Chunk upload with upload resume capability.
 - Global server side validation for temporary files.
-- Controller level validation before moving the temporary files to permanent location.
-- Artisan command to clean up temporary files and folders after they have expired.
+- Controller/Request level validation before moving the temporary files to permanent location.
+- Scheduled artisan command to clean up temporary files and folders after they have expired.
 
 **Attention:** People who are already using version less than < 1.3.8 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
+
+Support the development with a :star: to let others know it worked for you.
 
 ## Installation
 
@@ -43,8 +45,6 @@ php artisan migrate
 ## Quickstart
 
 Before we begin, first install and integrate the [FilePond](https://pqina.nl/filepond/docs/) library in your project any way you prefer.
-
-We will make up a scenario for the new-comers to get them started with FilePond right away.
 
 Let's assume we are updating a user avatar and his/her gallery like the form below.
 
