@@ -12,9 +12,12 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Controller/Request level validation before moving the temporary files to permanent location.
 - Scheduled artisan command to clean up temporary files and folders after they have expired.
 
-**Attention:** People who are already using version less than < 1.3.8 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
-
 Support the development with a :star: to let others know it worked for you.
+
+**Demo Projects**
+- [Laravel-filepond-vue-inertia-example](https://github.com/rahulhaque/laravel-filepond-vue-inertia-example)
+
+**Attention:** People who are already using version less than < 1.3.8 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
 
 ## Installation
 
