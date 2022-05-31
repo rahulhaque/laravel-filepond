@@ -21,7 +21,7 @@ Support the development with a :star: to let others know it worked for you.
 
 ## Installation
 
-Install the package via composer:
+Install the package Laravel 8 and onwards.
 
 ```bash
 composer require rahulhaque/laravel-filepond

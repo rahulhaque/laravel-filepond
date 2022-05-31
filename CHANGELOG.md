@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.7.10 - 2022-05-31
+
+- `validate()` method deprication notice added.
+- Test cases updated with `Rule::filepond()`.
+
 ## 1.7.9 - 2022-05-07
 
 - `Rule::filepond($rules)` documentation added.

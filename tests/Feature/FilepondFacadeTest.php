@@ -3,8 +3,10 @@
 namespace RahulHaque\Filepond\Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use RahulHaque\Filepond\Facades\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
@@ -30,8 +32,14 @@ class FilepondFacadeTest extends TestCase
                 'accept' => 'application/json'
             ]);
 
+        $request = new Request();
+
         try {
-            Filepond::field($response->content())->validate(['avatar' => 'required|file|size:30']);
+            $request->merge([
+                'avatar' => $response->content()
+            ])->validate([
+                'avatar' => Rule::filepond('required|file|size:30')
+            ]);
         } catch (ValidationException $e) {
             $this->assertEquals($e->errors(), ["avatar" => ["The avatar must be 30 kilobytes."]]);
         }

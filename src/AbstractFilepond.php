@@ -67,6 +67,7 @@ abstract class AbstractFilepond
 
     /**
      * @param  string  $tempDisk
+     * @return AbstractFilepond
      */
     public function setTempDisk(string $tempDisk)
     {

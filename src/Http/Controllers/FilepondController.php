@@ -13,6 +13,7 @@ class FilepondController extends Controller
      * FilePond ./process route logic.
      *
      * @param  Request  $request
+     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
      */
     public function process(Request $request, FilepondService $service)
@@ -61,6 +62,7 @@ class FilepondController extends Controller
      * FilePond ./revert route logic.
      *
      * @param  Request  $request
+     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
      */
     public function revert(Request $request, FilepondService $service)
