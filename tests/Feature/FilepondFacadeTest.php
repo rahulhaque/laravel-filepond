@@ -32,16 +32,57 @@ class FilepondFacadeTest extends TestCase
                 'accept' => 'application/json'
             ]);
 
-        $request = new Request();
+        $request = new Request([
+            'avatar' => $response->content()
+        ]);
 
         try {
-            $request->merge([
-                'avatar' => $response->content()
-            ])->validate([
+            $request->validate([
                 'avatar' => Rule::filepond('required|file|size:30')
             ]);
         } catch (ValidationException $e) {
             $this->assertEquals($e->errors(), ["avatar" => ["The avatar must be 30 kilobytes."]]);
+        }
+    }
+
+    /** @test */
+    function can_validate_after_multiple_filepond_file_upload()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $responses = [];
+
+        // Create 5 temporary file uploads
+        for ($i = 1; $i <= 5; $i++) {
+            $response = $this->actingAs($user)
+                ->post(route('filepond-process'), [
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100)
+                ], [
+                    'Content-Type' => 'multipart/form-data',
+                    'accept' => 'application/json'
+                ]);
+
+            $responses[] = $response->content();
+        }
+
+        $request = new Request([
+            'gallery' => $responses,
+        ]);
+
+        try {
+            $request->validate([
+                'gallery.*' => Rule::filepond('required|file|size:30')
+            ]);
+        } catch (ValidationException $e) {
+            $this->assertEquals($e->errors(), [
+                "gallery.0" => ["The gallery.0 must be 30 kilobytes."],
+                "gallery.1" => ["The gallery.1 must be 30 kilobytes."],
+                "gallery.2" => ["The gallery.2 must be 30 kilobytes."],
+                "gallery.3" => ["The gallery.3 must be 30 kilobytes."],
+                "gallery.4" => ["The gallery.4 must be 30 kilobytes."]
+            ]);
         }
     }
 
