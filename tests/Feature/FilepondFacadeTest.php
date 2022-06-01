@@ -155,6 +155,27 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
+    function can_move_filepond_file_upload_to_desired_location()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100)
+            ], [
+                'Content-Type' => 'multipart/form-data',
+                'accept' => 'application/json'
+            ]);
+
+        $fileInfo = Filepond::field($response->content())->moveTo('avatars/avatar-1');
+
+        Storage::disk(config('filepond.disk', 'local'))->assertExists($fileInfo['location']);
+    }
+
+    /** @test */
     function can_copy_multiple_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -177,6 +198,35 @@ class FilepondFacadeTest extends TestCase
         }
 
         $fileInfos = Filepond::field($request)->copyTo('galleries/gallery');
+
+        foreach ($fileInfos as $fileInfo) {
+            Storage::disk(config('filepond.disk', 'local'))->assertExists($fileInfo['location']);
+        }
+    }
+
+    /** @test */
+    function can_move_multiple_filepond_file_upload_to_desired_location()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $request = [];
+
+        // Create 5 temporary file uploads
+        for ($i = 1; $i <= 5; $i++) {
+            $response = $this->actingAs($user)
+                ->post(route('filepond-process'), [
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100)
+                ], [
+                    'Content-Type' => 'multipart/form-data',
+                    'accept' => 'application/json'
+                ]);
+
+            $request[] = $response->content();
+        }
+
+        $fileInfos = Filepond::field($request)->moveTo('galleries/gallery');
 
         foreach ($fileInfos as $fileInfo) {
             Storage::disk(config('filepond.disk', 'local'))->assertExists($fileInfo['location']);

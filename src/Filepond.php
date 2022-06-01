@@ -126,8 +126,8 @@ class Filepond extends AbstractFilepond
             foreach ($fileponds as $index => $filepond) {
                 $to = $path.'-'.($index + 1);
                 $response[] = $this->putFile($filepond, $to, $disk, $visibility);
-                $this->delete();
             }
+            $this->delete();
             return $response;
         }
 

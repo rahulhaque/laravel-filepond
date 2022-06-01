@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.8.10 - 2022-06-01
+
+- Multiple file uploads sometime won't move to location fixed.
+- New test cases added for `moveTo()` method.
+
 ## 1.7.10 - 2022-05-31
 
 - `validate()` method deprication notice added.
