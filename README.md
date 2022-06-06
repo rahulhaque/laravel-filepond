@@ -11,6 +11,7 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Global server side validation for temporary files.
 - Controller/Request level validation before moving the temporary files to permanent location.
 - Scheduled artisan command to clean up temporary files and folders after they have expired.
+- Can handle filepond's `process`, `revert`, `head` and `patch` routes.
 
 Support the development with a :star: to let others know it worked for you.
 
