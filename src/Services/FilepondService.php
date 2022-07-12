@@ -166,8 +166,8 @@ class FilepondService
     /**
      * Get the offset of the last uploaded chunk for resume
      *
-     * @param  string  $content
-     * @throws \Throwable
+     * @param string $content
+     * @return false|int
      */
     public function offset(string $content)
     {
@@ -186,7 +186,8 @@ class FilepondService
     /**
      * Delete the filepond file and record respecting soft delete
      *
-     * @param  Filepond  $filepond
+     * @param Filepond $filepond
+     * @return bool|null
      */
     public function delete(Filepond $filepond)
     {

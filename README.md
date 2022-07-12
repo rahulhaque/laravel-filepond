@@ -201,7 +201,7 @@ There is also a custom validation rule `Rule::filepond($rules)` is available to 
 
 #### Middleware
 
-By default all filepond's routes are protected by `web` and `auth` middleware. Change it if necessary.
+By default, all filepond's routes are protected by `web` and `auth` middleware. Change it if required.
 
 #### Soft Delete
 
@@ -285,6 +285,40 @@ Now you can get all the files info uploaded by a single user like this.
 
 ```php
 User::find(1)->fileponds;
+```
+
+## Development
+
+First clone the repo and `cd` into the directory. Build development environment with docker.
+
+```bash
+# Build the development image
+docker compose build
+
+# Run the development container from image
+docker compose up -d
+
+# Drop to development shell
+docker compose exec laravel-filepond bash
+
+# Install dependencies
+composer install
+
+# Run tests
+composer test
+```
+
+To free up space after development.
+
+```bash
+# To stop the container for later use
+docker compose stop
+
+# Stop and remove the container
+docker compose down -v
+
+# Also remove the development image if necessary
+docker image rm laravel-filepond-development
 ```
 
 ## Testing

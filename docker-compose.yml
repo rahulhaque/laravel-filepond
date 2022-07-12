@@ -1,0 +1,13 @@
+version: '3'
+services:
+  laravel-filepond:
+    build:
+      context: ./docker/8.1
+      dockerfile: Dockerfile
+    image: laravel-filepond-development
+    container_name: laravel-filepond
+    stdin_open: true
+    tty: true
+    volumes:
+      - '.:/code'
+    network_mode: host

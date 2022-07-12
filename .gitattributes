@@ -7,3 +7,5 @@
 /tests              export-ignore
 /.editorconfig      export-ignore
 /.github            export-ignore
+/docker
+/docker-compose.yml
