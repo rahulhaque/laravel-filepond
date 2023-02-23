@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.9.10 - 2023-02-23
+
+- Added Laravel 10 support. ✨
+- Removed depricated method `validate()`.
+- Readme updated to remove depricated method.
+- Test cases updated to support Laravel 10.
+
 ## 1.8.10 - 2022-06-01
 
 - Multiple file uploads sometime won't move to location fixed.

@@ -11,7 +11,7 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Global server side validation for temporary files.
 - Controller/Request level validation before moving the temporary files to permanent location.
 - Scheduled artisan command to clean up temporary files and folders after they have expired.
-- Can handle filepond's `process`, `revert`, `head` and `patch` routes.
+- Can handle filepond's `process`, `revert`, `head` and `patch` endpoints.
 
 Support the development with a :star: to let others know it worked for you.
 
@@ -223,12 +223,6 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 #### field()
 
 `Filepond::field($field)` is a required method which tell the library which FilePond form field to work with. Chain the rest of the methods as required.
-
-#### ~~validate()~~
-
-~~Calling the `Filepond::field()->validate($rules)` method will validate the temporarily stored file before moving or copying further. Supports both single and multiple files validation just as Laravel's default form validation does.~~
-
-Depricated method `validate()`. Will be removed in future. Use `Rule::filepond($rules)` for better validation management with other fields.
 
 #### Rule::filepond($rules)
 
