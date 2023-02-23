@@ -3,7 +3,6 @@
 namespace RahulHaque\Filepond;
 
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
 class Filepond extends AbstractFilepond
@@ -135,42 +134,6 @@ class Filepond extends AbstractFilepond
         $response = $this->putFile($filepond, $path, $disk, $visibility);
         $this->delete();
         return $response;
-    }
-
-    /**
-     * [Deprecated] Validate a file from temporary storage
-     *
-     * ```php
-     * // Deprecated
-     * Filepond::field($request->avatar)->validate(['avatar' => 'required|image|max:2000']);
-     *
-     * // New
-     * $this->validate($request, ['avatar' => Rule::filepond('required|image|max:2000')]);
-     *
-     * Or
-     *
-     * $request->validate(['avatar' => Rule::filepond('required|image|max:2000')]);
-     * ```
-     *
-     * @deprecated from v1.7.9 See Rule::filepond($rules) instead
-     *
-     * @param  array  $rules
-     * @param  array  $messages
-     * @param  array  $customAttributes
-     * @return array
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function validate(array $rules, array $messages = [], array $customAttributes = [])
-    {
-        $old = array_key_first($rules);
-        $field = explode('.', $old)[0];
-
-        if (!$this->getFieldValue() && ($old != $field)) {
-            $rules[$field] = $rules[$old];
-            unset($rules[$old]);
-        }
-
-        return Validator::make([$field => $this->getFile()], $rules, $messages, $customAttributes)->validate();
     }
 
     /**

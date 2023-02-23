@@ -47,7 +47,7 @@ class FilepondModelTest extends TestCase
         $filepond->filename = $filename;
         $filepond->save();
 
-        $this->assertEquals(true,$filepond->filename == $filename);
+        $this->assertEquals(true, $filepond->filename == $filename);
     }
 
     /** @test */
@@ -83,6 +83,6 @@ class FilepondModelTest extends TestCase
 
         $filepond->forceDelete();
 
-        $this->assertDeleted($filepond);
+        $this->assertDatabaseCount('fileponds', 0);
     }
 }
