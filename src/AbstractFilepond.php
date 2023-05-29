@@ -14,6 +14,7 @@ abstract class AbstractFilepond
     private $tempDisk;
     private $isMultipleUpload;
     private $fieldModel;
+    private $isOwnershipAware;
     private $isSoftDeletable;
 
     /**
@@ -106,14 +107,18 @@ abstract class AbstractFilepond
         }
 
         if ($this->getIsMultipleUpload()) {
-            $this->fieldModel = Filepond::owned()
+            $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+                $query->owned();
+            })
                 ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
                 ->get();
             return $this;
         }
 
         $input = $this->getFieldValue();
-        $this->fieldModel = Filepond::owned()
+        $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+            $query->owned();
+        })
             ->where('id', $input['id'])
             ->first();
         return $this;
@@ -138,6 +143,28 @@ abstract class AbstractFilepond
     protected function setIsSoftDeletable(bool $isSoftDeletable)
     {
         $this->isSoftDeletable = $isSoftDeletable;
+        return $this;
+    }
+
+    /**
+     * Get the ownership check value for filepond model
+     *
+     * @return boolean
+     */
+    protected function getIsOwnershipAware()
+    {
+        return $this->isOwnershipAware;
+    }
+
+    /**
+     * Set the ownership check value for filepond model
+     *
+     * @param  bool  $isOwnershipAware
+     * @return $this
+     */
+    protected function setIsOwnershipAware(bool $isOwnershipAware)
+    {
+        $this->isOwnershipAware = $isOwnershipAware;
         return $this;
     }
 

@@ -222,7 +222,7 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 #### field()
 
-`Filepond::field($field)` is a required method which tell the library which FilePond form field to work with. Chain the rest of the methods as required.
+`Filepond::field($field, $checkOwnership)` is a required method which tells the library which FilePond form field to work with. The optional second parameter is to check file ownership of the field. It is useful when an unauthenticated user uploads a file and later tries to retrieve it after authentication. Chain the rest of the methods as required.
 
 #### Rule::filepond($rules)
 

@@ -5,7 +5,7 @@ namespace RahulHaque\Filepond\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \RahulHaque\Filepond\Filepond field(string|array $field)
+ * @method static \RahulHaque\Filepond\Filepond field(string|array $field, bool $checkOwnership = true)
  * @method static \RahulHaque\Filepond\Filepond getFile()
  * @method static \RahulHaque\Filepond\Filepond getModel()
  * @method static \RahulHaque\Filepond\Filepond getDataURL()

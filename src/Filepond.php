@@ -13,11 +13,12 @@ class Filepond extends AbstractFilepond
      * @param  string|array  $field
      * @return $this
      */
-    public function field($field)
+    public function field($field, bool $checkOwnership = true)
     {
         $this->setFieldValue($field)
             ->setTempDisk(config('filepond.temp_disk', 'local'))
             ->setIsSoftDeletable(config('filepond.soft_delete', true))
+            ->setIsOwnershipAware($checkOwnership)
             ->setFieldModel();
 
         return $this;

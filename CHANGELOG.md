@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.10.10 - 2023-05-29
+
+- Added option to force skip file ownership check to solve #39.
+- Added error message for unsupported filepond endpoints.
+
 ## 1.9.10 - 2023-02-23
 
 - Added Laravel 10 support. ✨

@@ -55,7 +55,11 @@ class FilepondController extends Controller
      */
     public function head(Request $request, FilepondService $service)
     {
-        return Response::make('Ok', 200)->withHeaders(['upload-offset' => $service->offset($request->patch)]);
+        if ($request->isMethod('head')) {
+            return Response::make('Ok', 200)->withHeaders(['upload-offset' => $service->offset($request->patch)]);
+        }
+        
+        return Response::make('Feature not implemented yet!', 406);
     }
 
     /**
