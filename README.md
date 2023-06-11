@@ -21,7 +21,9 @@ Support the development with a :star: to let others know it worked for you.
 
 - [Laravel-filepond-vue-inertia-example](https://github.com/rahulhaque/laravel-filepond-vue-inertia-example)
 
-**Attention:** People who are already using version less than < 1.3.8 are requested to update the `./config/filepond.php` file when upgrading as the newer version contains significant changes.
+**Video Tutorials:**
+
+- Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
 
 ## Installation
 
