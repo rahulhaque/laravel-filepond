@@ -20,10 +20,12 @@ class CreateFilepondsTable extends Migration
             $table->string('extension', 100);
             $table->string('mimetypes', 100);
             $table->string('disk', 100);
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->dateTime('expires_at')->nullable();
-            $table->softDeletes();
-            $table->timestamps();
+            $table->unsignedBigInteger('created_by')->nullable()->index();
+            $table->dateTime('expires_at')->index()->nullable();
+            $table->text('s3_multipart_upload_id')->nullable();
+            $table->json('s3_parts')->nullable();
+            $table->softDeletesDatetime();
+            $table->datetimes();
         });
     }
 
