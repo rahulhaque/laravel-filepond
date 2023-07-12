@@ -42,11 +42,11 @@ class FilepondController extends Controller
      */
     public function patch(Request $request, FilepondService $service)
     {
-        return Response::make('Ok', 200)->withHeaders(['upload-offset' => $service->chunk($request)]);
+        return Response::make('Ok', 200)->withHeaders(['Upload-Offset' => $service->chunk($request)]);
     }
 
     /**
-     * FilePond ./head route logic.
+     * FilePond ./head, ./restore route logic.
      *
      * @param  Request  $request
      * @param  FilepondService  $service
@@ -55,11 +55,23 @@ class FilepondController extends Controller
      */
     public function head(Request $request, FilepondService $service)
     {
-        if ($request->isMethod('head')) {
-            return Response::make('Ok', 200)->withHeaders(['upload-offset' => $service->offset($request->patch)]);
+        // If request has patch key, then its a head request
+        if ($request->has('patch')) {
+            return Response::make('Ok', 200)->withHeaders(['Upload-Offset' => $service->offset($request->patch)]);
+        }
+
+        // If request has restore key, then its a restore request
+        if ($request->has('restore')) {
+            [$filepond, $content] = $service->restore($request->restore);
+
+            return Response::make($content, 200)->withHeaders([
+                'Access-Control-Expose-Headers' => 'Content-Disposition',
+                'Content-Type' => $filepond->mimetypes,
+                'Content-Disposition' => 'inline; filename="'.$filepond->filename.'"',
+            ]);
         }
         
-        return Response::make('Feature not implemented yet!', 406);
+        return Response::make('Feature not implemented yet.', 406);
     }
 
     /**

@@ -120,9 +120,9 @@ class FilepondService
 
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$id.'/');
 
-        $filename = $request->header('upload-name');
-        $length = $request->header('upload-length');
-        $offset = $request->header('upload-offset');
+        $filename = $request->header('Upload-Name');
+        $length = $request->header('Upload-Length');
+        $offset = $request->header('Upload-Offset');
 
         file_put_contents($dir.$offset, $request->getContent());
 
@@ -181,6 +181,19 @@ class FilepondService
         }
 
         return $size;
+    }
+
+    /**
+     * Retrieve the filepond file model and content
+     *
+     * @param  string  $content
+     * @return mixed
+     */
+    public function restore(string $content)
+    {
+        $filepond = $this->retrieve($content);
+        
+        return [$filepond, Storage::disk($this->tempDisk)->get($filepond->filepath)];
     }
 
     /**

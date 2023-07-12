@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.11.10 - 2023-07-12
+
+- Added support for filepond restore endpoint. ✨
+
 ## 1.10.10 - 2023-05-29
 
 - Added option to force skip file ownership check to solve #39.
@@ -10,8 +14,8 @@ All notable changes to `laravel-filepond` will be documented in this file.
 ## 1.9.10 - 2023-02-23
 
 - Added Laravel 10 support. ✨
-- Removed depricated method `validate()`.
-- Readme updated to remove depricated method.
+- Removed deprecated method `validate()`.
+- Readme updated to remove deprecated method.
 - Test cases updated to support Laravel 10.
 
 ## 1.8.10 - 2022-06-01
@@ -21,7 +25,7 @@ All notable changes to `laravel-filepond` will be documented in this file.
 
 ## 1.7.10 - 2022-05-31
 
-- `validate()` method deprication notice added.
+- `validate()` method deprecation notice added.
 - Test cases updated with `Rule::filepond()`.
 
 ## 1.7.9 - 2022-05-07
