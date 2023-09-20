@@ -4,7 +4,6 @@ namespace RahulHaque\Filepond\Console;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
-use RahulHaque\Filepond\Models\Filepond;
 
 class FilepondClear extends Command
 {
@@ -44,7 +43,7 @@ class FilepondClear extends Command
 
         if ($this->option('all')) {
             if ($this->confirm('Are you sure?', true)) {
-                Filepond::truncate();
+                config('filepond.model')::truncate();
                 $this->info('Fileponds table truncated.');
                 Storage::disk($tempDisk)->deleteDirectory($tempFolder);
                 $this->info('Temporary files and folders deleted.');
@@ -54,7 +53,7 @@ class FilepondClear extends Command
             return 0;
         }
 
-        $expiredFiles = Filepond::withTrashed()->where('expires_at', '<=', now())->select(['id', 'filepath']);
+        $expiredFiles = config('filepond.model')::withTrashed()->where('expires_at', '<=', now())->select(['id', 'filepath']);
         $this->info('Total expired files and folders: '.$expiredFiles->count());
         if ($expiredFiles->count() > 0) {
             foreach ($expiredFiles->get() as $expiredFile) {

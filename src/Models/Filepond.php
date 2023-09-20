@@ -5,8 +5,9 @@ namespace RahulHaque\Filepond\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use RahulHaque\Filepond\Interfaces\FilePondInterface;
 
-class Filepond extends Model
+class Filepond extends Model implements FilePondInterface
 {
     use HasFactory, SoftDeletes;
 

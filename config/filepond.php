@@ -40,6 +40,16 @@ return [
         'web', 'auth'
     ],
 
+	/*
+	|--------------------------------------------------------------------------
+	| Filepond Model
+	|--------------------------------------------------------------------------
+	|
+	| If you need to  customize the model, create a new one an extends the default model \RahulHaque\Filepond\Models\Filepond::class
+	|
+	*/
+	'model' => \RahulHaque\Filepond\Models\Filepond::class,
+
     /*
     |--------------------------------------------------------------------------
     | Soft Delete FilePond Model

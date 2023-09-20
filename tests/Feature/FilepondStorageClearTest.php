@@ -5,7 +5,6 @@ namespace RahulHaque\Filepond\Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use RahulHaque\Filepond\Models\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
 
@@ -31,7 +30,7 @@ class FilepondStorageClearTest extends TestCase
         }
 
         // Update expire_at time to make them ready to clean
-        Filepond::query()->update([
+        config('filepond.model')::query()->update([
             'expires_at' => now()->subMinutes(5)
         ]);
 

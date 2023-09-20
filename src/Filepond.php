@@ -3,7 +3,8 @@
 namespace RahulHaque\Filepond;
 
 use Illuminate\Support\Facades\Storage;
-use RahulHaque\Filepond\Models\Filepond as FilepondModel;
+use RahulHaque\Filepond\Interfaces\FilePondInterface;
+
 
 class Filepond extends AbstractFilepond
 {
@@ -173,14 +174,14 @@ class Filepond extends AbstractFilepond
     /**
      * Put the file in permanent storage and return response
      *
-     * @param  FilepondModel  $filepond
+     * @param  FilePondInterface $filepond
      * @param  string  $path
      * @param  string  $disk
      * @param  string  $visibility
      * @return array
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    private function putFile(FilepondModel $filepond, string $path, string $disk, string $visibility)
+    private function putFile(FilePondInterface $filepond, string $path, string $disk, string $visibility)
     {
         $permanentDisk = $disk == '' ? $filepond->disk : $disk;
 

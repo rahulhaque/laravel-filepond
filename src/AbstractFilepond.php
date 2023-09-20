@@ -6,7 +6,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
-use RahulHaque\Filepond\Models\Filepond;
+use RahulHaque\Filepond\Interfaces\FilePondInterface;
 
 abstract class AbstractFilepond
 {
@@ -107,7 +107,7 @@ abstract class AbstractFilepond
         }
 
         if ($this->getIsMultipleUpload()) {
-            $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+            $this->fieldModel = config('filepond.model')::when($this->isOwnershipAware, function ($query) {
                 $query->owned();
             })
                 ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
@@ -116,7 +116,7 @@ abstract class AbstractFilepond
         }
 
         $input = $this->getFieldValue();
-        $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+        $this->fieldModel = config('filepond.model')::when($this->isOwnershipAware, function ($query) {
             $query->owned();
         })
             ->where('id', $input['id'])
@@ -182,10 +182,10 @@ abstract class AbstractFilepond
     /**
      * Create file object from filepond model
      *
-     * @param  Filepond  $filepond
+     * @param  FilePondInterface  $filepond
      * @return UploadedFile
      */
-    protected function createFileObject(Filepond $filepond)
+    protected function createFileObject(FilePondInterface $filepond)
     {
         return new UploadedFile(
             Storage::disk($this->tempDisk)->path($filepond->filepath),
@@ -200,11 +200,11 @@ abstract class AbstractFilepond
      * Create Data URL from filepond model
      * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
      *
-     * @param  Filepond  $filepond
+     * @param  FilePondInterface  $filepond
      * @return string
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
-    protected function createDataUrl(Filepond $filepond)
+    protected function createDataUrl(FilePondInterface $filepond)
     {
         return 'data:'.$filepond->mimetypes.';base64,'.base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
     }

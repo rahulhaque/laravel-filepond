@@ -2,8 +2,6 @@
 
 namespace RahulHaque\Filepond\Traits;
 
-use RahulHaque\Filepond\Models\Filepond;
-
 trait HasFilepond {
 
     /**
@@ -13,6 +11,6 @@ trait HasFilepond {
      */
     public function fileponds()
     {
-        return $this->hasMany(Filepond::class, 'created_by');
+        return $this->hasMany(config('filepond.model'), 'created_by');
     }
 }
