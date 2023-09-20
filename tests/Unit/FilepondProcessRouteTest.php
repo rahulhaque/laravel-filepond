@@ -50,7 +50,7 @@ class FilepondProcessRouteTest extends TestCase
 
         $data = Crypt::decrypt($response->content(), true);
 
-        $fileById = config('filepond.model')::find($data['id']);
+        $fileById = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::find($data['id']);
 
         Storage::disk(config('filepond.temp_disk', 'local'))->assertExists($fileById->filepath);
     }
@@ -73,7 +73,7 @@ class FilepondProcessRouteTest extends TestCase
             ]);
 
         $data = Crypt::decrypt($response->content(), true);
-        $filepondModel = config('filepond.model')::find($data['id']);
+        $filepondModel = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::find($data['id']);
 
 		$this->assertEquals($user->id, $filepondModel->created_by);
 		$this->assertEquals(1, $user->fileponds->count());

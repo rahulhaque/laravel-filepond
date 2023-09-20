@@ -30,7 +30,7 @@ class FilepondStorageClearTest extends TestCase
         }
 
         // Update expire_at time to make them ready to clean
-        config('filepond.model')::query()->update([
+        config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::query()->update([
             'expires_at' => now()->subMinutes(5)
         ]);
 

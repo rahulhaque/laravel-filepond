@@ -24,7 +24,7 @@ class FilepondModelTest extends TestCase
             'expires_at' => now()->addMinutes(30)->toISOString()
         ];
 
-        config('filepond.model')::create($data);
+        config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create($data);
 
         $this->assertDatabaseHas('fileponds', $data);
     }
@@ -32,7 +32,7 @@ class FilepondModelTest extends TestCase
     /** @test */
     function can_update_filepond_model()
     {
-        $filepond = config('filepond.model')::create([
+        $filepond = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
@@ -53,7 +53,7 @@ class FilepondModelTest extends TestCase
     /** @test */
     function can_soft_delete_filepond_model()
     {
-        $filepond = config('filepond.model')::create([
+        $filepond = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
@@ -71,7 +71,7 @@ class FilepondModelTest extends TestCase
     /** @test */
     function can_force_delete_filepond_model()
     {
-        $filepond = config('filepond.model')::create([
+        $filepond = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',

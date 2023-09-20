@@ -107,7 +107,7 @@ abstract class AbstractFilepond
         }
 
         if ($this->getIsMultipleUpload()) {
-            $this->fieldModel = config('filepond.model')::when($this->isOwnershipAware, function ($query) {
+            $this->fieldModel = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::when($this->isOwnershipAware, function ($query) {
                 $query->owned();
             })
                 ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
@@ -116,7 +116,7 @@ abstract class AbstractFilepond
         }
 
         $input = $this->getFieldValue();
-        $this->fieldModel = config('filepond.model')::when($this->isOwnershipAware, function ($query) {
+        $this->fieldModel = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::when($this->isOwnershipAware, function ($query) {
             $query->owned();
         })
             ->where('id', $input['id'])

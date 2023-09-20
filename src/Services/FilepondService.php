@@ -59,7 +59,7 @@ class FilepondService
 	{
 		$file = $this->getUploadedFile($request);
 
-		$filepond = config('filepond.model')::create([
+		$filepond = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create([
 			'filepath' => $file->store($this->tempFolder, $this->tempDisk),
 			'filename' => $file->getClientOriginalName(),
 			'extension' => $file->getClientOriginalExtension(),
@@ -82,7 +82,7 @@ class FilepondService
 	{
 		$input = Crypt::decrypt($content);
 
-		return config('filepond.model')::owned()
+		return config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::owned()
 		                               ->where('id', $input['id'])
 		                               ->firstOrFail();
 	}
@@ -94,7 +94,7 @@ class FilepondService
 	 */
 	public function initChunk()
 	{
-		$filepond = config('filepond.model')::create([
+		$filepond = config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class)::create([
 			'filepath' => '',
 			'filename' => '',
 			'extension' => '',

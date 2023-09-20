@@ -11,6 +11,6 @@ trait HasFilepond {
      */
     public function fileponds()
     {
-        return $this->hasMany(config('filepond.model'), 'created_by');
+        return $this->hasMany(config('filepond.model', \RahulHaque\Filepond\Models\Filepond::class), 'created_by');
     }
 }
