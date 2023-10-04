@@ -68,7 +68,7 @@ abstract class AbstractFilepond
 
     /**
      * @param  string  $tempDisk
-     * @return AbstractFilepond
+     * @return $this
      */
     public function setTempDisk(string $tempDisk)
     {
@@ -97,9 +97,10 @@ abstract class AbstractFilepond
     /**
      * Set the FilePond model from the field
      *
-     * @return $this
+     * @param string $model
+     * @return void
      */
-    protected function setFieldModel()
+    protected function setFieldModel(string $model)
     {
         if (!$this->getFieldValue()) {
             $this->fieldModel = null;
@@ -107,7 +108,7 @@ abstract class AbstractFilepond
         }
 
         if ($this->getIsMultipleUpload()) {
-            $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+            $this->fieldModel = $model::when($this->isOwnershipAware, function ($query) {
                 $query->owned();
             })
                 ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
@@ -116,7 +117,7 @@ abstract class AbstractFilepond
         }
 
         $input = $this->getFieldValue();
-        $this->fieldModel = Filepond::when($this->isOwnershipAware, function ($query) {
+        $this->fieldModel = $model::when($this->isOwnershipAware, function ($query) {
             $query->owned();
         })
             ->where('id', $input['id'])

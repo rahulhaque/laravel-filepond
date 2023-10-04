@@ -13,12 +13,14 @@ class FilepondService
     private $disk;
     private $tempDisk;
     private $tempFolder;
+    private $model;
 
     public function __construct()
     {
         $this->disk = config('filepond.disk', 'public');
         $this->tempDisk = config('filepond.temp_disk', 'local');
         $this->tempFolder = config('filepond.temp_folder', 'filepond/temp');
+        $this->model = config('filepond.model', Filepond::class);
     }
 
     /**
@@ -58,7 +60,7 @@ class FilepondService
     {
         $file = $this->getUploadedFile($request);
 
-        $filepond = Filepond::create([
+        $filepond = $this->model::create([
             'filepath' => $file->store($this->tempFolder, $this->tempDisk),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
@@ -80,7 +82,7 @@ class FilepondService
     public function retrieve(string $content)
     {
         $input = Crypt::decrypt($content);
-        return Filepond::owned()
+        return $this->model::owned()
             ->where('id', $input['id'])
             ->firstOrFail();
     }
@@ -92,7 +94,7 @@ class FilepondService
      */
     public function initChunk()
     {
-        $filepond = Filepond::create([
+        $filepond = $this->model::create([
             'filepath' => '',
             'filename' => '',
             'extension' => '',

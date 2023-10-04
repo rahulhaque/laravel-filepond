@@ -12,6 +12,8 @@ class Filepond extends Model
 
     protected $guarded = [];
 
+    protected $table = 'fileponds';
+
     public function scopeOwned($query)
     {
         $query->when(auth()->check(), function ($query) {

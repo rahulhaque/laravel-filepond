@@ -19,7 +19,7 @@ class Filepond extends AbstractFilepond
             ->setTempDisk(config('filepond.temp_disk', 'local'))
             ->setIsSoftDeletable(config('filepond.soft_delete', true))
             ->setIsOwnershipAware($checkOwnership)
-            ->setFieldModel();
+            ->setFieldModel(config('filepond.model', FilepondModel::class));
 
         return $this;
     }

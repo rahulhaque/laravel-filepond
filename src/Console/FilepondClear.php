@@ -41,10 +41,11 @@ class FilepondClear extends Command
     {
         $tempDisk = config('filepond.temp_disk', 'local');
         $tempFolder = config('filepond.temp_folder', 'filepond/temp');
+        $model = config('filepond.model', Filepond::class);
 
         if ($this->option('all')) {
             if ($this->confirm('Are you sure?', true)) {
-                Filepond::truncate();
+                $model::truncate();
                 $this->info('Fileponds table truncated.');
                 Storage::disk($tempDisk)->deleteDirectory($tempFolder);
                 $this->info('Temporary files and folders deleted.');
@@ -54,7 +55,7 @@ class FilepondClear extends Command
             return 0;
         }
 
-        $expiredFiles = Filepond::withTrashed()->where('expires_at', '<=', now())->select(['id', 'filepath']);
+        $expiredFiles = $model::withTrashed()->where('expires_at', '<=', now())->select(['id', 'filepath']);
         $this->info('Total expired files and folders: '.$expiredFiles->count());
         if ($expiredFiles->count() > 0) {
             foreach ($expiredFiles->get() as $expiredFile) {

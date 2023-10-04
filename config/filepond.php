@@ -74,6 +74,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | FilePond Model
+    |--------------------------------------------------------------------------
+    |
+    | Set the filepond model to be used by the package. Make sure you extend
+    | the custom model with "RahulHaque\Filepond\Models\Filepond" model.
+    |
+    */
+    'model' => RahulHaque\Filepond\Models\Filepond::class,
+
+    /*
+    |--------------------------------------------------------------------------
     | Global Validation Rules
     |--------------------------------------------------------------------------
     |
