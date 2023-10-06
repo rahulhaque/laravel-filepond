@@ -17,7 +17,7 @@ class Filepond extends Model
     public function scopeOwned($query)
     {
         $query->when(auth()->check(), function ($query) {
-            $query->where('created_by', auth()->id());
+            $query->where($this->getTable().'.created_by', auth()->id());
         });
     }
 
