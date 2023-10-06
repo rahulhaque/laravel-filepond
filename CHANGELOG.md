@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.12.10 - 2023-10-06
+
+- Added support for extending `Filepond` model to support #45. ✨
+- Added support for filpond table rename to support #14. ✨
+- Added Larevel Pint for code styling.
+
 ## 1.11.10 - 2023-07-12
 
 - Added support for filepond restore endpoint. ✨
