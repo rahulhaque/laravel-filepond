@@ -11,10 +11,15 @@ use RahulHaque\Filepond\Models\Filepond;
 abstract class AbstractFilepond
 {
     private $fieldValue;
+
     private $tempDisk;
+
     private $isMultipleUpload;
+
     private $fieldModel;
+
     private $isOwnershipAware;
+
     private $isSoftDeletable;
 
     /**
@@ -35,26 +40,30 @@ abstract class AbstractFilepond
      */
     protected function setFieldValue($fieldValue)
     {
-        if (!$fieldValue) {
+        if (! $fieldValue) {
             $this->fieldValue = null;
+
             return $this;
         }
 
         $this->isMultipleUpload = is_array($fieldValue);
 
         if ($this->getIsMultipleUpload()) {
-            if (!$fieldValue[0]) {
+            if (! $fieldValue[0]) {
                 $this->fieldValue = null;
+
                 return $this;
             }
 
             $this->fieldValue = array_map(function ($input) {
                 return $this->decrypt($input);
             }, $fieldValue);
+
             return $this;
         }
 
         $this->fieldValue = $this->decrypt($fieldValue);
+
         return $this;
     }
 
@@ -67,17 +76,17 @@ abstract class AbstractFilepond
     }
 
     /**
-     * @param  string  $tempDisk
      * @return $this
      */
     public function setTempDisk(string $tempDisk)
     {
         $this->tempDisk = $tempDisk;
+
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     protected function getIsMultipleUpload()
     {
@@ -97,13 +106,13 @@ abstract class AbstractFilepond
     /**
      * Set the FilePond model from the field
      *
-     * @param string $model
-     * @return void
+     * @return $this
      */
     protected function setFieldModel(string $model)
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             $this->fieldModel = null;
+
             return $this;
         }
 
@@ -113,6 +122,7 @@ abstract class AbstractFilepond
             })
                 ->whereIn('id', (new Collection($this->getFieldValue()))->pluck('id'))
                 ->get();
+
             return $this;
         }
 
@@ -122,13 +132,14 @@ abstract class AbstractFilepond
         })
             ->where('id', $input['id'])
             ->first();
+
         return $this;
     }
 
     /**
      * Get the soft delete from filepond config
      *
-     * @return boolean
+     * @return bool
      */
     protected function getIsSoftDeletable()
     {
@@ -138,19 +149,19 @@ abstract class AbstractFilepond
     /**
      * Set the soft delete value from filepond config
      *
-     * @param  bool  $isSoftDeletable
      * @return $this
      */
     protected function setIsSoftDeletable(bool $isSoftDeletable)
     {
         $this->isSoftDeletable = $isSoftDeletable;
+
         return $this;
     }
 
     /**
      * Get the ownership check value for filepond model
      *
-     * @return boolean
+     * @return bool
      */
     protected function getIsOwnershipAware()
     {
@@ -160,19 +171,18 @@ abstract class AbstractFilepond
     /**
      * Set the ownership check value for filepond model
      *
-     * @param  bool  $isOwnershipAware
      * @return $this
      */
     protected function setIsOwnershipAware(bool $isOwnershipAware)
     {
         $this->isOwnershipAware = $isOwnershipAware;
+
         return $this;
     }
 
     /**
      * Decrypt the FilePond field value data
      *
-     * @param  string  $data
      * @return mixed
      */
     protected function decrypt(string $data)
@@ -183,7 +193,6 @@ abstract class AbstractFilepond
     /**
      * Create file object from filepond model
      *
-     * @param  Filepond  $filepond
      * @return UploadedFile
      */
     protected function createFileObject(Filepond $filepond)
@@ -201,8 +210,8 @@ abstract class AbstractFilepond
      * Create Data URL from filepond model
      * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
      *
-     * @param  Filepond  $filepond
      * @return string
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     protected function createDataUrl(Filepond $filepond)

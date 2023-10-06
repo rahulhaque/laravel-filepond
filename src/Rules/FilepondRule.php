@@ -8,11 +8,14 @@ use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Facades\Filepond;
 
-class FilepondRule implements Rule, DataAwareRule, ValidatorAwareRule
+class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
 {
     protected $validator;
+
     protected $data;
+
     protected $rules;
+
     protected $messages;
 
     /**
@@ -73,7 +76,7 @@ class FilepondRule implements Rule, DataAwareRule, ValidatorAwareRule
 
         $this->messages = $validator->errors()->all();
 
-        return !$validator->fails();
+        return ! $validator->fails();
     }
 
     /**

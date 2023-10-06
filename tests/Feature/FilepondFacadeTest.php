@@ -17,7 +17,7 @@ class FilepondFacadeTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function can_validate_after_filepond_file_upload()
+    public function can_validate_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -26,19 +26,19 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024)
+                'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $request = new Request([
-            'avatar' => $response->content()
+            'avatar' => $response->content(),
         ]);
 
         try {
             $request->validate([
-                'avatar' => Rule::filepond('required|file|size:30')
+                'avatar' => Rule::filepond('required|file|size:30'),
             ]);
         } catch (ValidationException $e) {
             $this->assertCount(1, $e->errors());
@@ -46,7 +46,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_validate_after_multiple_filepond_file_upload()
+    public function can_validate_after_multiple_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -58,10 +58,10 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100)
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json'
+                    'accept' => 'application/json',
                 ]);
 
             $responses[] = $response->content();
@@ -73,7 +73,7 @@ class FilepondFacadeTest extends TestCase
 
         try {
             $request->validate([
-                'gallery.*' => Rule::filepond('required|file|size:30')
+                'gallery.*' => Rule::filepond('required|file|size:30'),
             ]);
         } catch (ValidationException $e) {
             $this->assertCount(5, $e->errors());
@@ -81,7 +81,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_get_temporary_file_after_filepond_file_upload()
+    public function can_get_temporary_file_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -92,10 +92,10 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => $uploadedFile
+                'avatar' => $uploadedFile,
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $temporaryFile = Filepond::field($response->content())->getFile();
@@ -104,7 +104,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_get_data_url_after_filepond_file_upload()
+    public function can_get_data_url_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -116,10 +116,10 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => $uploadedFile
+                'avatar' => $uploadedFile,
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $dataUrl = Filepond::field($response->content())->getDataURL();
@@ -128,7 +128,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_copy_filepond_file_upload_to_desired_location()
+    public function can_copy_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -137,10 +137,10 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100)
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $fileInfo = Filepond::field($response->content())->copyTo('avatars/avatar-1');
@@ -149,7 +149,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_move_filepond_file_upload_to_desired_location()
+    public function can_move_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -158,10 +158,10 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100)
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $fileInfo = Filepond::field($response->content())->moveTo('avatars/avatar-1');
@@ -170,7 +170,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_copy_multiple_filepond_file_upload_to_desired_location()
+    public function can_copy_multiple_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -182,10 +182,10 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100)
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json'
+                    'accept' => 'application/json',
                 ]);
 
             $request[] = $response->content();
@@ -199,7 +199,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     /** @test */
-    function can_move_multiple_filepond_file_upload_to_desired_location()
+    public function can_move_multiple_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -211,10 +211,10 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100)
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json'
+                    'accept' => 'application/json',
                 ]);
 
             $request[] = $response->content();

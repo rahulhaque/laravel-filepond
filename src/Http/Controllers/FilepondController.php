@@ -12,8 +12,6 @@ class FilepondController extends Controller
     /**
      * FilePond ./process route logic.
      *
-     * @param  Request  $request
-     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
      */
     public function process(Request $request, FilepondService $service)
@@ -35,9 +33,8 @@ class FilepondController extends Controller
     /**
      * FilePond ./patch route logic.
      *
-     * @param  Request  $request
-     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
+     *
      * @throws \Throwable
      */
     public function patch(Request $request, FilepondService $service)
@@ -48,9 +45,8 @@ class FilepondController extends Controller
     /**
      * FilePond ./head, ./restore route logic.
      *
-     * @param  Request  $request
-     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
+     *
      * @throws \Throwable
      */
     public function head(Request $request, FilepondService $service)
@@ -70,15 +66,13 @@ class FilepondController extends Controller
                 'Content-Disposition' => 'inline; filename="'.$filepond->filename.'"',
             ]);
         }
-        
+
         return Response::make('Feature not implemented yet.', 406);
     }
 
     /**
      * FilePond ./revert route logic.
      *
-     * @param  Request  $request
-     * @param  FilepondService  $service
      * @return \Illuminate\Http\Response
      */
     public function revert(Request $request, FilepondService $service)

@@ -14,7 +14,7 @@ class FilepondStorageClearTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function can_clear_expired_files_from_storage()
+    public function can_clear_expired_files_from_storage()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -23,16 +23,16 @@ class FilepondStorageClearTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100)
+                    'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json'
+                    'accept' => 'application/json',
                 ]);
         }
 
         // Update expire_at time to make them ready to clean
         Filepond::query()->update([
-            'expires_at' => now()->subMinutes(5)
+            'expires_at' => now()->subMinutes(5),
         ]);
 
         $this->artisan('filepond:clear')
@@ -42,7 +42,7 @@ class FilepondStorageClearTest extends TestCase
     }
 
     /** @test */
-    function can_force_clear_all_files_from_storage()
+    public function can_force_clear_all_files_from_storage()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -51,10 +51,10 @@ class FilepondStorageClearTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100)
+                    'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json'
+                    'accept' => 'application/json',
                 ]);
         }
 

@@ -37,7 +37,7 @@ return [
     |
     */
     'middleware' => [
-        'web', 'auth'
+        'web', 'auth',
     ],
 
     /*
@@ -95,7 +95,7 @@ return [
     'validation_rules' => [
         'required',
         'file',
-        'max:5000'
+        'max:5000',
     ],
 
     /*
@@ -109,5 +109,5 @@ return [
     */
     'server' => [
         'url' => env('FILEPOND_URL', '/filepond'),
-    ]
+    ],
 ];

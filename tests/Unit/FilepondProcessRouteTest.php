@@ -15,7 +15,7 @@ class FilepondProcessRouteTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function can_validate_filepond_file_upload_request()
+    public function can_validate_filepond_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -24,17 +24,17 @@ class FilepondProcessRouteTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => 'string_input_instead_of_file'
+                'avatar' => 'string_input_instead_of_file',
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
-        $response->assertJson(["avatar" => ["The avatar field is required."]]);
+        $response->assertJson(['avatar' => ['The avatar field is required.']]);
     }
 
     /** @test */
-    function can_process_filepond_file_upload_request()
+    public function can_process_filepond_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -43,10 +43,10 @@ class FilepondProcessRouteTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100)
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $data = Crypt::decrypt($response->content(), true);

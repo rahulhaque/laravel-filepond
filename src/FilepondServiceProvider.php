@@ -25,14 +25,14 @@ class FilepondServiceProvider extends ServiceProvider
                 __DIR__.'/../config/filepond.php' => base_path('config/filepond.php'),
             ], 'filepond-config');
 
-            if (!class_exists('CreateFilepondsTable')) {
+            if (! class_exists('CreateFilepondsTable')) {
                 $this->publishes([
                     __DIR__.'/../database/migrations/create_fileponds_table.php.stub' => database_path('migrations/'.date('Y_m_d', time()).'_000000_create_fileponds_table.php'),
                 ], 'filepond-migrations');
             }
 
             $this->commands([
-                FilepondClear::class
+                FilepondClear::class,
             ]);
         }
     }

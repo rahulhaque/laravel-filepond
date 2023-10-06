@@ -10,10 +10,9 @@ class Filepond extends AbstractFilepond
     /**
      * Set the FilePond field name
      *
-     * @param  string|array  $field
      * @return $this
      */
-    public function field($field, bool $checkOwnership = true)
+    public function field(string|array $field, bool $checkOwnership = true)
     {
         $this->setFieldValue($field)
             ->setTempDisk(config('filepond.temp_disk', 'local'))
@@ -31,7 +30,7 @@ class Filepond extends AbstractFilepond
      */
     public function getFile()
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             return null;
         }
 
@@ -49,11 +48,12 @@ class Filepond extends AbstractFilepond
      * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
      *
      * @return array|string
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function getDataURL()
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             return null;
         }
 
@@ -79,15 +79,13 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination
      *
-     * @param  string  $path
-     * @param  string  $disk
-     * @param  string  $visibility
      * @return array
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function copyTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             return null;
         }
 
@@ -98,25 +96,25 @@ class Filepond extends AbstractFilepond
                 $to = $path.'-'.($index + 1);
                 $response[] = $this->putFile($filepond, $to, $disk, $visibility);
             }
+
             return $response;
         }
 
         $filepond = $this->getFieldModel();
+
         return $this->putFile($filepond, $path, $disk, $visibility);
     }
 
     /**
      * Copy the FilePond files to destination and delete
      *
-     * @param  string  $path
-     * @param  string  $disk
-     * @param  string  $visibility
      * @return array
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     public function moveTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             return null;
         }
 
@@ -128,12 +126,14 @@ class Filepond extends AbstractFilepond
                 $response[] = $this->putFile($filepond, $to, $disk, $visibility);
             }
             $this->delete();
+
             return $response;
         }
 
         $filepond = $this->getFieldModel();
         $response = $this->putFile($filepond, $path, $disk, $visibility);
         $this->delete();
+
         return $response;
     }
 
@@ -144,7 +144,7 @@ class Filepond extends AbstractFilepond
      */
     public function delete()
     {
-        if (!$this->getFieldValue()) {
+        if (! $this->getFieldValue()) {
             return null;
         }
 
@@ -158,6 +158,7 @@ class Filepond extends AbstractFilepond
                     $filepond->forceDelete();
                 }
             }
+
             return;
         }
 
@@ -173,11 +174,8 @@ class Filepond extends AbstractFilepond
     /**
      * Put the file in permanent storage and return response
      *
-     * @param  FilepondModel  $filepond
-     * @param  string  $path
-     * @param  string  $disk
-     * @param  string  $visibility
      * @return array
+     *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
     private function putFile(FilepondModel $filepond, string $path, string $disk, string $visibility)
@@ -187,13 +185,13 @@ class Filepond extends AbstractFilepond
         Storage::disk($permanentDisk)->put($path.'.'.$filepond->extension, Storage::disk($this->getTempDisk())->get($filepond->filepath), $visibility);
 
         return [
-            "id" => $filepond->id,
-            "dirname" => dirname($path.'.'.$filepond->extension),
-            "basename" => basename($path.'.'.$filepond->extension),
-            "extension" => $filepond->extension,
-            "filename" => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
-            "location" => $path.'.'.$filepond->extension,
-            "url" => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension)
+            'id' => $filepond->id,
+            'dirname' => dirname($path.'.'.$filepond->extension),
+            'basename' => basename($path.'.'.$filepond->extension),
+            'extension' => $filepond->extension,
+            'filename' => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
+            'location' => $path.'.'.$filepond->extension,
+            'url' => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension),
         ];
     }
 }

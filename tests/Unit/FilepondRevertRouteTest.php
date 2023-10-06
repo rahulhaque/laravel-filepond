@@ -13,7 +13,7 @@ class FilepondRevertRouteTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function can_revert_filepond_file_upload_request()
+    public function can_revert_filepond_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -22,10 +22,10 @@ class FilepondRevertRouteTest extends TestCase
         $responseAfterProcess = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100)
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json'
+                'accept' => 'application/json',
             ]);
 
         $responseAfterRevert = $this

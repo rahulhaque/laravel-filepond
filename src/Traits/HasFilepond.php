@@ -4,8 +4,8 @@ namespace RahulHaque\Filepond\Traits;
 
 use RahulHaque\Filepond\Models\Filepond;
 
-trait HasFilepond {
-
+trait HasFilepond
+{
     /**
      * User has many FilePond uploads
      *

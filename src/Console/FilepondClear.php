@@ -49,9 +49,11 @@ class FilepondClear extends Command
                 $this->info('Fileponds table truncated.');
                 Storage::disk($tempDisk)->deleteDirectory($tempFolder);
                 $this->info('Temporary files and folders deleted.');
+
                 return 0;
             }
             $this->info('Operation cancelled.');
+
             return 0;
         }
 
@@ -65,6 +67,7 @@ class FilepondClear extends Command
             $this->info('Temporary files and folders deleted.');
             $expiredFiles->forceDelete();
         }
+
         return 0;
     }
 }

@@ -12,7 +12,7 @@ class FilepondModelTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    function can_insert_to_filepond_model()
+    public function can_insert_to_filepond_model()
     {
         $data = [
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
@@ -21,7 +21,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString()
+            'expires_at' => now()->addMinutes(30)->toISOString(),
         ];
 
         Filepond::create($data);
@@ -30,7 +30,7 @@ class FilepondModelTest extends TestCase
     }
 
     /** @test */
-    function can_update_filepond_model()
+    public function can_update_filepond_model()
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
@@ -39,7 +39,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString()
+            'expires_at' => now()->addMinutes(30)->toISOString(),
         ]);
 
         $filename = 'new_filename.png';
@@ -51,7 +51,7 @@ class FilepondModelTest extends TestCase
     }
 
     /** @test */
-    function can_soft_delete_filepond_model()
+    public function can_soft_delete_filepond_model()
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
@@ -60,7 +60,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString()
+            'expires_at' => now()->addMinutes(30)->toISOString(),
         ]);
 
         $filepond->delete();
@@ -69,7 +69,7 @@ class FilepondModelTest extends TestCase
     }
 
     /** @test */
-    function can_force_delete_filepond_model()
+    public function can_force_delete_filepond_model()
     {
         $filepond = Filepond::create([
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
@@ -78,7 +78,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString()
+            'expires_at' => now()->addMinutes(30)->toISOString(),
         ]);
 
         $filepond->forceDelete();
