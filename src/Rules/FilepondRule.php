@@ -63,9 +63,9 @@ class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
      */
     public function passes($attribute, $value)
     {
-        $field = explode('.', $attribute)[0];
+        $file = Filepond::field($value)->getFile();
 
-        $this->data[$field] = Filepond::field($this->data[$field])->getFile();
+        data_set($this->data, $attribute, $file);
 
         $validator = Validator::make(
             $this->data,

@@ -38,7 +38,7 @@ class FilepondFacadeTest extends TestCase
 
         try {
             $request->validate([
-                'avatar' => Rule::filepond('required|file|size:30'),
+                'avatar' => Rule::filepond('required|image|mimes:jpg|size:30'),
             ]);
         } catch (ValidationException $e) {
             $this->assertCount(1, $e->errors());
@@ -58,7 +58,7 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
                     'accept' => 'application/json',
@@ -73,7 +73,45 @@ class FilepondFacadeTest extends TestCase
 
         try {
             $request->validate([
-                'gallery.*' => Rule::filepond('required|file|size:30'),
+                'gallery.*' => Rule::filepond('required|image|mimes:jpg|size:30'),
+            ]);
+        } catch (ValidationException $e) {
+            $this->assertCount(5, $e->errors());
+        }
+    }
+
+    /** @test */
+    public function can_validate_after_nested_multiple_filepond_file_upload()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $responses = [];
+
+        // Create 5 temporary file uploads
+        for ($i = 1; $i <= 5; $i++) {
+            $response = $this->actingAs($user)
+                ->post(route('filepond-process'), [
+                    'galleries' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
+                ], [
+                    'Content-Type' => 'multipart/form-data',
+                    'accept' => 'application/json',
+                ]);
+
+            $responses[] = [
+                'title' => fake()->name(),
+                'image' => $response->content(),
+            ];
+        }
+
+        $request = new Request([
+            'galleries' => $responses,
+        ]);
+
+        try {
+            $request->validate([
+                'galleries.*.image' => Rule::filepond('required|image|mimes:jpg|size:30'),
             ]);
         } catch (ValidationException $e) {
             $this->assertCount(5, $e->errors());
@@ -137,7 +175,7 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
+                'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
                 'accept' => 'application/json',
@@ -158,7 +196,7 @@ class FilepondFacadeTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [
-                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
+                'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
                 'accept' => 'application/json',
@@ -182,7 +220,7 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
                     'accept' => 'application/json',
@@ -211,7 +249,7 @@ class FilepondFacadeTest extends TestCase
         for ($i = 1; $i <= 5; $i++) {
             $response = $this->actingAs($user)
                 ->post(route('filepond-process'), [
-                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 100, 100),
+                    'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
                     'accept' => 'application/json',
