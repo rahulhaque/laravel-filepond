@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.12.11 - 2023-10-09
+
+- Nested validation bug fixed #46. 🐛
+- New test cases added for nested validation.
+
 ## 1.12.10 - 2023-10-06
 
 - Added support for extending `Filepond` model to support #45. ✨
