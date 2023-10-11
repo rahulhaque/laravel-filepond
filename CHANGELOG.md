@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.12.12 - 2023-10-12
+
+- Filepond file revert logic updated. ⬆️
+
 ## 1.12.11 - 2023-10-09
 
 - Nested validation bug fixed #46. 🐛
