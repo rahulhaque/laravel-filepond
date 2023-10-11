@@ -81,9 +81,7 @@ class FilepondService
     {
         $input = Crypt::decrypt($content);
 
-        return $this->model::owned()
-            ->where('id', $input['id'])
-            ->firstOrFail();
+        return $this->model::where('id', $input['id'])->firstOrFail();
     }
 
     /**
