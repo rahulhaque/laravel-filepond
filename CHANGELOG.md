@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.12.13 - 2023-10-13
+
+- Filepond null validation bug fixed. 🐛
+- New test cases added for null validation.
+
 ## 1.12.12 - 2023-10-12
 
 - Filepond file revert logic updated. ⬆️
