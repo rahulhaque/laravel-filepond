@@ -17,6 +17,24 @@ class FilepondFacadeTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    public function can_validate_null_filepond_file_upload()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $request = new Request([
+            'avatar' => null,
+        ]);
+
+        try {
+            $request->validate([
+                'avatar' => Rule::filepond('required|image|mimes:jpg|size:30'),
+            ]);
+        } catch (ValidationException $e) {
+            $this->assertEquals($e->errors(), ['avatar' => ['The avatar field is required.']]);
+        }
+    }
+
+    /** @test */
     public function can_validate_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -41,7 +59,12 @@ class FilepondFacadeTest extends TestCase
                 'avatar' => Rule::filepond('required|image|mimes:jpg|size:30'),
             ]);
         } catch (ValidationException $e) {
-            $this->assertCount(1, $e->errors());
+            $this->assertEquals($e->errors(), [
+                'avatar' => [
+                    'The avatar field must be a file of type: jpg.',
+                    'The avatar field must be 30 kilobytes.',
+                ],
+            ]);
         }
     }
 
@@ -76,7 +99,28 @@ class FilepondFacadeTest extends TestCase
                 'gallery.*' => Rule::filepond('required|image|mimes:jpg|size:30'),
             ]);
         } catch (ValidationException $e) {
-            $this->assertCount(5, $e->errors());
+            $this->assertEquals($e->errors(), [
+                'gallery.0' => [
+                    'The gallery.0 field must be a file of type: jpg.',
+                    'The gallery.0 field must be 30 kilobytes.',
+                ],
+                'gallery.1' => [
+                    'The gallery.1 field must be a file of type: jpg.',
+                    'The gallery.1 field must be 30 kilobytes.',
+                ],
+                'gallery.2' => [
+                    'The gallery.2 field must be a file of type: jpg.',
+                    'The gallery.2 field must be 30 kilobytes.',
+                ],
+                'gallery.3' => [
+                    'The gallery.3 field must be a file of type: jpg.',
+                    'The gallery.3 field must be 30 kilobytes.',
+                ],
+                'gallery.4' => [
+                    'The gallery.4 field must be a file of type: jpg.',
+                    'The gallery.4 field must be 30 kilobytes.',
+                ],
+            ]);
         }
     }
 
@@ -114,7 +158,28 @@ class FilepondFacadeTest extends TestCase
                 'galleries.*.image' => Rule::filepond('required|image|mimes:jpg|size:30'),
             ]);
         } catch (ValidationException $e) {
-            $this->assertCount(5, $e->errors());
+            $this->assertEquals($e->errors(), [
+                'galleries.0.image' => [
+                    'The galleries.0.image field must be a file of type: jpg.',
+                    'The galleries.0.image field must be 30 kilobytes.',
+                ],
+                'galleries.1.image' => [
+                    'The galleries.1.image field must be a file of type: jpg.',
+                    'The galleries.1.image field must be 30 kilobytes.',
+                ],
+                'galleries.2.image' => [
+                    'The galleries.2.image field must be a file of type: jpg.',
+                    'The galleries.2.image field must be 30 kilobytes.',
+                ],
+                'galleries.3.image' => [
+                    'The galleries.3.image field must be a file of type: jpg.',
+                    'The galleries.3.image field must be 30 kilobytes.',
+                ],
+                'galleries.4.image' => [
+                    'The galleries.4.image field must be a file of type: jpg.',
+                    'The galleries.4.image field must be 30 kilobytes.',
+                ],
+            ]);
         }
     }
 
