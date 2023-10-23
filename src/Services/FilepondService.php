@@ -3,6 +3,7 @@
 namespace RahulHaque\Filepond\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -33,9 +34,9 @@ class FilepondService
      */
     protected function getUploadedFile(Request $request)
     {
-        $input = collect($request->allFiles())->first();
+        $field = array_key_first(Arr::dot($request->all()));
 
-        return is_array($input) ? $input[0] : $input;
+        return $request->file($field);
     }
 
     /**
@@ -45,9 +46,9 @@ class FilepondService
      */
     public function validator(Request $request, array $rules)
     {
-        $field = array_key_first($request->all());
+        $field = array_key_first(Arr::dot($request->all()));
 
-        return Validator::make([$field => $this->getUploadedFile($request)], [$field => $rules]);
+        return Validator::make($request->all(), [$field => $rules]);
     }
 
     /**
