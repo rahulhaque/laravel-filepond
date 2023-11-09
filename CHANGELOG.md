@@ -2,10 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 1.12.14 - 2023-10-23
+## 1.12.14 - 2023-11-09
 
 - Fixed single file upload as array #47. 🐛
-- New test cases added single file upload as array.
+- New test cases added for single file upload as array.
+- Bumped minimal PHP version to 7.4.
 
 ## 1.12.13 - 2023-10-13
 
