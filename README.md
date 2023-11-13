@@ -42,8 +42,7 @@ composer require rahulhaque/laravel-filepond:"^9"
 Laravel 8 users install with.
 
 ```bash
-# Coming soon...
-# composer require rahulhaque/laravel-filepond:"^8"
+composer require rahulhaque/laravel-filepond:"^8"
 ```
 
 Laravel 7 users use less than 1.x version. See [7.x branch](https://github.com/rahulhaque/laravel-filepond/tree/7.x) for documentation.
