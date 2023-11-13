@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 1.12.15 - 2023-11-13
+
+- Fixed union type issue for older PHP versions #49. 🐛
+
 ## 1.12.14 - 2023-11-09
 
 - Fixed single file upload as array #47. 🐛

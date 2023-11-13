@@ -35,9 +35,10 @@ abstract class AbstractFilepond
     /**
      * Set the FilePond field value data
      *
+     * @param string|array|null $fieldValue
      * @return $this
      */
-    protected function setFieldValue(string|array|null $fieldValue)
+    protected function setFieldValue($fieldValue)
     {
         if (! $fieldValue) {
             $this->fieldValue = null;
