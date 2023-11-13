@@ -27,10 +27,10 @@ Support the development with a :star: to let others know it worked for you.
 
 ## Installation
 
-Laravel 9 users install with.
+Laravel 8 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^9"
+composer require rahulhaque/laravel-filepond:"^8"
 ```
 
 Publish the configuration and migration files.

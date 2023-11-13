@@ -144,7 +144,7 @@ class FilepondFacadeTest extends TestCase
                 ]);
 
             $responses[] = [
-                'title' => fake()->name(),
+                'title' => 'test-'.$i,
                 'image' => $response->content(),
             ];
         }
