@@ -61,8 +61,8 @@ class FilepondFacadeTest extends TestCase
         } catch (ValidationException $e) {
             $this->assertEquals($e->errors(), [
                 'avatar' => [
-                    'The avatar field must be a file of type: jpg.',
-                    'The avatar field must be 30 kilobytes.',
+                    'The avatar must be a file of type: jpg.',
+                    'The avatar must be 30 kilobytes.',
                 ],
             ]);
         }
@@ -101,24 +101,24 @@ class FilepondFacadeTest extends TestCase
         } catch (ValidationException $e) {
             $this->assertEquals($e->errors(), [
                 'gallery.0' => [
-                    'The gallery.0 field must be a file of type: jpg.',
-                    'The gallery.0 field must be 30 kilobytes.',
+                    'The gallery.0 must be a file of type: jpg.',
+                    'The gallery.0 must be 30 kilobytes.',
                 ],
                 'gallery.1' => [
-                    'The gallery.1 field must be a file of type: jpg.',
-                    'The gallery.1 field must be 30 kilobytes.',
+                    'The gallery.1 must be a file of type: jpg.',
+                    'The gallery.1 must be 30 kilobytes.',
                 ],
                 'gallery.2' => [
-                    'The gallery.2 field must be a file of type: jpg.',
-                    'The gallery.2 field must be 30 kilobytes.',
+                    'The gallery.2 must be a file of type: jpg.',
+                    'The gallery.2 must be 30 kilobytes.',
                 ],
                 'gallery.3' => [
-                    'The gallery.3 field must be a file of type: jpg.',
-                    'The gallery.3 field must be 30 kilobytes.',
+                    'The gallery.3 must be a file of type: jpg.',
+                    'The gallery.3 must be 30 kilobytes.',
                 ],
                 'gallery.4' => [
-                    'The gallery.4 field must be a file of type: jpg.',
-                    'The gallery.4 field must be 30 kilobytes.',
+                    'The gallery.4 must be a file of type: jpg.',
+                    'The gallery.4 must be 30 kilobytes.',
                 ],
             ]);
         }
@@ -160,24 +160,24 @@ class FilepondFacadeTest extends TestCase
         } catch (ValidationException $e) {
             $this->assertEquals($e->errors(), [
                 'galleries.0.image' => [
-                    'The galleries.0.image field must be a file of type: jpg.',
-                    'The galleries.0.image field must be 30 kilobytes.',
+                    'The galleries.0.image must be a file of type: jpg.',
+                    'The galleries.0.image must be 30 kilobytes.',
                 ],
                 'galleries.1.image' => [
-                    'The galleries.1.image field must be a file of type: jpg.',
-                    'The galleries.1.image field must be 30 kilobytes.',
+                    'The galleries.1.image must be a file of type: jpg.',
+                    'The galleries.1.image must be 30 kilobytes.',
                 ],
                 'galleries.2.image' => [
-                    'The galleries.2.image field must be a file of type: jpg.',
-                    'The galleries.2.image field must be 30 kilobytes.',
+                    'The galleries.2.image must be a file of type: jpg.',
+                    'The galleries.2.image must be 30 kilobytes.',
                 ],
                 'galleries.3.image' => [
-                    'The galleries.3.image field must be a file of type: jpg.',
-                    'The galleries.3.image field must be 30 kilobytes.',
+                    'The galleries.3.image must be a file of type: jpg.',
+                    'The galleries.3.image must be 30 kilobytes.',
                 ],
                 'galleries.4.image' => [
-                    'The galleries.4.image field must be a file of type: jpg.',
-                    'The galleries.4.image field must be 30 kilobytes.',
+                    'The galleries.4.image must be a file of type: jpg.',
+                    'The galleries.4.image must be 30 kilobytes.',
                 ],
             ]);
         }

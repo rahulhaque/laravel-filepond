@@ -30,7 +30,7 @@ class FilepondProcessRouteTest extends TestCase
                 'accept' => 'application/json',
             ]);
 
-        $response->assertJson(['avatar' => ['The avatar field must be a file.']]);
+        $response->assertJson(['avatar' => ['The avatar must be a file.']]);
     }
 
     /** @test */
