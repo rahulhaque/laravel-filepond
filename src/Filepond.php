@@ -10,10 +10,9 @@ class Filepond extends AbstractFilepond
     /**
      * Set the FilePond field name
      *
-     * @param string|array|null $field
      * @return $this
      */
-    public function field($field, bool $checkOwnership = true)
+    public function field(string|array|null $field, bool $checkOwnership = true)
     {
         $this->setFieldValue($field)
             ->setTempDisk(config('filepond.temp_disk', 'local'))

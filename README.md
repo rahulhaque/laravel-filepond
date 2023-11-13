@@ -27,16 +27,10 @@ Support the development with a :star: to let others know it worked for you.
 
 ## Installation
 
-Install the package Laravel 8 and onwards.
+Laravel 10 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond
-```
-
-Laravel 7 users use less than 1.x version. See [7.x branch](https://github.com/rahulhaque/laravel-filepond/tree/7.x) for documentation.
-
-```bash
-composer require rahulhaque/laravel-filepond "~0"
+composer require rahulhaque/laravel-filepond:"^10"
 ```
 
 Publish the configuration and migration files.
