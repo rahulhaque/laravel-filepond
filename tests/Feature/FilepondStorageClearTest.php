@@ -18,7 +18,7 @@ class FilepondStorageClearTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
         // Create 5 temporary file uploads
         for ($i = 1; $i <= 5; $i++) {
             $this->actingAs($user)
@@ -46,7 +46,7 @@ class FilepondStorageClearTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
         // Create 5 temporary file uploads
         for ($i = 1; $i <= 5; $i++) {
             $this->actingAs($user)

@@ -9,6 +9,8 @@ class TestCase extends \Orchestra\Testbench\TestCase
     public function setUp(): void
     {
         parent::setUp();
+
+        $this->withFactories(__DIR__.'/database/factories');
     }
 
     protected function getPackageProviders($app)
@@ -18,7 +20,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
 
     protected function getPackageAliases($app)
     {
-        return ['Filepond' => \RahulHaque\Filepond\Facades\Filepond::class];
+        return ['Filepond' => \RahulHaque\Filepond\Facades\Filepond::class,];
     }
 
     protected function getEnvironmentSetUp($app)

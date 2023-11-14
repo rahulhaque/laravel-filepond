@@ -17,7 +17,7 @@ class FilepondRevertRouteTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $responseAfterProcess = $this
             ->actingAs($user)

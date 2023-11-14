@@ -2,56 +2,31 @@
 
 namespace RahulHaque\Filepond\Rules;
 
-use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Facades\Filepond;
 
-class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
+class FilepondRule implements Rule
 {
-    protected $validator;
-
     protected $data;
-
     protected $rules;
-
+    protected $customMessages;
+    protected $customAttributes;
     protected $messages;
 
     /**
      * Create a new rule instance.
      *
      * @param  string|array  $rules
+     * @param  array  $customMessages
+     * @param  array  $customAttributes
      */
-    public function __construct($rules)
+    public function __construct($rules, array $customMessages = [], array $customAttributes = [])
     {
+        $this->data = request()->toArray();
         $this->rules = $rules;
-    }
-
-    /**
-     * Set the performing validator.
-     *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
-     * @return $this
-     */
-    public function setValidator($validator)
-    {
-        $this->validator = $validator;
-
-        return $this;
-    }
-
-    /**
-     * Set the data under validation.
-     *
-     * @param  array  $data
-     * @return $this
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-
-        return $this;
+        $this->customMessages = $customMessages;
+        $this->customAttributes = $customAttributes;
     }
 
     /**
@@ -64,19 +39,19 @@ class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
     public function passes($attribute, $value)
     {
         $file = Filepond::field($value)->getFile();
-
+        
         data_set($this->data, $attribute, $file);
 
         $validator = Validator::make(
             $this->data,
             [$attribute => $this->rules],
-            $this->validator->customMessages,
-            $this->validator->customAttributes
+            $this->customMessages,
+            $this->customAttributes
         );
 
         $this->messages = $validator->errors()->all();
 
-        return ! $validator->fails();
+        return !$validator->fails();
     }
 
     /**

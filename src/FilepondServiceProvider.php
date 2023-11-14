@@ -16,8 +16,8 @@ class FilepondServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        Rule::macro('filepond', function ($args) {
-            return new FilepondRule($args);
+        Rule::macro('filepond', function (...$args) {
+            return new FilepondRule(...$args);
         });
 
         if ($this->app->runningInConsole()) {

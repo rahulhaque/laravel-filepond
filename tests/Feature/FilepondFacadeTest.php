@@ -25,6 +25,10 @@ class FilepondFacadeTest extends TestCase
             'avatar' => null,
         ]);
 
+        // Overridin request as there's no way to
+        // retrieve current request in rule class
+        $this->app->request = $request;
+
         try {
             $request->validate([
                 'avatar' => Rule::filepond('required|image|mimes:jpg|size:30'),
@@ -39,7 +43,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $response = $this
             ->actingAs($user)
@@ -53,6 +57,10 @@ class FilepondFacadeTest extends TestCase
         $request = new Request([
             'avatar' => $response->content(),
         ]);
+
+        // Overridin request as there's no way to
+        // retrieve current request in rule class
+        $this->app->request = $request;
 
         try {
             $request->validate([
@@ -73,7 +81,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $responses = [];
 
@@ -93,6 +101,10 @@ class FilepondFacadeTest extends TestCase
         $request = new Request([
             'gallery' => $responses,
         ]);
+
+        // Overridin request as there's no way to
+        // retrieve current request in rule class
+        $this->app->request = $request;
 
         try {
             $request->validate([
@@ -129,7 +141,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $responses = [];
 
@@ -152,6 +164,10 @@ class FilepondFacadeTest extends TestCase
         $request = new Request([
             'galleries' => $responses,
         ]);
+
+        // Overridin request as there's no way to
+        // retrieve current request in rule class
+        $this->app->request = $request;
 
         try {
             $request->validate([
@@ -188,7 +204,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $uploadedFile = UploadedFile::fake()->image('avatar.png', 1024, 1024);
 
@@ -211,7 +227,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $uploadedFile = UploadedFile::fake()->image('avatar.png', 50, 50);
         $uploadEncoded = base64_encode($uploadedFile->getContent());
@@ -235,7 +251,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $response = $this
             ->actingAs($user)
@@ -256,7 +272,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $response = $this
             ->actingAs($user)
@@ -277,7 +293,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $request = [];
 
@@ -306,7 +322,7 @@ class FilepondFacadeTest extends TestCase
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
-        $user = User::factory()->create();
+        $user = factory(User::class)->create();
 
         $request = [];
 
