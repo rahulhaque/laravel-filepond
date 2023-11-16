@@ -1,0 +1,54 @@
+{
+    "name": "rahulhaque/laravel-filepond",
+    "description": "Use FilePond the Laravel way",
+    "keywords": [
+        "filepond-laravel",
+        "laravel-filepond",
+        "filepond"
+    ],
+    "homepage": "https://github.com/rahulhaque/laravel-filepond",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Rahul Haque",
+            "email": "rahulhaque07@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.2.5|^7.3|^8.0|^8.1"
+    },
+    "require-dev": {
+        "league/flysystem-aws-s3-v3": "^1.0|^3.0",
+        "orchestra/testbench": "^5.0|^6.0|^7.0|^8.0",
+        "phpunit/phpunit": "^8.5.8|^9.3.3|^9.5.10|^10.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "RahulHaque\\Filepond\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "RahulHaque\\Filepond\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RahulHaque\\Filepond\\FilepondServiceProvider"
+            ],
+            "aliases": {
+                "Filepond": "RahulHaque\\Filepond\\Facades\\Filepond"
+            }
+        }
+    }
+}
