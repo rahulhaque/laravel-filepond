@@ -2,6 +2,9 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+Every major releases specific to Laravel framework versions includes all of the changes below.
+Please, use the corresponding version for your project or update if already installed.
+
 ## 1.12.15 - 2023-11-13
 
 - Fixed union type issue for older PHP versions #49. 🐛
