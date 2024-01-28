@@ -31,10 +31,10 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
-|Laravel 10|[10.x branch](../../tree/10.x)|
-|Laravel 9|[9.x branch](../../tree/9.x)|
-|Laravel 8|[8.x branch](../../tree/8.x)|
-|Laravel 7|[7.x branch](../../tree/7.x)|
+|Laravel 10|[10.x branch](../../tree/10.x/README.md)|
+|Laravel 9|[9.x branch](../../tree/9.x/README.md)|
+|Laravel 8|[8.x branch](../../tree/8.x/README.md)|
+|Laravel 7|[7.x branch](../../tree/7.x/README.md)|
 
 >**Important:** Please, see the [announcement](../../discussions/50) if you've already installed any previous version of this package. You're requested to update the package with the corresponding Laravel version of your project. I'll be slowly removing any old release as I see fit. Thank you for your support.
 
