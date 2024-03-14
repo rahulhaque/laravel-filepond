@@ -2,16 +2,14 @@
 
 namespace RahulHaque\Filepond\Tests\Unit;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Models\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 
 class FilepondModelTest extends TestCase
 {
-    use RefreshDatabase;
-
-    /** @test */
+    #[Test]
     public function can_insert_to_filepond_model()
     {
         $data = [
@@ -29,7 +27,7 @@ class FilepondModelTest extends TestCase
         $this->assertDatabaseHas('fileponds', $data);
     }
 
-    /** @test */
+    #[Test]
     public function can_update_filepond_model()
     {
         $filepond = Filepond::create([
@@ -50,7 +48,7 @@ class FilepondModelTest extends TestCase
         $this->assertEquals(true, $filepond->filename == $filename);
     }
 
-    /** @test */
+    #[Test]
     public function can_soft_delete_filepond_model()
     {
         $filepond = Filepond::create([
@@ -68,7 +66,7 @@ class FilepondModelTest extends TestCase
         $this->assertSoftDeleted($filepond);
     }
 
-    /** @test */
+    #[Test]
     public function can_force_delete_filepond_model()
     {
         $filepond = Filepond::create([

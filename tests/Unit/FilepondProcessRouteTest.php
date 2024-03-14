@@ -2,19 +2,17 @@
 
 namespace RahulHaque\Filepond\Tests\Unit;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Models\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
 
 class FilepondProcessRouteTest extends TestCase
 {
-    use RefreshDatabase;
-
-    /** @test */
+    #[Test]
     public function can_validate_filepond_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -33,7 +31,7 @@ class FilepondProcessRouteTest extends TestCase
         $response->assertJson(['avatar' => ['The avatar field must be a file.']]);
     }
 
-    /** @test */
+    #[Test]
     public function can_process_filepond_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -56,7 +54,7 @@ class FilepondProcessRouteTest extends TestCase
         Storage::disk(config('filepond.temp_disk', 'local'))->assertExists($fileById->filepath);
     }
 
-    /** @test */
+    #[Test]
     public function can_process_filepond_array_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));

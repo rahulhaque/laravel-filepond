@@ -27,10 +27,10 @@ Support the development with a :star: to let others know it worked for you.
 
 ## Installation
 
-Laravel 10 users install with.
+Laravel 11 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^10"
+composer require rahulhaque/laravel-filepond:"^11.0"
 ```
 
 Publish the configuration and migration files.

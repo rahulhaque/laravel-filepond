@@ -2,21 +2,19 @@
 
 namespace RahulHaque\Filepond\Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Facades\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
 
 class FilepondFacadeTest extends TestCase
 {
-    use RefreshDatabase;
-
-    /** @test */
+    #[Test]
     public function can_validate_null_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -34,7 +32,7 @@ class FilepondFacadeTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function can_validate_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -68,7 +66,7 @@ class FilepondFacadeTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function can_validate_after_multiple_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -124,7 +122,7 @@ class FilepondFacadeTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function can_validate_after_nested_multiple_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -183,7 +181,7 @@ class FilepondFacadeTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function can_get_temporary_file_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -206,7 +204,7 @@ class FilepondFacadeTest extends TestCase
         $this->assertEquals($temporaryFile->getSize(), $uploadedFile->getSize());
     }
 
-    /** @test */
+    #[Test]
     public function can_get_data_url_after_filepond_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -230,7 +228,7 @@ class FilepondFacadeTest extends TestCase
         $this->assertEquals($uploadEncoded, last(explode(',', $dataUrl)));
     }
 
-    /** @test */
+    #[Test]
     public function can_copy_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -251,7 +249,7 @@ class FilepondFacadeTest extends TestCase
         Storage::disk(config('filepond.disk', 'local'))->assertExists($fileInfo['location']);
     }
 
-    /** @test */
+    #[Test]
     public function can_move_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -272,7 +270,7 @@ class FilepondFacadeTest extends TestCase
         Storage::disk(config('filepond.disk', 'local'))->assertExists($fileInfo['location']);
     }
 
-    /** @test */
+    #[Test]
     public function can_copy_multiple_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -301,7 +299,7 @@ class FilepondFacadeTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function can_move_multiple_filepond_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
