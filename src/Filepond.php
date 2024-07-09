@@ -2,6 +2,7 @@
 
 namespace RahulHaque\Filepond;
 
+use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
@@ -182,7 +183,9 @@ class Filepond extends AbstractFilepond
     {
         $permanentDisk = $disk == '' ? $filepond->disk : $disk;
 
-        Storage::disk($permanentDisk)->put($path.'.'.$filepond->extension, Storage::disk($this->getTempDisk())->get($filepond->filepath), $visibility);
+        $pathInfo = pathinfo($path);
+
+        Storage::disk($permanentDisk)->putFileAs($pathInfo['dirname'], new File(Storage::disk($this->getTempDisk())->path($filepond->filepath)), $pathInfo['filename'].'.'.$filepond->extension, $visibility);
 
         return [
             'id' => $filepond->id,
