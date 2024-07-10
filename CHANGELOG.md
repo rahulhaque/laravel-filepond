@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 10.0.1 - 2024-10-07
+## 10.0.1 - 2024-07-10
 
 - Fixed large file processing (out of memory exception) 🐛.
 
