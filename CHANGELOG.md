@@ -5,6 +5,18 @@ All notable changes to `laravel-filepond` will be documented in this file.
 Every major releases specific to Laravel framework versions includes all of the changes below.
 Please, use the corresponding version for your project or update if already installed.
 
+## 11.0.1 - 2024-07-10
+
+- Fixed large file processing (out of memory exception) 🐛.
+
+## 10.0.1 - 2024-07-10
+
+- Fixed large file processing (out of memory exception) 🐛.
+
+## 9.0.1 - 2024-07-10
+
+- Fixed large file processing (out of memory exception) 🐛.
+
 ## 11.0.0 - 2024-03-15
 
 - Laravel 11 support added. ✨
