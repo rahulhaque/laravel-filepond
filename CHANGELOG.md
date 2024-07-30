@@ -5,6 +5,36 @@ All notable changes to `laravel-filepond` will be documented in this file.
 Every major releases specific to Laravel framework versions includes all of the changes below.
 Please, use the corresponding version for your project or update if already installed.
 
+## 11.0.2 - 2024-07-30
+
+- Fixed third party storage compatibility 🐛. 
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
+## 10.0.2 - 2024-07-30
+
+- Fixed third party storage compatibility 🐛. 
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
+## 9.0.2 - 2024-07-30
+
+- Fixed third party storage compatibility 🐛. 
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
+## 8.0.1 - 2024-07-30
+
+- Fixed third party storage compatibility 🐛. 
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
+## 7.0.1 - 2024-07-30
+
+- Fixed third party storage compatibility 🐛. 
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
 ## 11.0.1 - 2024-07-10
 
 - Fixed large file processing (out of memory exception) 🐛.
