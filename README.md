@@ -6,7 +6,7 @@
 A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them. It currently features - 
 
 - Single and multiple file uploads.
-- Chunk uploads with resume.
+- Chunk uploads with resume support.
 - Third party storage support.
 - Global server side validation for temporary files.
 - Controller/Request level validation before moving the temporary files to permanent location.

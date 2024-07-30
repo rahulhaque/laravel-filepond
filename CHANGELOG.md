@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 11.0.2 - 2024-07-30
+
+- Fixed large file processing in third party storage 🐛.
+- Docker development environment isolated 🐳.
+- Filepond disk test cases added ✅.
+
 ## 11.0.1 - 2024-07-10
 
 - Fixed large file processing (out of memory exception) 🐛.
