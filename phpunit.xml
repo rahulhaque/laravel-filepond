@@ -12,6 +12,11 @@
   <php>
     <env name="DB_CONNECTION" value="testing"/>
     <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
+    <env name="AWS_ENDPOINT" value="http://minio:9000"/>
+    <env name="AWS_ACCESS_KEY_ID" value="key"/>
+    <env name="AWS_SECRET_ACCESS_KEY" value="secret"/>
+    <env name="AWS_DEFAULT_REGION" value="us-east-1"/>
+    <env name="AWS_BUCKET" value="emulated-s3"/>
   </php>
   <source>
     <include>
