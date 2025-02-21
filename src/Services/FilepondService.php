@@ -5,6 +5,7 @@ namespace RahulHaque\Filepond\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Models\Filepond;
@@ -118,6 +119,7 @@ class FilepondService
     {
         $id = Crypt::decrypt($request->patch)['id'];
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$id.'/');
+
         $filename = $request->header('Upload-Name');
         $length = $request->header('Upload-Length');
         $offset = $request->header('Upload-Offset');
@@ -133,7 +135,7 @@ class FilepondService
 
             // 1. Verify Chunk (Crucial):  Check if the filename matches the expected offset format
             if (! preg_match('/^\d+$/', $chunkOffset)) { // Basic check: filename should be numeric offset
-                \Log::warning('Invalid chunk filename: '.$chunk); // Log the error!
+                Log::warning('Invalid chunk filename: '.$chunk); // Log the error!
 
                 continue; // Skip invalid files
             }
@@ -141,7 +143,7 @@ class FilepondService
             // 2. Check File Size (Direct Fix):
             $chunkSize = filesize($chunk);
             if ($chunkSize === 0) {
-                \Log::warning('Empty chunk file: '.$chunk); // Log the error!
+                Log::warning('Empty chunk file: '.$chunk); // Log the error!
                 unlink($chunk); // Optionally delete the empty chunk
 
                 continue; // Skip empty files
