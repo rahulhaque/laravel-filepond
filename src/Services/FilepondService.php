@@ -117,31 +117,33 @@ class FilepondService
     public function chunk(Request $request)
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder . '/' . $id . '/');
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$id.'/');
         $filename = $request->header('Upload-Name');
         $length = $request->header('Upload-Length');
         $offset = $request->header('Upload-Offset');
 
         // Store the chunk
-        file_put_contents($dir . $offset, $request->getContent());
+        file_put_contents($dir.$offset, $request->getContent());
 
         $size = 0;
-        $chunks = glob($dir . '*');
+        $chunks = glob($dir.'*');
 
         foreach ($chunks as $chunk) {
             $chunkOffset = basename($chunk); // Get the offset from the filename
 
             // 1. Verify Chunk (Crucial):  Check if the filename matches the expected offset format
-            if (!preg_match('/^\d+$/', $chunkOffset)) { // Basic check: filename should be numeric offset
-                \Log::warning("Invalid chunk filename: " . $chunk); // Log the error!
+            if (! preg_match('/^\d+$/', $chunkOffset)) { // Basic check: filename should be numeric offset
+                \Log::warning('Invalid chunk filename: '.$chunk); // Log the error!
+
                 continue; // Skip invalid files
             }
 
             // 2. Check File Size (Direct Fix):
             $chunkSize = filesize($chunk);
             if ($chunkSize === 0) {
-                \Log::warning("Empty chunk file: " . $chunk); // Log the error!
+                \Log::warning('Empty chunk file: '.$chunk); // Log the error!
                 unlink($chunk); // Optionally delete the empty chunk
+
                 continue; // Skip empty files
             }
 
@@ -149,21 +151,23 @@ class FilepondService
         }
 
         if ($length == $size) {
-            $file = fopen($dir . $filename, 'w');
-            if (!$file) {
-                throw new \Exception("Failed to open file for writing: " . $dir . $filename); // Handle errors
+            $file = fopen($dir.$filename, 'w');
+            if (! $file) {
+                throw new \Exception('Failed to open file for writing: '.$dir.$filename); // Handle errors
             }
 
             foreach ($chunks as $chunk) {
                 $chunkOffset = basename($chunk);
                 $chunkSize = filesize($chunk);
 
-                if ($chunkSize === 0) continue; // Skip if it's still zero after the more robust check
+                if ($chunkSize === 0) {
+                    continue;
+                } // Skip if it's still zero after the more robust check
 
                 $chunkFile = fopen($chunk, 'r');
-                if (!$chunkFile) {
+                if (! $chunkFile) {
                     fclose($file); // Close the main file
-                    throw new \Exception("Failed to open chunk file for reading: " . $chunk); // Handle errors
+                    throw new \Exception('Failed to open chunk file for reading: '.$chunk); // Handle errors
                 }
 
                 $chunkContent = fread($chunkFile, $chunkSize);
@@ -171,14 +175,14 @@ class FilepondService
 
                 if ($chunkContent === false) { // Check for read errors
                     fclose($file);
-                    throw new \Exception("Failed to read chunk file: " . $chunk);
+                    throw new \Exception('Failed to read chunk file: '.$chunk);
                 }
 
                 fseek($file, $chunkOffset);
 
                 if (fwrite($file, $chunkContent) === false) { // Check for write errors
                     fclose($file);
-                    throw new \Exception("Failed to write to file: " . $dir . $filename);
+                    throw new \Exception('Failed to write to file: '.$dir.$filename);
                 }
 
                 unlink($chunk);
@@ -187,10 +191,10 @@ class FilepondService
 
             $filepond = $this->retrieve($request->patch);
             $filepond->update([
-                'filepath' => $this->tempFolder . '/' . $id . '/' . $filename,
+                'filepath' => $this->tempFolder.'/'.$id.'/'.$filename,
                 'filename' => $filename,
                 'extension' => pathinfo($filename, PATHINFO_EXTENSION),
-                'mimetypes' => Storage::disk($this->tempDisk)->mimeType($this->tempFolder . '/' . $id . '/' . $filename),
+                'mimetypes' => Storage::disk($this->tempDisk)->mimeType($this->tempFolder.'/'.$id.'/'.$filename),
                 'disk' => $this->disk,
                 'created_by' => auth()->id(),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
@@ -199,7 +203,6 @@ class FilepondService
 
         return $size;
     }
-
 
     /**
      * Get the offset of the last uploaded chunk for resume
