@@ -7,6 +7,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use RahulHaque\Filepond\Exceptions\InvalidChunkException;
 use RahulHaque\Filepond\Models\Filepond;
 
 class FilepondService
@@ -117,14 +118,19 @@ class FilepondService
     public function chunk(Request $request)
     {
         $id = Crypt::decrypt($request->patch)['id'];
-
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$id.'/');
 
-        $filename = $request->header('Upload-Name');
-        $length = $request->header('Upload-Length');
-        $offset = $request->header('Upload-Offset');
+        $contentLength = $request->header('Content-Length');
+        $uploadLength = $request->header('Upload-Length');
+        $uploadName = $request->header('Upload-Name');
+        $uploadOffset = $request->header('Upload-Offset');
 
-        file_put_contents($dir.$offset, $request->getContent());
+        $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
+
+        if ($chunkSize === false || $chunkSize === 0 || (int) $contentLength !== $chunkSize) {
+            unlink($dir.$uploadOffset); // Remove invalid chunk to retry
+            throw new InvalidChunkException();
+        }
 
         $size = 0;
         $chunks = glob($dir.'*');
@@ -132,16 +138,16 @@ class FilepondService
             $size += filesize($chunk);
         }
 
-        if ($length == $size) {
-            $file = fopen($dir.$filename, 'w');
+        if ((int) $uploadLength === $size) {
+            $file = fopen($dir.$uploadName, 'w');
             foreach ($chunks as $chunk) {
-                $offset = basename($chunk);
+                $uploadOffset = basename($chunk);
 
                 $chunkFile = fopen($chunk, 'r');
                 $chunkContent = fread($chunkFile, filesize($chunk));
                 fclose($chunkFile);
 
-                fseek($file, $offset);
+                fseek($file, $uploadOffset);
                 fwrite($file, $chunkContent);
 
                 unlink($chunk);
@@ -150,10 +156,10 @@ class FilepondService
 
             $filepond = $this->retrieve($request->patch);
             $filepond->update([
-                'filepath' => $this->tempFolder.'/'.$id.'/'.$filename,
-                'filename' => $filename,
-                'extension' => pathinfo($filename, PATHINFO_EXTENSION),
-                'mimetypes' => Storage::disk($this->tempDisk)->mimeType($this->tempFolder.'/'.$id.'/'.$filename),
+                'filepath' => $this->tempFolder.'/'.$id.'/'.$uploadName,
+                'filename' => $uploadName,
+                'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetypes' => Storage::disk($this->tempDisk)->mimeType($this->tempFolder.'/'.$id.'/'.$uploadName),
                 'disk' => $this->disk,
                 'created_by' => auth()->id(),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
