@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 11.0.3 - 2025-02-26
+
+- Introducing empty or corrupted chunk exception. 🥅
+- Docker compose development image isolated. 🧑‍💻
+
 ## 11.0.2 - 2024-07-30
 
 - Fixed large file processing in third party storage 🐛.
