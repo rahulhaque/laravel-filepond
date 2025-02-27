@@ -293,7 +293,7 @@ docker compose build
 docker compose up -d
 
 # Drop to development shell
-docker compose exec laravel-filepond-11 bash
+docker compose exec laravel-filepond-12 bash
 
 # Install dependencies
 composer install
@@ -312,7 +312,7 @@ docker compose stop
 docker compose down -v
 
 # Also remove the development image if necessary
-docker image rm laravel-filepond-11-development
+docker image rm laravel-filepond-12-development
 ```
 
 ## Testing

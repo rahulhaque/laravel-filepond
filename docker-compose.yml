@@ -1,10 +1,10 @@
 services:
-  laravel-filepond-11:
-    image: laravel-filepond-11-development:11.x
+  laravel-filepond-12:
+    image: laravel-filepond-12-development:12.x
     build:
       context: ./docker/8.2
       dockerfile: Dockerfile
-    container_name: laravel-filepond-11-dev
+    container_name: laravel-filepond-12-dev
     stdin_open: true
     tty: true
     volumes:

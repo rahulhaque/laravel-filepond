@@ -129,7 +129,7 @@ class FilepondService
 
         if ($chunkSize === false || $chunkSize === 0 || (int) $contentLength !== $chunkSize) {
             unlink($dir.$uploadOffset); // Remove invalid chunk to retry
-            throw new InvalidChunkException();
+            throw new InvalidChunkException;
         }
 
         $size = 0;
