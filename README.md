@@ -26,12 +26,25 @@ Support the development with a :star: to let others know it worked for you.
 
 - Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
 
+## Documentation
+
+See the corresponding branch for the documentation.
+
+|Version|Branch|
+|:-:|:-:|
+|Laravel 12|[12.x branch](../../tree/12.x/README.md)|
+|Laravel 11|[11.x branch](../../tree/11.x/README.md)|
+|Laravel 10|[10.x branch](../../tree/10.x/README.md)|
+|Laravel 9|[9.x branch](../../tree/9.x/README.md)|
+|Laravel 8|[8.x branch](../../tree/8.x/README.md)|
+|Laravel 7|[7.x branch](../../tree/7.x/README.md)|
+
 ## Installation
 
-Laravel 11 users install with.
+Laravel 12 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^11.0"
+composer require rahulhaque/laravel-filepond:"^12.0"
 ```
 
 Publish the configuration and migration files.
