@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond;
 
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
@@ -181,7 +182,7 @@ class Filepond extends AbstractFilepond
      */
     private function putFile(FilepondModel $filepond, string $path, string $disk, string $visibility)
     {
-        $permanentDisk = $disk == '' ? $filepond->disk : $disk;
+        $permanentDisk = $disk === '' ? $filepond->disk : $disk;
 
         $pathInfo = pathinfo($path);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests;
 
 use Orchestra\Testbench\Factories\UserFactory as TestbenchUserFactory;

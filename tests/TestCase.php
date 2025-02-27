@@ -1,6 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests;
+
+use CreateFilepondsTable;
+use CreateUsersTable;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -30,7 +35,7 @@ class TestCase extends \Orchestra\Testbench\TestCase
         include_once __DIR__.'/database/migrations/create_users_table.php.stub';
         include_once __DIR__.'/../database/migrations/create_fileponds_table.php.stub';
 
-        (new \CreateUsersTable)->up();
-        (new \CreateFilepondsTable)->up();
+        (new CreateUsersTable)->up();
+        (new CreateFilepondsTable)->up();
     }
 }
