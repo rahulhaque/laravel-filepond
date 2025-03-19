@@ -3,6 +3,8 @@ name: run-tests
 on:
   push:
     branches: [12.x]
+    paths-ignore:
+      - '**.md'
   # pull_request:
   #   branches: [master]
 
