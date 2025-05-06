@@ -188,7 +188,7 @@ class Filepond extends AbstractFilepond
         Storage::disk($permanentDisk)->writeStream(
             $pathInfo['dirname'].DIRECTORY_SEPARATOR.$pathInfo['filename'].'.'.$filepond->extension,
             Storage::disk($this->getTempDisk())->readStream($filepond->filepath),
-            ['visibility' => $visibility],
+            $visibility !== '' ? ['visibility' => $visibility] : [],
         );
 
         return [
