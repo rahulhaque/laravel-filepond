@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 10.1.2 - 2025-05-08
+
+- Mimetype added in fileinfo response. ✨
+- Fixed overriding the disk default visibility. 🐛
+
 ## 10.0.2 - 2024-07-30
 
 - Fixed large file processing in third party storage 🐛.

@@ -1,7 +1,6 @@
-version: '3'
 services:
-  laravel-filepond:
-    image: laravel-filepond-development:10.x
+  laravel-filepond-10:
+    image: laravel-filepond-10-development:10.x
     build:
       context: ./docker/8.1
       dockerfile: Dockerfile
