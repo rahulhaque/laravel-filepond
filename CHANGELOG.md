@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.1.1 - 2025-05-08
+
+- Fixed overriding the disk default visibility #75. 🐛
+
 ## 12.1.0 - 2025-03-19
 
 - Mimetype added in fileinfo response. ✨
