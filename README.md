@@ -26,12 +26,24 @@ Support the development with a :star: to let others know it worked for you.
 
 - Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
 
+## Documentation
+
+See the corresponding branch for the documentation.
+
+|Version|Branch|
+|:-:|:-:|
+|Laravel 11|[11.x branch](../../tree/11.x/README.md)|
+|Laravel 10|[10.x branch](../../tree/10.x/README.md)|
+|Laravel 9|[9.x branch](../../tree/9.x/README.md)|
+|Laravel 8|[8.x branch](../../tree/8.x/README.md)|
+|Laravel 7|[7.x branch](../../tree/7.x/README.md)|
+
 ## Installation
 
 Laravel 8 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^8"
+composer require rahulhaque/laravel-filepond:"^8.0"
 ```
 
 Publish the configuration and migration files.
@@ -131,6 +143,7 @@ class UserAvatarController extends Controller
         //     "dirname" => "avatars",
         //     "basename" => "avatar-1.png",
         //     "extension" => "png",
+        //     "mimetype" => "image/png",
         //     "filename" => "avatar-1",
         //     "location" => "avatars/avatar-1.png",
         //     "url" => "http://localhost/storage/avatars/avatar-1.png",
@@ -148,6 +161,7 @@ class UserAvatarController extends Controller
         //         "dirname" => "galleries",
         //         "basename" => "gallery-1-1.png",
         //         "extension" => "png",
+        //         "mimetype" => "image/png",
         //         "filename" => "gallery-1-1",
         //         "location" => "galleries/gallery-1-1.png",
         //         "url" => "http://localhost/storage/galleries/gallery-1-1.png",
@@ -157,6 +171,7 @@ class UserAvatarController extends Controller
         //         "dirname" => "galleries",
         //         "basename" => "gallery-1-2.png",
         //         "extension" => "png",
+        //         "mimetype" => "image/png",
         //         "filename" => "gallery-1-2",
         //         "location" => "galleries/gallery-1-2.png",
         //         "url" => "http://localhost/storage/galleries/gallery-1-2.png",
@@ -166,6 +181,7 @@ class UserAvatarController extends Controller
         //         "dirname" => "galleries",
         //         "basename" => "gallery-1-3.png",
         //         "extension" => "png",
+        //         "mimetype" => "image/png",
         //         "filename" => "gallery-1-3",
         //         "location" => "galleries/gallery-1-3.png",
         //         "url" => "http://localhost/storage/galleries/gallery-1-3.png",
@@ -177,7 +193,8 @@ class UserAvatarController extends Controller
 
 This is the quickest way to get started. This package has already implemented all the classes and controllers for you. Next we will discuss about all the nitty gritty stuffs available.
 
-> **Important:** If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.  
+> [!IMPORTANT]
+> If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.  
 
 ## Configuration
 
@@ -185,13 +202,14 @@ First have a look at the `./config/filepond.php` to know about all the options a
 
 #### Permanent Storage
 
-This package uses Laravel's public filesystem driver for permanent file storage by default. Change the `disk` option to anything you prefer for permanent storage. Hold up! But I am using different disks for different uploads. Don't worry. You will be able to change the disk name on the fly with [copyTo()](https://github.com/rahulhaque/laravel-filepond#copyto) and [moveTo()](https://github.com/rahulhaque/laravel-filepond#moveto) methods.
+This package uses Laravel's public filesystem driver for permanent file storage by default. Change the `disk` option to anything you prefer for permanent storage. Hold up! But I am using different disks for different uploads? Don't worry. You will be able to change the disk name on the fly with [copyTo()](https://github.com/rahulhaque/laravel-filepond#copyto) and [moveTo()](https://github.com/rahulhaque/laravel-filepond#moveto) methods.
 
 #### Temporary Storage
 
-This package uses Laravel's local filesystem driver for temporary file storage by default. Change the `temp_disk` and `temp_folder` name to points towards directory for temporary file storage.
+This package uses Laravel's `local` filesystem driver for temporary file storage by default. Change the `temp_disk` and `temp_folder` name to points towards directory for temporary file storage.
 
-> **Note:** Setting temporary file storage to third party will upload the files directly to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
+> [!NOTE]
+> Setting temporary file storage to third party will upload the files directly to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
 
 #### Validation Rules
 
@@ -213,7 +231,8 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 
 This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
-> If you see your files are not deleted even after everything is set up correctly, then its probably the directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> [!NOTE]
+> If you see your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
 
 ### Methods
 
@@ -225,7 +244,8 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
 
-> **Note:** This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
+> [!NOTE]
+> This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
 
 #### copyTo()
 
@@ -249,7 +269,8 @@ If you need more granular approach and know the ins and outs of this package, yo
 
 Processing the file object manually will not update the associated `Filepond` model which is used to keep track of the uploaded files. However the expired files will be cleaned up as usual by the scheduled command. It is recommended that you either call the [delete()](#delete) method or update the underlying model by calling [getModel()](#getModel) method after the processing is done.
 
-> **Note:** This method is not available when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
+> [!NOTE]
+> This method is not available when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
 
 #### getModel()
 
@@ -293,7 +314,7 @@ docker compose build
 docker compose up -d
 
 # Drop to development shell
-docker compose exec laravel-filepond bash
+docker compose exec laravel-filepond-8 bash
 
 # Install dependencies
 composer install
@@ -312,7 +333,7 @@ docker compose stop
 docker compose down -v
 
 # Also remove the development image if necessary
-docker image rm laravel-filepond-development
+docker image rm laravel-filepond-8-development
 ```
 
 ## Testing
@@ -335,8 +356,8 @@ If you discover any security related issues, please email rahulhaque07@gmail.com
 
 ## Credits
 
--   [Rahul Haque](https://github.com/rahulhaque)
--   [All Contributors](../../contributors)
+- [Rahul Haque](https://github.com/rahulhaque)
+- [All Contributors](../../contributors)
 
 ## License
 

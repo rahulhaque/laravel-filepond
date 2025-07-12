@@ -2,7 +2,6 @@
 
 namespace RahulHaque\Filepond;
 
-use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
 
@@ -28,7 +27,7 @@ class Filepond extends AbstractFilepond
     /**
      * Return file object from the field
      *
-     * @return array|\Illuminate\Http\UploadedFile
+     * @return \Illuminate\Http\UploadedFile|array<int, \Illuminate\Http\UploadedFile>|null
      */
     public function getFile()
     {
@@ -49,7 +48,7 @@ class Filepond extends AbstractFilepond
      * Get the filepond file as Data URL string
      * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
      *
-     * @return array|string
+     * @return array|array<int, string>
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -81,7 +80,28 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination
      *
-     * @return array
+     * @param string $path
+     * @param string $disk
+     * @param string $visibility
+     * @return array{
+     *     id: int,
+     *     dirname: string,
+     *     basename: string,
+     *     extension: string,
+     *     mimetype: string,
+     *     filename: string,
+     *     location: string,
+     *     url: string
+     * }|array<int, array{
+     *     id: int,
+     *     dirname: string,
+     *     basename: string,
+     *     extension: string,
+     *     mimetype: string,
+     *     filename: string,
+     *     location: string,
+     *     url: string
+     * }>
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -110,7 +130,28 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination and delete
      *
-     * @return array
+     * @param string $path
+     * @param string $disk
+     * @param string $visibility
+     * @return array{
+     *     id: int,
+     *     dirname: string,
+     *     basename: string,
+     *     extension: string,
+     *     mimetype: string,
+     *     filename: string,
+     *     location: string,
+     *     url: string
+     * }|array<int, array{
+     *     id: int,
+     *     dirname: string,
+     *     basename: string,
+     *     extension: string,
+     *     mimetype: string,
+     *     filename: string,
+     *     location: string,
+     *     url: string
+     * }>
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -147,7 +188,7 @@ class Filepond extends AbstractFilepond
     public function delete()
     {
         if (! $this->getFieldValue()) {
-            return null;
+            return;
         }
 
         if ($this->getIsMultipleUpload()) {
@@ -176,7 +217,20 @@ class Filepond extends AbstractFilepond
     /**
      * Put the file in permanent storage and return response
      *
-     * @return array
+     * @param FilepondModel $filepond
+     * @param string $path
+     * @param string $disk
+     * @param string $visibility
+     * @return array{
+     *     id: int,
+     *     dirname: string,
+     *     basename: string,
+     *     extension: string,
+     *     mimetype: string,
+     *     filename: string,
+     *     location: string,
+     *     url: string
+     * }
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -189,7 +243,7 @@ class Filepond extends AbstractFilepond
         Storage::disk($permanentDisk)->writeStream(
             $pathInfo['dirname'].DIRECTORY_SEPARATOR.$pathInfo['filename'].'.'.$filepond->extension,
             Storage::disk($this->getTempDisk())->readStream($filepond->filepath),
-            ['visibility' => $visibility],
+            $visibility !== '' ? ['visibility' => $visibility] : []
         );
 
         return [
@@ -197,6 +251,7 @@ class Filepond extends AbstractFilepond
             'dirname' => dirname($path.'.'.$filepond->extension),
             'basename' => basename($path.'.'.$filepond->extension),
             'extension' => $filepond->extension,
+            'mimetype' => $filepond->mimetypes,
             'filename' => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
             'location' => $path.'.'.$filepond->extension,
             'url' => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension),

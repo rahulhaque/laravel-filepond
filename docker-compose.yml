@@ -1,6 +1,6 @@
 services:
-  laravel-filepond:
-    image: laravel-filepond-development:8.x
+  laravel-filepond-8:
+    image: laravel-filepond-8-development:8.x
     build:
       context: ./docker/7.3
       dockerfile: Dockerfile
