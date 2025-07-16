@@ -305,7 +305,7 @@ User::find(1)->fileponds;
 
 ## Development
 
-First clone the repo and `cd` into the directory. Switch to `10.x-dev` branch. Build and start development environment with docker.
+First clone the repo and `cd` into the directory. Build development environment with docker.
 
 ```bash
 # Build the development image
@@ -357,8 +357,8 @@ If you discover any security related issues, please email rahulhaque07@gmail.com
 
 ## Credits
 
--   [Rahul Haque](https://github.com/rahulhaque)
--   [All Contributors](../../contributors)
+- [Rahul Haque](https://github.com/rahulhaque)
+- [All Contributors](../../contributors)
 
 ## License
 

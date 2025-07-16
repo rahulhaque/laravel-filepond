@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 10.2.2 - 2025-07-16
+
+- Added PHPDoc for IDE autocomplete support. 🚀
+
 ## 10.1.2 - 2025-05-08
 
 - Mimetype added in fileinfo response. ✨
