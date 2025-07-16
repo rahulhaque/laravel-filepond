@@ -32,6 +32,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
 |Laravel 9|[9.x branch](../../tree/9.x/README.md)|
