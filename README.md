@@ -357,8 +357,8 @@ If you discover any security related issues, please email rahulhaque07@gmail.com
 
 ## Credits
 
--   [Rahul Haque](https://github.com/rahulhaque)
--   [All Contributors](../../contributors)
+- [Rahul Haque](https://github.com/rahulhaque)
+- [All Contributors](../../contributors)
 
 ## License
 
