@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 11.2.4 - 2025-07-16
+
+- Added PHPDoc for IDE autocomplete support. 🚀
+
 ## 11.1.4 - 2025-05-08
 
 - Fixed overriding the disk default visibility #75. 🐛
