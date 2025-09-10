@@ -94,7 +94,7 @@ class FilepondService
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder . '/' . $filepond->id);
+        Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder.'/'.$filepond->id);
 
         return Crypt::encrypt(['id' => $filepond->id]);
     }
@@ -207,9 +207,9 @@ class FilepondService
     {
         $filepond = $this->retrieve($content);
 
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder . '/' . $filepond->id . '/');
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$filepond->id.'/');
         $size = 0;
-        $chunks = glob($dir . '*');
+        $chunks = glob($dir.'*');
         foreach ($chunks as $chunk) {
             $size += filesize($chunk);
         }
@@ -241,7 +241,7 @@ class FilepondService
         }
 
         Storage::disk($this->tempDisk)->delete($filepond->filepath);
-        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder . '/' . $filepond->id);
+        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.'/'.$filepond->id);
 
         return $filepond->forceDelete();
     }
