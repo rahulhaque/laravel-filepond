@@ -94,7 +94,7 @@ class FilepondService
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder.'/'.$filepond->id);
+        Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder . '/' . $filepond->id);
 
         return Crypt::encrypt(['id' => $filepond->id]);
     }
@@ -109,49 +109,87 @@ class FilepondService
     public function chunk(Request $request)
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$id.'/');
 
-        $contentLength = $request->header('Content-Length');
-        $uploadLength = $request->header('Upload-Length');
-        $uploadName = $request->header('Upload-Name');
-        $uploadOffset = $request->header('Upload-Offset');
+        $disk = Storage::disk($this->tempDisk);
+        $baseDir = trim($this->tempFolder . '/' . $id, '/') . '/';
 
-        $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
+        $contentLength = (int) $request->header('Content-Length');
+        $uploadLength  = (int) $request->header('Upload-Length');
+        $uploadName    = $request->header('Upload-Name');
+        $uploadOffset  = $request->header('Upload-Offset');
 
-        if ($chunkSize === false || $chunkSize === 0 || (int) $contentLength !== $chunkSize) {
-            unlink($dir.$uploadOffset); // Remove invalid chunk to retry
+        // Ensure folder exists
+        $disk->makeDirectory($baseDir);
+
+        $chunkKey   = $baseDir . $uploadOffset;
+        $chunkBytes = $request->getContent();            // raw binary
+        $chunkSize  = strlen($chunkBytes);               // byte length
+
+        // Write this chunk
+        $ok = $disk->put($chunkKey, $chunkBytes, ['visibility' => 'private']);
+
+        // Validate write success and size vs Content-Length
+        if (!$ok || $chunkSize === 0 || $chunkSize !== $contentLength) {
+            // Remove invalid chunk key and fail
+            $disk->delete($chunkKey);
             throw new InvalidChunkException;
         }
 
+        // Compute total size by summing sizes of numeric-named chunk files
         $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
+        $chunkFiles = array_filter(
+            $disk->files($baseDir),
+            fn($path) => is_numeric(basename($path))
+        );
+
+        foreach ($chunkFiles as $path) {
+            $size += (int) $disk->size($path);
         }
 
-        if ((int) $uploadLength === $size) {
-            $file = fopen($dir.$uploadName, 'w');
-            foreach ($chunks as $chunk) {
-                $uploadOffset = basename($chunk);
+        // If all bytes are in, merge chunks into final object
+        if ($size === $uploadLength) {
+            $finalKey = $baseDir . $uploadName;
 
-                $chunkFile = fopen($chunk, 'r');
-                $chunkContent = fread($chunkFile, filesize($chunk));
-                fclose($chunkFile);
+            // Sort chunks by numeric offset
+            usort($chunkFiles, function ($a, $b) {
+                return (int) basename($a) <=> (int) basename($b);
+            });
 
-                fseek($file, (int) $uploadOffset);
-                fwrite($file, $chunkContent);
-
-                unlink($chunk);
+            // Stream-assemble into php://temp to avoid loading into memory at once
+            $tmp = fopen('php://temp', 'w+');
+            if ($tmp === false) {
+                throw new \RuntimeException('Unable to open temp stream.');
             }
-            fclose($file);
 
+            try {
+                foreach ($chunkFiles as $path) {
+                    $read = $disk->readStream($path);
+                    if ($read === false) {
+                        throw new \RuntimeException("Unable to read chunk: {$path}");
+                    }
+
+                    stream_copy_to_stream($read, $tmp);
+                    fclose($read);
+                }
+
+                // Rewind and upload the assembled stream to the final path
+                rewind($tmp);
+                $disk->writeStream($finalKey, $tmp);
+            } finally {
+                fclose($tmp);
+            }
+
+            // Clean up chunk objects
+            $disk->delete($chunkFiles);
+
+            // Persist metadata for your FilePond record (uses your primary $this->disk)
             $filepond = $this->retrieve($request->patch);
             $filepond->update([
-                'filepath' => $this->tempFolder.'/'.$id.'/'.$uploadName,
-                'filename' => $uploadName,
-                'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
-                'mimetypes' => Storage::disk($this->tempDisk)->mimeType($this->tempFolder.'/'.$id.'/'.$uploadName),
-                'disk' => $this->disk,
+                'filepath'   => $this->tempFolder . '/' . $id . '/' . $uploadName,
+                'filename'   => $uploadName,
+                'extension'  => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetypes'  => Storage::disk($this->tempDisk)->mimeType($finalKey),
+                'disk'       => $this->disk,
                 'created_by' => auth()->id(),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
             ]);
@@ -169,9 +207,9 @@ class FilepondService
     {
         $filepond = $this->retrieve($content);
 
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.'/'.$filepond->id.'/');
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder . '/' . $filepond->id . '/');
         $size = 0;
-        $chunks = glob($dir.'*');
+        $chunks = glob($dir . '*');
         foreach ($chunks as $chunk) {
             $size += filesize($chunk);
         }
@@ -203,7 +241,7 @@ class FilepondService
         }
 
         Storage::disk($this->tempDisk)->delete($filepond->filepath);
-        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.'/'.$filepond->id);
+        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder . '/' . $filepond->id);
 
         return $filepond->forceDelete();
     }
