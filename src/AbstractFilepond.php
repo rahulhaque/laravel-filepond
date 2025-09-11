@@ -200,12 +200,48 @@ abstract class AbstractFilepond
      */
     protected function createFileObject(Filepond $filepond)
     {
+        $disk = Storage::disk($this->tempDisk);
+        $remotePath = $filepond->filepath;
+
+        // 1) Open a read stream from Storage (works for S3/local/etc.)
+        $read = $disk->readStream($remotePath);
+        if ($read === false) {
+            throw new \RuntimeException("Unable to read file from disk: {$remotePath}");
+        }
+
+        // 2) Create a real temp file and open a write stream
+        $tmpPath = tempnam(sys_get_temp_dir(), 'filepond_');
+        if ($tmpPath === false) {
+            fclose($read);
+            throw new \RuntimeException('Unable to create temp file path.');
+        }
+        $write = fopen($tmpPath, 'w+b');
+        if ($write === false) {
+            fclose($read);
+            @unlink($tmpPath);
+            throw new \RuntimeException('Unable to open temp file for writing.');
+        }
+
+        // 3) Stream copy (no full in-memory buffering)
+        try {
+            stream_copy_to_stream($read, $write);
+        } finally {
+            fclose($read);
+            fflush($write);
+            fclose($write);
+        }
+
+        // 4) Resolve mime (fallback to generic)
+        $mime = $filepond->mimetypes
+            ?? ($disk->mimeType($remotePath) ?: 'application/octet-stream');
+
+        // 5) Build UploadedFile in test mode (bypasses is_uploaded_file)
         return new UploadedFile(
-            Storage::disk($this->tempDisk)->path($filepond->filepath),
-            $filepond->filename,
-            $filepond->mimetypes,
-            UPLOAD_ERR_OK,
-            true
+            $tmpPath,               // local temp path
+            $filepond->filename,    // original client filename
+            $mime,                  // mime type
+            UPLOAD_ERR_OK,          // upload error code
+            true                    // test mode
         );
     }
 
@@ -219,6 +255,6 @@ abstract class AbstractFilepond
      */
     protected function createDataUrl(Filepond $filepond)
     {
-        return 'data:'.$filepond->mimetypes.';base64,'.base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
+        return 'data:' . $filepond->mimetypes . ';base64,' . base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
     }
 }
