@@ -26,7 +26,7 @@ class FilepondStorageClearTest extends TestCase
                     'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
         }
 
@@ -54,7 +54,7 @@ class FilepondStorageClearTest extends TestCase
                     'avatar' => UploadedFile::fake()->image('avatar-'.$i.'.png', 100, 100),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
         }
 

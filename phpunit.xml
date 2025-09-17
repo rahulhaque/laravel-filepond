@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd" cacheDirectory=".phpunit.result.cache" backupStaticProperties="false">
-  <coverage/>
-  <testsuites>
-    <testsuite name="Unit">
-      <directory suffix="Test.php">./tests/Unit</directory>
-    </testsuite>
-    <testsuite name="Feature">
-      <directory suffix="Test.php">./tests/Feature</directory>
-    </testsuite>
-  </testsuites>
-  <php>
-    <env name="DB_CONNECTION" value="testing"/>
-    <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10="/>
-    <env name="AWS_ENDPOINT" value="http://0.0.0.0:9000"/>
-    <env name="AWS_ACCESS_KEY_ID" value="key"/>
-    <env name="AWS_SECRET_ACCESS_KEY" value="password"/>
-    <env name="AWS_DEFAULT_REGION" value="us-east-1"/>
-    <env name="AWS_BUCKET" value="emulated-s3"/>
-  </php>
-  <source>
-    <include>
-      <directory suffix=".php">./src</directory>
-    </include>
-  </source>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false"
+    bootstrap="vendor/autoload.php" colors="true" processIsolation="false" stopOnFailure="false"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
+    cacheDirectory=".phpunit.result.cache" backupStaticProperties="false">
+    <coverage />
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_KEY" value="base64:2fl+Ktvkfl+Fuz4Qp/A75G2RTiWVA/ZoKZvp6fiiM10=" />
+        <env name="APP_ENV" value="testing" />
+        <env name="CACHE_STORE" value="array" />
+        <env name="DB_CONNECTION" value="sqlite" />
+        <env name="DB_DATABASE" value=":memory:" />
+        <env name="SESSION_DRIVER" value="array" />
+        <env name="AWS_ENDPOINT" value="http://rustfs:9000" />
+        <env name="AWS_ACCESS_KEY_ID" value="key" />
+        <env name="AWS_SECRET_ACCESS_KEY" value="password" />
+        <env name="AWS_DEFAULT_REGION" value="us-east-1" />
+        <env name="AWS_BUCKET" value="emulated-s3" />
+    </php>
+    <source>
+        <include>
+            <directory suffix=".php">./src</directory>
+        </include>
+    </source>
 </phpunit>
