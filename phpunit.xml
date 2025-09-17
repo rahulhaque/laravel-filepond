@@ -19,7 +19,7 @@
         <env name="DB_CONNECTION" value="sqlite" />
         <env name="DB_DATABASE" value=":memory:" />
         <env name="SESSION_DRIVER" value="array" />
-        <env name="AWS_ENDPOINT" value="http://rustfs:9000" />
+        <env name="AWS_ENDPOINT" value="http://0.0.0.0:9000" />
         <env name="AWS_ACCESS_KEY_ID" value="key" />
         <env name="AWS_SECRET_ACCESS_KEY" value="password" />
         <env name="AWS_DEFAULT_REGION" value="us-east-1" />

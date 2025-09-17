@@ -1,20 +1,27 @@
-# Laravel FilePond Backend
+# Effortless FilePond Uploads for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them. It currently features - 
+A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
 
-- Single and multiple file uploads.
-- Chunk uploads with resume support.
-- Third party storage support.
+**Key Features**
+
+- Support for both single and multiple file uploads.
+- Integrates well with third-party storage drivers.
+- Chunked uploads with resume capability for both local and external storage.
+- Native AWS S3 multipart upload support.
 - Global server side validation for temporary files.
-- Controller/Request level validation before moving the temporary files to permanent location.
-- Scheduled artisan command to clean up temporary files and folders after they have expired.
-- Can handle filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
-- Can handle large files efficiently.
+- Request/Controller level validation before persisting the temporary files to permanent storage.
+- Scheduled artisan command to automatically clean up expired temporary files and directories.
+- Optimized handling of large files for efficient memory usage.
+- Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
 
-Support the development with a :star: to let others know it worked for you.
+Support the development with a 🌟 to let others know it worked for you.
+
+**Support the Development**
+
+I’ve spent countless hours building and maintaining this package, developing new features, fixing issues from the community and making sure it stays reliable with latest updates. If you find it useful, please consider supporting my work on Ko-fi. Your support helps me dedicate more time in maintaining and enhancing this project. ❤️
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2I1JIV)
 
