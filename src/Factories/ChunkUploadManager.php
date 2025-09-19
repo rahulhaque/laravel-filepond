@@ -12,7 +12,7 @@ use RahulHaque\Filepond\Drivers\S3ChunkProcessor;
 
 class ChunkUploadManager extends Manager
 {
-    public function getDefaultDriver()
+    public function getDefaultDriver(): ?string
     {
         return $this->getDriverFromDisk($this->config->get('filepond.temp_disk'));
     }
@@ -21,11 +21,10 @@ class ChunkUploadManager extends Manager
      * Get a driver instance.
      *
      * @param  string|null  $disk
-     * @return mixed
      *
      * @throws InvalidArgumentException
      */
-    public function driver($disk = null)
+    public function driver($disk = null): mixed
     {
         $driver = $disk ? $this->getDriverFromDisk($disk) : $this->getDefaultDriver();
 

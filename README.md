@@ -1,4 +1,4 @@
-# Effortless FilePond Uploads for Laravel
+# Effortless FilePond Integration for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
@@ -17,11 +17,11 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Optimized handling of large files for efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
 
-Support the development with a 🌟 to let others know it worked for you.
+Spare a 🌟 to let others know it worked for you.
 
 **Support the Development**
 
-I’ve spent countless hours building and maintaining this package, developing new features, fixing issues from the community and making sure it stays reliable with latest updates. If you find it useful, please consider supporting my work on Ko-fi. Your support helps me dedicate more time in maintaining and enhancing this project. ❤️
+I’ve spent countless hours building and maintaining this package by developing new features, fixing issues from the community and making sure it stays reliable with the latest updates and changes from Laravel. If you find it useful, please consider supporting my work on Ko-fi. Your support keep me motivated and allow me to dedicate more time in maintaining and enhancing this project. ❤️
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2I1JIV)
 
@@ -65,6 +65,10 @@ Run the migration.
 ```bash
 php artisan migrate
 ```
+<br>
+
+> [!IMPORTANT]
+> If you have already installed version `12.2.1` or any lower version of the `12.x` release, make sure to publish and run the new migration after deleting the existing one.
 
 ## Quickstart
 
@@ -92,7 +96,7 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
         server: {
             url: "{{ config('filepond.server.url') }}",
             headers: {
-                'X-CSRF-TOKEN': "{{ @csrf_token() }}",
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
             }
         }
     });

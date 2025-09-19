@@ -35,7 +35,7 @@ class S3ChunkProcessor implements ChunkProcessor
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        $key = config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->filename;
+        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
 
         $initChunkResponse = $this->client->createMultipartUpload([
             'Bucket' => config('filesystems.disks.s3.bucket'),
@@ -54,7 +54,7 @@ class S3ChunkProcessor implements ChunkProcessor
     {
         $id = Crypt::decrypt($request->patch)['id'];
         $filepond = Filepond::findOrFail($id);
-        $key = config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->filename;
+        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
@@ -62,15 +62,15 @@ class S3ChunkProcessor implements ChunkProcessor
 
         $partNumber = count($filepond->upload_tags) + 1;
 
-        // Check if first chunk is less than 5MB in size
-        if ($partNumber === 1 && $contentLength < (5 * 1024 * 1024)) {
+        // Check if the uploaded file and chunk are S3 compatible
+        if ($partNumber === 1 && $error = $this->checkS3Compatibility($contentLength, $uploadLength)) {
             $this->client->abortMultipartUpload([
                 'Bucket' => config('filesystems.disks.s3.bucket'),
                 'Key' => $key,
                 'UploadId' => $filepond->upload_id,
             ]);
 
-            throw new InvalidChunkException('Chunk size must be greater than or equal to 5MB for S3.');
+            throw new InvalidChunkException($error);
         }
 
         try {
@@ -130,6 +130,8 @@ class S3ChunkProcessor implements ChunkProcessor
                 'filepath' => $key,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'upload_id' => null,
+                'upload_tags' => null,
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
             ]);
         }
@@ -141,7 +143,7 @@ class S3ChunkProcessor implements ChunkProcessor
     {
         $id = Crypt::decrypt($request->patch)['id'];
         $filepond = Filepond::findOrFail($id);
-        $key = config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->filename;
+        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
 
         try {
             $listPartsResponse = $this->client->listParts([
@@ -156,5 +158,38 @@ class S3ChunkProcessor implements ChunkProcessor
         $size = array_sum(array_column($listPartsResponse['Parts'], 'Size'));
 
         return $size;
+    }
+
+    /**
+     * Checks the chunk size and file size for S3 compatibility.
+     * Returns string with reason why upload is incompatible.
+     * Returns false when the upload is compatible with S3.
+     */
+    protected function checkS3Compatibility(int $chunkSize, int $fileSize): bool|string
+    {
+        $minChunkSize = 5 * 1024 * 1024; // 5 MiB
+        $maxChunkSize = 5 * 1024 * 1024 * 1024; // 5 GiB
+        $maxFileSize = 5 * 1024 * 1024 * 1024 * 1024; // 5 TiB
+        $maxNoOfParts = 10000;
+
+        $fileParts = (int) ceil($fileSize / $chunkSize);
+
+        if ($fileSize > $maxFileSize) {
+            return 'File size must less than or equal to 5 TiB for S3.';
+        }
+
+        if ($fileParts > $maxNoOfParts) {
+            return 'Number of chunks must be less than or equal to '.$maxNoOfParts.' for S3.';
+        }
+
+        if ($chunkSize < $minChunkSize) {
+            return 'Chunk size must be greater than or equal to 5MB for S3.';
+        }
+
+        if ($chunkSize > $maxChunkSize) {
+            return 'Chunk size must be less than or equal to 5GB for S3.';
+        }
+
+        return false;
     }
 }
