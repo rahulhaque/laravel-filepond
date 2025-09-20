@@ -6,6 +6,7 @@ namespace RahulHaque\Filepond\Tests;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Orchestra\Testbench\Factories\UserFactory;
 use RahulHaque\Filepond\Traits\HasFilepond;
 
 class User extends Authenticatable

@@ -49,7 +49,7 @@ class Filepond extends AbstractFilepond
      * Get the filepond file as Data URL string
      * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
      *
-     * @return array|array<int, string>|null
+     * @return array|array<int, string>|string|null
      *
      * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
      */
@@ -242,7 +242,7 @@ class Filepond extends AbstractFilepond
             'dirname' => dirname($path.'.'.$filepond->extension),
             'basename' => basename($path.'.'.$filepond->extension),
             'extension' => $filepond->extension,
-            'mimetype' => $filepond->mimetypes,
+            'mimetype' => Storage::disk($permanentDisk)->mimeType($path.'.'.$filepond->extension),
             'filename' => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
             'location' => $path.'.'.$filepond->extension,
             'url' => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension),
