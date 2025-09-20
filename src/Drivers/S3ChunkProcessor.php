@@ -143,21 +143,8 @@ class S3ChunkProcessor implements ChunkProcessor
     {
         $id = Crypt::decrypt($request->patch)['id'];
         $filepond = Filepond::findOrFail($id);
-        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
 
-        try {
-            $listPartsResponse = $this->client->listParts([
-                'Bucket' => config('filesystems.disks.s3.bucket'),
-                'Key' => $key,
-                'UploadId' => $filepond->upload_id,
-            ]);
-        } catch (S3Exception $e) {
-            throw $e;
-        }
-
-        $size = array_sum(array_column($listPartsResponse['Parts'], 'Size'));
-
-        return $size;
+        return array_sum(array_column($filepond->upload_tags ?? [], 'Size'));
     }
 
     /**

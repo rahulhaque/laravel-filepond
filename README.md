@@ -3,7 +3,7 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
+Straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
 
 **Key Features**
 
@@ -14,7 +14,7 @@ A straight forward backend support for Laravel application to work with [FilePon
 - Global server side validation for temporary files.
 - Request/Controller level validation before persisting the temporary files to permanent storage.
 - Scheduled artisan command to automatically clean up expired temporary files and directories.
-- Optimized handling of large files for efficient memory usage.
+- Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
 
 Spare a 🌟 to let others know it worked for you.
@@ -65,10 +65,11 @@ Run the migration.
 ```bash
 php artisan migrate
 ```
+
 <br>
 
-> [!IMPORTANT]
-> If you have already installed version `12.2.1` or any lower version of the `12.x` release, make sure to publish and run the new migration after deleting the existing one.
+> [!WARNING]
+> If you are using version `12.2.1` or any earlier release within the `12.x` branch, please delete the existing migration, then publish and run the new one.
 
 ## Quickstart
 
