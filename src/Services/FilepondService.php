@@ -9,7 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use RahulHaque\Filepond\Factories\ChunkUploadManager;
+use RahulHaque\Filepond\Factories\FileUploaderManager;
 use RahulHaque\Filepond\Models\Filepond;
 use Throwable;
 
@@ -23,15 +23,15 @@ class FilepondService
 
     private $model;
 
-    private $chunkUploadManager;
+    private $uploader;
 
-    public function __construct(ChunkUploadManager $chunkUploadManager)
+    public function __construct(FileUploaderManager $uploader)
     {
         $this->disk = config('filepond.disk', 'public');
         $this->tempDisk = config('filepond.temp_disk', 'local');
         $this->tempFolder = config('filepond.temp_folder', 'filepond/temp');
         $this->model = config('filepond.model', Filepond::class);
-        $this->chunkUploadManager = $chunkUploadManager;
+        $this->uploader = $uploader;
     }
 
     /**
@@ -75,7 +75,7 @@ class FilepondService
      */
     public function initChunk(Request $request)
     {
-        return $this->chunkUploadManager->driver($this->tempDisk)->initChunkUpload($request);
+        return $this->uploader->initChunkUpload($request);
     }
 
     /**
@@ -87,7 +87,7 @@ class FilepondService
      */
     public function chunk(Request $request)
     {
-        return $this->chunkUploadManager->driver($this->tempDisk)->handleChunk($request);
+        return $this->uploader->handleChunk($request);
     }
 
     /**
@@ -97,7 +97,7 @@ class FilepondService
      */
     public function offset(Request $request)
     {
-        return $this->chunkUploadManager->driver($this->tempDisk)->calculateOffset($request);
+        return $this->uploader->calculateOffset($request);
     }
 
     /**
@@ -121,18 +121,7 @@ class FilepondService
      */
     public function delete(Request $request)
     {
-        $id = Crypt::decrypt($request->getContent())['id'];
-
-        $filepond = $this->model::findOrFail($id);
-
-        if (config('filepond.soft_delete', true)) {
-            return $filepond->delete();
-        }
-
-        Storage::disk($this->tempDisk)->delete($filepond->filepath);
-        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id);
-
-        return $filepond->forceDelete();
+        return $this->uploader->deleteFile($request);
     }
 
     /**
