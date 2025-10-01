@@ -2,6 +2,11 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.3.3 - 2025-10-02
+
+- Unsupported disk driver exception for `getFile()` method added. ✅
+- New test cases updated to support above changes. 🧪
+
 ## 12.3.2 - 2025-10-01
 
 - Filepond model in config not acknowledged by driver fixed. 🐛

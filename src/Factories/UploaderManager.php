@@ -10,7 +10,7 @@ use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Drivers\LocalUploadDriver;
 use RahulHaque\Filepond\Drivers\S3UploadDriver;
 
-class FileUploaderManager extends Manager
+class UploaderManager extends Manager
 {
     public function getDefaultDriver(): ?string
     {

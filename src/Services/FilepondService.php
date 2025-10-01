@@ -9,7 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use RahulHaque\Filepond\Factories\FileUploaderManager;
+use RahulHaque\Filepond\Factories\UploaderManager;
 use RahulHaque\Filepond\Models\Filepond;
 use Throwable;
 
@@ -25,7 +25,7 @@ class FilepondService
 
     private $uploader;
 
-    public function __construct(FileUploaderManager $uploader)
+    public function __construct(UploaderManager $uploader)
     {
         $this->disk = config('filepond.disk', 'public');
         $this->tempDisk = config('filepond.temp_disk', 'local');

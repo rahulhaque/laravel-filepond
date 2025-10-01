@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RahulHaque\Filepond\Tests\Unit;
 
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
@@ -15,6 +16,34 @@ use RahulHaque\Filepond\Tests\User;
 
 class FilepondDiskTest extends TestCase
 {
+    #[Test]
+    #[Group('disk-test')]
+    public function can_prevent_get_temporary_file_from_external_storage()
+    {
+        Config::set('filepond.temp_disk', 's3');
+
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $uploadedFile = UploadedFile::fake()->image('avatar.png', 1024, 1024);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'avatar' => $uploadedFile,
+            ], [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ]);
+
+        try {
+            Filepond::field($response->content())->getFile();
+        } catch (Exception $e) {
+            $this->assertEquals('Unable to create file object for ['.config('filepond.temp_disk').'] disk driver.', $e->getMessage());
+        }
+    }
+
     #[Test]
     #[Group('disk-test')]
     public function can_move_file_local_to_local()
