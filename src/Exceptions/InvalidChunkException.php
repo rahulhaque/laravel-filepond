@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Exceptions;
 
-class InvalidChunkException extends \Exception
+use Exception;
+
+class InvalidChunkException extends Exception
 {
     protected $message = 'Invalid or corrupted chunk received.';
 

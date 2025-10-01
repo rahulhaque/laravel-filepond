@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Services;
 
 use Illuminate\Http\Request;
@@ -9,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
 use RahulHaque\Filepond\Models\Filepond;
+use Throwable;
 
 class FilepondService
 {
@@ -26,18 +29,6 @@ class FilepondService
         $this->tempDisk = config('filepond.temp_disk', 'local');
         $this->tempFolder = config('filepond.temp_folder', 'filepond/temp');
         $this->model = config('filepond.model', Filepond::class);
-    }
-
-    /**
-     * Get the file from request
-     *
-     * @return mixed
-     */
-    protected function getUploadedFile(Request $request)
-    {
-        $field = array_key_first(Arr::dot($request->all()));
-
-        return $request->file($field);
     }
 
     /**
@@ -113,7 +104,7 @@ class FilepondService
      *
      * @return string
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function chunk(Request $request)
     {
@@ -129,7 +120,7 @@ class FilepondService
 
         if ($chunkSize === false || $chunkSize === 0 || (int) $contentLength !== $chunkSize) {
             unlink($dir.$uploadOffset); // Remove invalid chunk to retry
-            throw new InvalidChunkException();
+            throw new InvalidChunkException;
         }
 
         $size = 0;
@@ -215,5 +206,17 @@ class FilepondService
         Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.'/'.$filepond->id);
 
         return $filepond->forceDelete();
+    }
+
+    /**
+     * Get the file from request
+     *
+     * @return mixed
+     */
+    protected function getUploadedFile(Request $request)
+    {
+        $field = array_key_first(Arr::dot($request->all()));
+
+        return $request->file($field);
     }
 }

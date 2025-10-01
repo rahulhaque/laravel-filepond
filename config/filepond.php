@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -59,7 +61,7 @@ return [
     | deleted while running 'artisan filepond:clear' command.
     |
     */
-    'expiration' => 30,
+    'expiration' => 60,
 
     /*
     |--------------------------------------------------------------------------
