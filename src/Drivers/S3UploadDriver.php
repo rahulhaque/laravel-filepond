@@ -10,11 +10,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use RahulHaque\Filepond\Contracts\ChunkProcessor;
+use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
-use RahulHaque\Filepond\Models\Filepond;
 
-class S3ChunkProcessor implements ChunkProcessor
+class S3UploadDriver implements UploaderInterface
 {
     private S3Client $client;
 
@@ -25,7 +24,7 @@ class S3ChunkProcessor implements ChunkProcessor
 
     public function initChunkUpload(Request $request): string
     {
-        $filepond = Filepond::create([
+        $filepond = config('filepond.model')::create([
             'filepath' => '',
             'filename' => Str::uuid().'.tmp',
             'extension' => '',
@@ -53,7 +52,7 @@ class S3ChunkProcessor implements ChunkProcessor
     public function handleChunk(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $filepond = Filepond::findOrFail($id);
+        $filepond = config('filepond.model')::findOrFail($id);
         $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
 
         $contentLength = (int) $request->header('Content-Length');
@@ -142,9 +141,25 @@ class S3ChunkProcessor implements ChunkProcessor
     public function calculateOffset(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $filepond = Filepond::findOrFail($id);
+        $filepond = config('filepond.model')::findOrFail($id);
 
         return array_sum(array_column($filepond->upload_tags ?? [], 'Size'));
+    }
+
+    public function deleteFile(Request $request): bool
+    {
+        $id = Crypt::decrypt($request->getContent())['id'];
+
+        $filepond = config('filepond.model')::findOrFail($id);
+
+        if (config('filepond.soft_delete', true)) {
+            return $filepond->delete();
+        }
+
+        Storage::disk(config('filepond.temp_disk'))->delete($filepond->filepath);
+        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder').'/'.$filepond->id);
+
+        return $filepond->forceDelete();
     }
 
     /**

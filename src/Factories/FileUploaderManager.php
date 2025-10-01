@@ -6,11 +6,11 @@ namespace RahulHaque\Filepond\Factories;
 
 use Illuminate\Support\Manager;
 use InvalidArgumentException;
-use RahulHaque\Filepond\Contracts\ChunkProcessor;
-use RahulHaque\Filepond\Drivers\LocalChunkProcessor;
-use RahulHaque\Filepond\Drivers\S3ChunkProcessor;
+use RahulHaque\Filepond\Contracts\UploaderInterface;
+use RahulHaque\Filepond\Drivers\LocalUploadDriver;
+use RahulHaque\Filepond\Drivers\S3UploadDriver;
 
-class ChunkUploadManager extends Manager
+class FileUploaderManager extends Manager
 {
     public function getDefaultDriver(): ?string
     {
@@ -45,13 +45,13 @@ class ChunkUploadManager extends Manager
         return $this->config->get('filesystems.disks.'.$disk.'.driver');
     }
 
-    protected function createLocalDriver(): ChunkProcessor
+    protected function createLocalDriver(): UploaderInterface
     {
-        return $this->container->make(LocalChunkProcessor::class);
+        return $this->container->make(LocalUploadDriver::class);
     }
 
-    protected function createS3Driver(): ChunkProcessor
+    protected function createS3Driver(): UploaderInterface
     {
-        return $this->container->make(S3ChunkProcessor::class);
+        return $this->container->make(S3UploadDriver::class);
     }
 }

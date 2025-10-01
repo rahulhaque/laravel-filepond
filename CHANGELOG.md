@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.3.2 - 2025-10-01
+
+- Filepond model in config not acknowledged by driver fixed. 🐛
+
 ## 12.3.1 - 2025-09-20
 
 - Added full chunk upload support for S3 storage. ✨
