@@ -12,19 +12,32 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
+use RahulHaque\Filepond\Models\Filepond;
 
 class S3UploadDriver implements UploaderInterface
 {
+    private $tempDisk;
+
+    private $tempFolder;
+
+    private $bucket;
+
+    private $model;
+
     private S3Client $client;
 
     public function __construct()
     {
-        $this->client = Storage::disk(config('filepond.temp_disk'))->getClient();
+        $this->tempDisk = config('filepond.temp_disk', 'local');
+        $this->tempFolder = config('filepond.temp_folder', 'filepond/temp');
+        $this->bucket = config('filesystems.disks.'.$this->tempDisk.'.bucket');
+        $this->model = config('filepond.model', Filepond::class);
+        $this->client = Storage::disk($this->tempDisk)->getClient();
     }
 
     public function initChunkUpload(Request $request): string
     {
-        $filepond = config('filepond.model')::create([
+        $filepond = $this->model::create([
             'filepath' => '',
             'filename' => Str::uuid().'.tmp',
             'extension' => '',
@@ -34,10 +47,10 @@ class S3UploadDriver implements UploaderInterface
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
+        $key = $this->tempFolder.'/'.$filepond->id.'/'.$filepond->filename;
 
         $initChunkResponse = $this->client->createMultipartUpload([
-            'Bucket' => config('filesystems.disks.s3.bucket'),
+            'Bucket' => $this->bucket,
             'Key' => $key,
         ]);
 
@@ -52,8 +65,8 @@ class S3UploadDriver implements UploaderInterface
     public function handleChunk(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $filepond = config('filepond.model')::findOrFail($id);
-        $key = config('filepond.temp_folder').'/'.$filepond->id.'/'.$filepond->filename;
+        $filepond = $this->model::findOrFail($id);
+        $key = $this->tempFolder.'/'.$filepond->id.'/'.$filepond->filename;
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
@@ -64,7 +77,7 @@ class S3UploadDriver implements UploaderInterface
         // Check if the uploaded file and chunk are S3 compatible
         if ($partNumber === 1 && $error = $this->checkS3Compatibility($contentLength, $uploadLength)) {
             $this->client->abortMultipartUpload([
-                'Bucket' => config('filesystems.disks.s3.bucket'),
+                'Bucket' => $this->bucket,
                 'Key' => $key,
                 'UploadId' => $filepond->upload_id,
             ]);
@@ -74,7 +87,7 @@ class S3UploadDriver implements UploaderInterface
 
         try {
             $uploadPartResponse = $this->client->uploadPart([
-                'Bucket' => config('filesystems.disks.s3.bucket'),
+                'Bucket' => $this->bucket,
                 'Key' => $key,
                 'UploadId' => $filepond->upload_id,
                 'PartNumber' => $partNumber,
@@ -110,14 +123,14 @@ class S3UploadDriver implements UploaderInterface
 
             try {
                 $this->client->completeMultipartUpload([
-                    'Bucket' => config('filesystems.disks.s3.bucket'),
+                    'Bucket' => $this->bucket,
                     'Key' => $key,
                     'UploadId' => $filepond->upload_id,
                     'MultipartUpload' => ['Parts' => $tags],
                 ]);
             } catch (S3Exception $e) {
                 $this->client->abortMultipartUpload([
-                    'Bucket' => config('filesystems.disks.s3.bucket'),
+                    'Bucket' => $this->bucket,
                     'Key' => $key,
                     'UploadId' => $filepond->upload_id,
                 ]);
@@ -141,7 +154,7 @@ class S3UploadDriver implements UploaderInterface
     public function calculateOffset(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $filepond = config('filepond.model')::findOrFail($id);
+        $filepond = $this->model::findOrFail($id);
 
         return array_sum(array_column($filepond->upload_tags ?? [], 'Size'));
     }
@@ -150,14 +163,14 @@ class S3UploadDriver implements UploaderInterface
     {
         $id = Crypt::decrypt($request->getContent())['id'];
 
-        $filepond = config('filepond.model')::findOrFail($id);
+        $filepond = $this->model::findOrFail($id);
 
         if (config('filepond.soft_delete', true)) {
             return $filepond->delete();
         }
 
-        Storage::disk(config('filepond.temp_disk'))->delete($filepond->filepath);
-        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder').'/'.$filepond->id);
+        Storage::disk($this->tempDisk)->delete($filepond->filepath);
+        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.'/'.$filepond->id);
 
         return $filepond->forceDelete();
     }
