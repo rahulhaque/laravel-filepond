@@ -9,12 +9,26 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
+use RahulHaque\Filepond\Models\Filepond;
 
 class LocalUploadDriver implements UploaderInterface
 {
+    private $tempDisk;
+
+    private $tempFolder;
+
+    private $model;
+
+    public function __construct()
+    {
+        $this->tempDisk = config('filepond.temp_disk', 'local');
+        $this->tempFolder = config('filepond.temp_folder', 'filepond/temp');
+        $this->model = config('filepond.model', Filepond::class);
+    }
+
     public function initChunkUpload(Request $request): string
     {
-        $filepond = config('filepond.model')::create([
+        $filepond = $this->model::create([
             'filepath' => '',
             'filename' => '',
             'extension' => '',
@@ -24,7 +38,7 @@ class LocalUploadDriver implements UploaderInterface
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        Storage::disk(config('filepond.temp_disk'))->makeDirectory(config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id);
+        Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id);
 
         return Crypt::encrypt(['id' => $filepond->id]);
     }
@@ -32,8 +46,7 @@ class LocalUploadDriver implements UploaderInterface
     public function handleChunk(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $disk = Storage::disk(config('filepond.temp_disk'));
-        $dir = $disk->path(config('filepond.temp_folder').DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
@@ -69,10 +82,10 @@ class LocalUploadDriver implements UploaderInterface
             }
             fclose($file);
 
-            $filepond = config('filepond.model')::findOrFail($id);
+            $filepond = $this->model::findOrFail($id);
 
             $filepond->update([
-                'filepath' => config('filepond.temp_folder').DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
+                'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
@@ -85,8 +98,8 @@ class LocalUploadDriver implements UploaderInterface
     public function calculateOffset(Request $request): int
     {
         $id = Crypt::decrypt($request->patch)['id'];
-        $filepond = config('filepond.model')::findOrFail($id);
-        $dir = Storage::disk(config('filepond.temp_disk'))->path(config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
+        $filepond = $this->model::findOrFail($id);
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
         $size = 0;
         $chunks = glob($dir.'*');
@@ -101,14 +114,14 @@ class LocalUploadDriver implements UploaderInterface
     {
         $id = Crypt::decrypt($request->getContent())['id'];
 
-        $filepond = config('filepond.model')::findOrFail($id);
+        $filepond = $this->model::findOrFail($id);
 
         if (config('filepond.soft_delete', true)) {
             return $filepond->delete();
         }
 
-        Storage::disk(config('filepond.temp_disk'))->delete($filepond->filepath);
-        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder').DIRECTORY_SEPARATOR.$filepond->id);
+        Storage::disk($this->tempDisk)->delete($filepond->filepath);
+        Storage::disk($this->tempDisk)->deleteDirectory($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id);
 
         return $filepond->forceDelete();
     }
