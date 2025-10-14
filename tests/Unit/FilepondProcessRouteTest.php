@@ -27,7 +27,7 @@ class FilepondProcessRouteTest extends TestCase
                 'avatar' => 'string_input_instead_of_file',
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $response->assertJson(['avatar' => ['The avatar field must be a file.']]);
@@ -46,7 +46,7 @@ class FilepondProcessRouteTest extends TestCase
                 'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $data = Crypt::decrypt($response->content());
@@ -69,7 +69,7 @@ class FilepondProcessRouteTest extends TestCase
                 'gallery' => ['profile' => UploadedFile::fake()->image('avatar.png', 1024, 1024)],
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $data = Crypt::decrypt($response->content());
