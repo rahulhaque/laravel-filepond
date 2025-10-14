@@ -1,13 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Orchestra\Testbench\Attributes\WithMigration;
+
+#[WithMigration]
 class TestCase extends \Orchestra\Testbench\TestCase
 {
-    public function setUp(): void
-    {
-        parent::setUp();
-    }
+    use RefreshDatabase;
 
     protected function getPackageProviders($app)
     {
@@ -27,10 +30,6 @@ class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function defineEnvironment($app)
     {
-        include_once __DIR__.'/database/migrations/create_users_table.php.stub';
-        include_once __DIR__.'/../database/migrations/create_fileponds_table.php.stub';
-
-        (new \CreateUsersTable)->up();
-        (new \CreateFilepondsTable)->up();
+        $app->call([require __DIR__.'/../database/migrations/create_fileponds_table.php.stub', 'up']);
     }
 }

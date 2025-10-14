@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Support\Facades\Storage;
@@ -45,7 +47,7 @@ class FilepondModelTest extends TestCase
         $filepond->filename = $filename;
         $filepond->save();
 
-        $this->assertEquals(true, $filepond->filename == $filename);
+        $this->assertEquals(true, $filepond->filename === $filename);
     }
 
     #[Test]

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests\Feature;
 
 use Illuminate\Http\UploadedFile;
@@ -12,7 +14,7 @@ use RahulHaque\Filepond\Tests\User;
 class FilepondFacadeTest extends TestCase
 {
     #[Test]
-    public function can_get_temporary_file_after_filepond_file_upload()
+    public function can_get_temporary_file_after_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -26,7 +28,7 @@ class FilepondFacadeTest extends TestCase
                 'avatar' => $uploadedFile,
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $temporaryFile = Filepond::field($response->content())->getFile();
@@ -35,7 +37,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
-    public function can_get_data_url_after_filepond_file_upload()
+    public function can_get_data_url_after_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -50,7 +52,7 @@ class FilepondFacadeTest extends TestCase
                 'avatar' => $uploadedFile,
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $dataUrl = Filepond::field($response->content())->getDataURL();
@@ -59,7 +61,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
-    public function can_copy_filepond_file_upload_to_desired_location()
+    public function can_copy_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -71,7 +73,7 @@ class FilepondFacadeTest extends TestCase
                 'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $fileInfo = Filepond::field($response->content())->copyTo('avatars/avatar-1');
@@ -80,7 +82,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
-    public function can_move_filepond_file_upload_to_desired_location()
+    public function can_move_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -92,7 +94,7 @@ class FilepondFacadeTest extends TestCase
                 'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $fileInfo = Filepond::field($response->content())->moveTo('avatars/avatar-1');
@@ -101,7 +103,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
-    public function can_copy_multiple_filepond_file_upload_to_desired_location()
+    public function can_copy_multiple_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -116,7 +118,7 @@ class FilepondFacadeTest extends TestCase
                     'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
 
             $request[] = $response->content();
@@ -130,7 +132,7 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
-    public function can_move_multiple_filepond_file_upload_to_desired_location()
+    public function can_move_multiple_file_upload_to_desired_location()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -145,7 +147,7 @@ class FilepondFacadeTest extends TestCase
                     'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
 
             $request[] = $response->content();

@@ -21,10 +21,10 @@
         "laravel/framework": "^11.0"
     },
     "require-dev": {
-        "laravel/pint": "^1.13",
-        "league/flysystem-aws-s3-v3": "^3.0",
-        "orchestra/testbench": "^9.0",
-        "phpunit/phpunit": "^10.5"
+        "laravel/pint": "^1.25.1",
+        "league/flysystem-aws-s3-v3": "^3.29",
+        "orchestra/testbench": "^9.15",
+        "phpunit/phpunit": "^10.5.58"
     },
     "autoload": {
         "psr-4": {

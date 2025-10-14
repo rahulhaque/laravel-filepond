@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests\Feature;
 
 use Illuminate\Http\Request;
@@ -14,7 +16,7 @@ use RahulHaque\Filepond\Tests\User;
 class FilepondValidationTest extends TestCase
 {
     #[Test]
-    public function can_validate_null_filepond_file_upload()
+    public function can_validate_null_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -32,7 +34,7 @@ class FilepondValidationTest extends TestCase
     }
 
     #[Test]
-    public function can_validate_after_filepond_file_upload()
+    public function can_validate_after_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -44,7 +46,7 @@ class FilepondValidationTest extends TestCase
                 'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $request = new Request([
@@ -66,7 +68,7 @@ class FilepondValidationTest extends TestCase
     }
 
     #[Test]
-    public function can_validate_after_multiple_filepond_file_upload()
+    public function can_validate_after_multiple_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -81,7 +83,7 @@ class FilepondValidationTest extends TestCase
                     'gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
 
             $responses[] = $response->content();
@@ -122,7 +124,7 @@ class FilepondValidationTest extends TestCase
     }
 
     #[Test]
-    public function can_validate_after_nested_multiple_filepond_file_upload()
+    public function can_validate_after_nested_multiple_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
 
@@ -137,7 +139,7 @@ class FilepondValidationTest extends TestCase
                     'galleries' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024),
                 ], [
                     'Content-Type' => 'multipart/form-data',
-                    'accept' => 'application/json',
+                    'Accept' => 'application/json',
                 ]);
 
             $responses[] = [

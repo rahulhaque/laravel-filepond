@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Http\UploadedFile;
@@ -23,7 +25,7 @@ class FilepondRevertRouteTest extends TestCase
                 'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
             ], [
                 'Content-Type' => 'multipart/form-data',
-                'accept' => 'application/json',
+                'Accept' => 'application/json',
             ]);
 
         $responseAfterRevert = $this
