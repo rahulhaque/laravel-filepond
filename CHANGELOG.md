@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 11.3.4 - 2025-07-16
+## 11.3.4 - 2025-10-14
 
 - Added full chunk upload support for S3 storage. ✨
 - Unsupported disk driver exception for `getFile()` method added. ✅
