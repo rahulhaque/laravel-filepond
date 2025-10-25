@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Traits;
 
 use RahulHaque\Filepond\Models\Filepond;
