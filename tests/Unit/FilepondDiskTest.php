@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;

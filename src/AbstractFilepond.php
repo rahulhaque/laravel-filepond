@@ -1,6 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond;
+
+use const UPLOAD_ERR_OK;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -21,6 +25,24 @@ abstract class AbstractFilepond
     private $isOwnershipAware;
 
     private $isSoftDeletable;
+
+    /**
+     * @return string
+     */
+    public function getTempDisk()
+    {
+        return $this->tempDisk;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setTempDisk(string $tempDisk)
+    {
+        $this->tempDisk = $tempDisk;
+
+        return $this;
+    }
 
     /**
      * Decrypt the FilePond field value data
@@ -62,24 +84,6 @@ abstract class AbstractFilepond
         }
 
         $this->fieldValue = $this->decrypt($fieldValue);
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getTempDisk()
-    {
-        return $this->tempDisk;
-    }
-
-    /**
-     * @return $this
-     */
-    public function setTempDisk(string $tempDisk)
-    {
-        $this->tempDisk = $tempDisk;
 
         return $this;
     }
@@ -200,7 +204,7 @@ abstract class AbstractFilepond
             Storage::disk($this->tempDisk)->path($filepond->filepath),
             $filepond->filename,
             $filepond->mimetypes,
-            \UPLOAD_ERR_OK,
+            UPLOAD_ERR_OK,
             true
         );
     }

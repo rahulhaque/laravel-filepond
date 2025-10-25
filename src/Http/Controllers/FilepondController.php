@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RahulHaque\Filepond\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 use RahulHaque\Filepond\Services\FilepondService;
+use Throwable;
 
 class FilepondController extends Controller
 {
@@ -35,7 +38,7 @@ class FilepondController extends Controller
      *
      * @return \Illuminate\Http\Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function patch(Request $request, FilepondService $service)
     {
@@ -47,7 +50,7 @@ class FilepondController extends Controller
      *
      * @return \Illuminate\Http\Response
      *
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function head(Request $request, FilepondService $service)
     {
