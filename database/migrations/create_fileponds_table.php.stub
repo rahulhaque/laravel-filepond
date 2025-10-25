@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFilepondsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -20,7 +20,9 @@ class CreateFilepondsTable extends Migration
             $table->string('extension', 100);
             $table->string('mimetypes', 100);
             $table->string('disk', 100);
-            $table->unsignedBigInteger('created_by')->nullable();
+            $table->text('upload_id')->nullable();
+            $table->json('upload_tags')->nullable();
+            $table->foreignId('created_by')->nullable();
             $table->dateTime('expires_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
@@ -36,4 +38,4 @@ class CreateFilepondsTable extends Migration
     {
         Schema::dropIfExists('fileponds');
     }
-}
+};
