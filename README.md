@@ -130,16 +130,14 @@ class UserAvatarController extends Controller
     {
         // Single and multiple file validation
         $this->validate($request, [
-            'avatar' => Rule::filepond([
-                'required',
+            'avatar' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ]),
-            'gallery.*' => Rule::filepond([
-                'required',
+            ]]),
+            'gallery.*' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ])
+            ]])
         ]);
     
         // Set filename
@@ -245,7 +243,7 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
 > [!NOTE]
-> If you see your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> If your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the correct permission of filepond's temporary directory and run `php artisan filepond:clear --all` for a clean start (optional). For third party storages like - amazon s3, make sure you have the correct policy set up.
 
 ### Methods
 
@@ -255,7 +253,7 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 #### Rule::filepond($rules)
 
-Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
+Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond field. See the example.
 
 > [!NOTE]
 > This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
