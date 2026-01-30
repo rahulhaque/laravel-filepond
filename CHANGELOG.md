@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.3.5 - 2026-01-30
+
+- Fail-safe expired files cleanup added. 🐛
+
 ## 12.3.4 - 2025-10-09
 
 - Fails to retrieve bucket name when disk name is not s3 fixed. 🐛
