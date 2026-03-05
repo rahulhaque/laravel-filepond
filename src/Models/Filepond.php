@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $upload_id
  * @property array $upload_tags
  * @property int $created_by
- * @property \Illuminate\Support\Carbon $expired_at
+ * @property \Illuminate\Support\Carbon $expires_at
  * @property \Illuminate\Support\Carbon $deleted_at
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at
@@ -33,6 +33,7 @@ class Filepond extends Model
 
     protected $casts = [
         'upload_tags' => 'json',
+        'expires_at' => 'datetime',
     ];
 
     protected $table = 'fileponds';
