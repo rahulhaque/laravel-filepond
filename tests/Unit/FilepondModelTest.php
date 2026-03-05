@@ -21,7 +21,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ];
 
         Filepond::create($data);
@@ -39,7 +39,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filename = 'new_filename.png';
@@ -60,7 +60,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filepond->delete();
@@ -78,7 +78,7 @@ class FilepondModelTest extends TestCase
             'mimetypes' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filepond->forceDelete();
