@@ -63,7 +63,9 @@ class FilepondClear extends Command
         $this->info('Total expired files and folders: '.$expiredFiles->count());
         if ($expiredFiles->count() > 0) {
             foreach ($expiredFiles->get() as $expiredFile) {
-                Storage::disk($tempDisk)->delete($expiredFile->filepath);
+                if (! empty($expiredFile->filepath)) {
+                    Storage::disk($tempDisk)->delete($expiredFile->filepath);
+                }
                 Storage::disk($tempDisk)->deleteDirectory($tempFolder.'/'.$expiredFile->id);
             }
             $this->info('Temporary files and folders deleted.');

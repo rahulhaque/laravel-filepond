@@ -2,6 +2,12 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 11.3.5 - 2025-10-14
+
+- Fail-safe expired files cleanup added. 🐛
+- Filepond model null during upload in rare cases fixed. 🐛
+- New test cases added to support above changes. 🧪
+
 ## 11.3.4 - 2025-10-14
 
 - Added full chunk upload support for S3 storage. ✨
@@ -17,7 +23,7 @@ All notable changes to `laravel-filepond` will be documented in this file.
 - Fixed overriding the disk default visibility #75. 🐛
 
 ## 11.1.3 - 2025-03-23
- 
+
 - Mimetype added in fileinfo response. ✨
 
 ## 11.0.3 - 2025-02-26

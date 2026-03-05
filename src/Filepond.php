@@ -32,7 +32,7 @@ class Filepond extends AbstractFilepond
      */
     public function getFile()
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return null;
         }
 
