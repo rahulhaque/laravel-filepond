@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use PHPUnit\Framework\Attributes\Test;
+use RahulHaque\Filepond\Facades\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
 
@@ -177,6 +178,42 @@ class FilepondValidationTest extends TestCase
                 'galleries.4.image' => [
                     'The galleries.4.image field must be a file of type: jpg.',
                     'The galleries.4.image field must be 30 kilobytes.',
+                ],
+            ]);
+        }
+    }
+
+    #[Test]
+    public function can_validate_missing_model_file_upload()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'avatar' => UploadedFile::fake()->image('avatar.png', 1024, 1024),
+            ], [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ]);
+
+        $request = new Request([
+            'avatar' => $response->content(),
+        ]);
+
+        // Simulating model deleted before get file is called
+        Filepond::field($response->content())->delete();
+
+        try {
+            $request->validate([
+                'avatar' => Rule::filepond('required|image|mimes:jpg|size:30'),
+            ]);
+        } catch (ValidationException $e) {
+            $this->assertEquals($e->errors(), [
+                'avatar' => [
+                    'The avatar field is required.',
                 ],
             ]);
         }
