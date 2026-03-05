@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 11.3.5 - 2025-10-14
+## 11.3.5 - 2026-03-05
 
 - Fail-safe expired files cleanup added. 🐛
 - Filepond model null during upload in rare cases fixed. 🐛
