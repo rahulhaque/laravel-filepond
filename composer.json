@@ -1,80 +1,80 @@
 {
-    "name": "rahulhaque/laravel-filepond",
-    "description": "Use FilePond the Laravel way",
-    "keywords": [
-        "filepond-laravel",
-        "laravel-filepond",
-        "filepond"
-    ],
-    "homepage": "https://github.com/rahulhaque/laravel-filepond",
-    "license": "MIT",
-    "type": "library",
-    "authors": [
-        {
-            "name": "Rahul Haque",
-            "email": "rahulhaque07@gmail.com",
-            "role": "Developer"
-        }
-    ],
-    "require": {
-        "php": "^8.2",
-        "laravel/framework": "^12.0 || ^13.0"
-    },
-    "require-dev": {
-        "fakerphp/faker": "^1.24.1",
-        "laravel/pail": "^1.2.3",
-        "laravel/pint": "^1.24",
-        "laravel/sail": "^1.45",
-        "league/flysystem-aws-s3-v3": "^3.29",
-        "mockery/mockery": "^1.6.12",
-        "nunomaduro/collision": "^8.8.2",
-        "orchestra/testbench": "^10.6 || ^11.0",
-        "phpunit/phpunit": "^11.5.38"
-    },
-    "autoload": {
-        "psr-4": {
-            "RahulHaque\\Filepond\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "RahulHaque\\Filepond\\Tests\\": "tests",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit",
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
-        "post-autoload-dump": [
-            "@clear",
-            "@prepare"
-        ],
-        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
-        "prepare": "@php vendor/bin/testbench package:discover --ansi",
-        "build": "@php vendor/bin/testbench workbench:build --ansi",
-        "serve": [
-            "Composer\\Config::disableProcessTimeout",
-            "@build",
-            "@php vendor/bin/testbench serve --ansi"
-        ],
-        "lint": [
-            "@php vendor/bin/pint",
-            "@php vendor/bin/phpstan analyse"
-        ]
-    },
-    "config": {
-        "sort-packages": true
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "RahulHaque\\Filepond\\FilepondServiceProvider"
-            ],
-            "aliases": {
-                "Filepond": "RahulHaque\\Filepond\\Facades\\Filepond"
-            }
-        }
+  "name": "rahulhaque/laravel-filepond",
+  "description": "Use FilePond the Laravel way",
+  "keywords": [
+    "filepond-laravel",
+    "laravel-filepond",
+    "filepond"
+  ],
+  "homepage": "https://github.com/rahulhaque/laravel-filepond",
+  "license": "MIT",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Rahul Haque",
+      "email": "rahulhaque07@gmail.com",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": "^8.2",
+    "laravel/framework": "^12.0 || ^13.0"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.24.1",
+    "laravel/pail": "^1.2.3",
+    "laravel/pint": "^1.24",
+    "laravel/sail": "^1.45",
+    "league/flysystem-aws-s3-v3": "^3.29",
+    "mockery/mockery": "^1.6.12",
+    "nunomaduro/collision": "^8.8.2",
+    "orchestra/testbench": "^10.6 || ^11.0",
+    "phpunit/phpunit": "^11.5.38"
+  },
+  "autoload": {
+    "psr-4": {
+      "RahulHaque\\Filepond\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "RahulHaque\\Filepond\\Tests\\": "tests",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve --ansi"
+    ],
+    "lint": [
+      "@php vendor/bin/pint",
+      "@php vendor/bin/phpstan analyse"
+    ]
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "RahulHaque\\Filepond\\FilepondServiceProvider"
+      ],
+      "aliases": {
+        "Filepond": "RahulHaque\\Filepond\\Facades\\Filepond"
+      }
+    }
+  }
 }

@@ -2,10 +2,6 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## Unreleased
-
-- Laravel 13 support added. ✨
-
 ## 12.3.6 - 2026-03-05
 
 - Filepond model null during upload in rare cases fixed. 🐛

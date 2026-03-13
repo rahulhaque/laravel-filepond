@@ -37,15 +37,15 @@ I’ve spent countless hours building and maintaining this package by developing
 
 See the corresponding branch for the documentation.
 
-|Version|Branch|
-|:-:|:-:|
-|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
-|Laravel 12|[12.x branch](../../tree/12.x/README.md)|
-|Laravel 11|[11.x branch](../../tree/11.x/README.md)|
-|Laravel 10|[10.x branch](../../tree/10.x/README.md)|
-|Laravel 9|[9.x branch](../../tree/9.x/README.md)|
-|Laravel 8|[8.x branch](../../tree/8.x/README.md)|
-|Laravel 7|[7.x branch](../../tree/7.x/README.md)|
+|  Version   |                  Branch                  |
+| :--------: | :--------------------------------------: |
+| Laravel 13 | [13.x branch](../../tree/13.x/README.md) |
+| Laravel 12 | [12.x branch](../../tree/12.x/README.md) |
+| Laravel 11 | [11.x branch](../../tree/11.x/README.md) |
+| Laravel 10 | [10.x branch](../../tree/10.x/README.md) |
+| Laravel 9  |  [9.x branch](../../tree/9.x/README.md)  |
+| Laravel 8  |  [8.x branch](../../tree/8.x/README.md)  |
+| Laravel 7  |  [7.x branch](../../tree/7.x/README.md)  |
 
 ## Installation
 
@@ -80,32 +80,34 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
 
 ```html
 <form action="{{ route('avatar') }}" method="post">
-    @csrf
-    <!--  For single file upload  -->
-    <input type="file" name="avatar" required/>
-    <p class="help-block">{{ $errors->first('avatar') }}</p>
+  @csrf
+  <!--  For single file upload  -->
+  <input type="file" name="avatar" required />
+  <p class="help-block">{{ $errors->first('avatar') }}</p>
 
-    <!--  For multiple file uploads  -->
-    <input type="file" name="gallery[]" multiple required/>
-    <p class="help-block">{{ $errors->first('gallery.*') }}</p>
+  <!--  For multiple file uploads  -->
+  <input type="file" name="gallery[]" multiple required />
+  <p class="help-block">{{ $errors->first('gallery.*') }}</p>
 
-    <button type="submit">Submit</button>
+  <button type="submit">Submit</button>
 </form>
 
 <script>
-    // Set default FilePond options
-    FilePond.setOptions({
-        server: {
-            url: "{{ config('filepond.server.url') }}",
-            headers: {
-                'X-CSRF-TOKEN': "{{ csrf_token() }}",
-            }
-        }
-    });
+  // Set default FilePond options
+  FilePond.setOptions({
+    server: {
+      url: "{{ config('filepond.server.url') }}",
+      headers: {
+        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+      },
+    },
+  });
 
-    // Create the FilePond instance
-    FilePond.create(document.querySelector('input[name="avatar"]'));
-    FilePond.create(document.querySelector('input[name="gallery[]"]'), {chunkUploads: true});
+  // Create the FilePond instance
+  FilePond.create(document.querySelector('input[name="avatar"]'));
+  FilePond.create(document.querySelector('input[name="gallery[]"]'), {
+    chunkUploads: true,
+  });
 </script>
 ```
 
