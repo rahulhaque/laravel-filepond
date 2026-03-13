@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "laravel/framework": "^12.0"
+        "laravel/framework": "^12.0 || ^13.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.24.1",
@@ -28,7 +28,7 @@
         "league/flysystem-aws-s3-v3": "^3.29",
         "mockery/mockery": "^1.6.12",
         "nunomaduro/collision": "^8.8.2",
-        "orchestra/testbench": "^10.6",
+        "orchestra/testbench": "^10.6 || ^11.0",
         "phpunit/phpunit": "^11.5.38"
     },
     "autoload": {

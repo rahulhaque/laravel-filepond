@@ -39,6 +39,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
 |Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
@@ -48,10 +49,10 @@ See the corresponding branch for the documentation.
 
 ## Installation
 
-Laravel 12 users install with.
+Laravel 12/13 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^12.0"
+composer require rahulhaque/laravel-filepond:"^12.0 || ^13.0"
 ```
 
 Publish the configuration and migration files.
