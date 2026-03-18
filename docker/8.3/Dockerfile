@@ -1,5 +1,5 @@
 # Base image
-FROM serversideup/php:8.2-cli-alpine
+FROM serversideup/php:8.3-cli-alpine
 
 # Set working directory
 WORKDIR /code

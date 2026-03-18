@@ -39,6 +39,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
 |Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
@@ -48,10 +49,10 @@ See the corresponding branch for the documentation.
 
 ## Installation
 
-Laravel 12 users install with.
+Laravel 13 users install with.
 
 ```bash
-composer require rahulhaque/laravel-filepond:"^12.0"
+composer require rahulhaque/laravel-filepond:"^13.0"
 ```
 
 Publish the configuration and migration files.
@@ -69,7 +70,7 @@ php artisan migrate
 <br>
 
 > [!WARNING]
-> If you are using version `12.2.1` or any earlier release within the `12.x` branch, please delete the existing migration, then publish and run the new one.
+> If you are upgrading from `12.x` to `13.x`, delete existing migration, publish and run the new one.
 
 ## Quickstart
 
@@ -287,10 +288,6 @@ Processing the file object manually will not update the associated `Filepond` mo
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
 
-#### getDataURL()
-
-`Filepond::field()->getDataURL()` method returns the Data URL of uploaded file for the given field just like [HTTP Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs). This is useful when you need to store the raw content along with encryption, such as - user signature.
-
 ### Traits
 
 There is a `HasFilepond` trait available to get the temporary files uploaded by the users.
@@ -325,7 +322,7 @@ docker compose build
 docker compose up -d
 
 # Drop to development shell
-docker compose exec laravel-filepond-12 sh
+docker compose exec laravel-filepond-13 sh
 
 # Install dependencies
 composer install
@@ -344,7 +341,7 @@ docker compose stop
 docker compose down -v
 
 # Also remove the development image if necessary
-docker image rm laravel-filepond-12-development
+docker image rm laravel-filepond-13-development
 ```
 
 ## Testing
