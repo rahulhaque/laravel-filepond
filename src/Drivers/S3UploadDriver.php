@@ -41,7 +41,7 @@ class S3UploadDriver implements UploaderInterface
             'filepath' => '',
             'filename' => Str::uuid().'.tmp',
             'extension' => '',
-            'mimetypes' => '',
+            'mimetype' => '',
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
