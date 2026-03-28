@@ -7,6 +7,7 @@ namespace RahulHaque\Filepond\Drivers;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Illuminate\Http\Request;
+use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -142,6 +143,7 @@ class S3UploadDriver implements UploaderInterface
                 'filepath' => $key,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetype' => MimeType::from($uploadName),
                 'upload_id' => null,
                 'upload_tags' => null,
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),

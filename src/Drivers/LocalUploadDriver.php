@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RahulHaque\Filepond\Drivers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Contracts\UploaderInterface;
@@ -88,6 +89,7 @@ class LocalUploadDriver implements UploaderInterface
                 'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetype' => MimeType::from($uploadName),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
             ]);
         }

@@ -2,6 +2,10 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 13.0.1 - 2026-03-28
+
+- Mimetype missing after chunk upload fixed. 🐛
+
 ## 13.0.0 - 2026-03-18
 
 - Laravel 13 support added. ✨
