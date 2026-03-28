@@ -34,6 +34,7 @@ class LocalUploadDriver implements UploaderInterface
             'filename' => '',
             'extension' => '',
             'mimetype' => '',
+            'metadata' => $request->string('file', ''),
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
