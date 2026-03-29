@@ -45,7 +45,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_move_file_local_to_local()
     {
         $pathToMove = 'move_file_local_to_local/avatar';
@@ -168,7 +167,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_chunk_upload_file_to_local(): void
     {
         $pathToMove = 'chunk_upload_file_to_local/document';
@@ -291,7 +289,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_resume_chunk_upload_from_local(): void
     {
         Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));

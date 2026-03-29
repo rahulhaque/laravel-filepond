@@ -16,6 +16,7 @@ Straight forward backend support for Laravel application to work with [FilePond]
 - Scheduled artisan command to automatically clean up expired temporary files and directories.
 - Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
+- Compatible with [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
 
 Spare a 🌟 to let others know it worked for you.
 
@@ -287,6 +288,10 @@ Processing the file object manually will not update the associated `Filepond` mo
 #### getModel()
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
+
+#### getMetadata()
+
+`Filepond::field()->getMetadata()` method returns the associated file metadata from [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
 
 ### Traits
 
