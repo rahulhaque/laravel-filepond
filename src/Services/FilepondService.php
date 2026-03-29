@@ -6,11 +6,11 @@ namespace RahulHaque\Filepond\Services;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Factories\UploaderManager;
 use RahulHaque\Filepond\Models\Filepond;
+use RahulHaque\Filepond\Utils\FilepondUtil;
 use Throwable;
 
 class FilepondService
@@ -53,20 +53,22 @@ class FilepondService
      */
     public function store(Request $request)
     {
-        $file = $this->getUploadedFile($request);
+        $file = FilepondUtil::getUploadedFile($request);
+
+        $metadata = FilepondUtil::getMetadata($request);
 
         $filepond = $this->model::create([
             'filepath' => $file->store($this->tempFolder, $this->tempDisk),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
             'mimetype' => $file->getClientMimeType(),
-            'metadata' => $request->string('file', ''),
+            'metadata' => $metadata,
             'disk' => $this->disk,
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
         ]);
 
-        return Crypt::encrypt(['id' => $filepond->id]);
+        return FilepondUtil::makeFilepondId(['id' => $filepond->id]);
     }
 
     /**
@@ -108,7 +110,7 @@ class FilepondService
      */
     public function restore(string $content)
     {
-        $id = Crypt::decrypt($content)['id'];
+        $id = FilepondUtil::getFilepondId($content);
 
         $filepond = $this->model::findOrFail($id);
 
@@ -123,17 +125,5 @@ class FilepondService
     public function delete(Request $request)
     {
         return $this->uploader->deleteFile($request);
-    }
-
-    /**
-     * Get the file from request
-     *
-     * @return \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|null
-     */
-    protected function getUploadedFile(Request $request)
-    {
-        $field = array_key_first(Arr::dot($request->all()));
-
-        return $request->file($field);
     }
 }

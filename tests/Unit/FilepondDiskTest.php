@@ -45,7 +45,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_move_file_local_to_local()
     {
         $pathToMove = 'move_file_local_to_local/avatar';
@@ -168,7 +167,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_chunk_upload_file_to_local(): void
     {
         $pathToMove = 'chunk_upload_file_to_local/document';
@@ -291,7 +289,6 @@ class FilepondDiskTest extends TestCase
     }
 
     #[Test]
-    #[Group('disk-test')]
     public function can_resume_chunk_upload_from_local(): void
     {
         Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));
@@ -416,5 +413,72 @@ class FilepondDiskTest extends TestCase
             ->head(route('filepond-patch', ['patch' => $serverId]));
 
         $offsetResponse->assertHeader('Upload-Offset', $uploadOffset);
+    }
+
+    #[Test]
+    public function can_move_file_local_to_local_with_metadata()
+    {
+        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));
+        Storage::disk(config('filepond.disk'))->deleteDirectory('move_file_local_to_local');
+
+        $user = User::factory()->create();
+
+        $uploadedFile = UploadedFile::fake()->image('avatar.png', 1024, 1024);
+
+        $metadata = ['some' => 'value'];
+
+        $response = $this
+            ->actingAs($user)
+            ->call(
+                method: 'POST',
+                uri: route('filepond-process'),
+                parameters: ['avatar' => json_encode($metadata)],
+                files: ['avatar' => $uploadedFile],
+                server: $this->transformHeadersToServerVars([
+                    'Content-Type' => 'multipart/form-data',
+                    'Accept' => 'application/json',
+                ])
+            );
+
+        $filepondModel = Filepond::field($response->content())->getModel();
+
+        $this->assertEquals($metadata, $filepondModel->metadata);
+    }
+
+    #[Test]
+    public function can_move_multiple_file_local_to_local_with_metadata()
+    {
+        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));
+        Storage::disk(config('filepond.disk'))->deleteDirectory('move_file_local_to_local');
+
+        $user = User::factory()->create();
+
+        $responses = [];
+        $metadatas = [];
+
+        // Create 5 temporary file uploads
+        for ($i = 1; $i <= 5; $i++) {
+            $metadata = ['some' => 'value-'.$i];
+
+            $response = $this
+                ->actingAs($user)
+                ->call(
+                    method: 'POST',
+                    uri: route('filepond-process'),
+                    parameters: ['gallery' => json_encode($metadata)],
+                    files: ['gallery' => UploadedFile::fake()->image('gallery-'.$i.'.png', 1024, 1024)],
+                    server: $this->transformHeadersToServerVars([
+                        'Content-Type' => 'multipart/form-data',
+                        'Accept' => 'application/json',
+                    ])
+                );
+
+            $responses[] = $response->content();
+            $metadatas[] = $metadata;
+        }
+
+        $filepondModel = Filepond::field($responses)->getModel();
+
+        $this->assertEquals($filepondModel->pluck('metadata')->toArray(), $metadatas);
     }
 }
