@@ -37,6 +37,61 @@ class FilepondFacadeTest extends TestCase
     }
 
     #[Test]
+    public function can_get_temporary_file_after_chunk_file_upload(): void
+    {
+        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));
+        Storage::disk(config('filepond.disk'))->deleteDirectory('chunk_upload_file_to_local');
+
+        $user = User::factory()->create();
+
+        $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
+        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+
+        $initChunkUploadResponse = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [], [
+                'Upload-Length' => mb_strlen($content),
+            ]);
+
+        $initChunkUploadResponse->assertSuccessful();
+
+        $serverId = $initChunkUploadResponse->content();
+
+        $uploadOffset = 0;
+
+        foreach ($chunks as $chunk) {
+            $response = $this
+                ->actingAs($user)
+                ->call(
+                    method: 'PATCH',
+                    uri: route('filepond-patch', ['patch' => $serverId]),
+                    content: $chunk,
+                    server: $this->transformHeadersToServerVars([
+                        'Content-Length' => mb_strlen($chunk),
+                        'Upload-Length' => mb_strlen($content),
+                        'Upload-Name' => 'test-file.txt',
+                        'Upload-Offset' => $uploadOffset,
+                        'Content-Type' => 'application/offset+octet-stream',
+                    ])
+                );
+
+            $response->assertSuccessful();
+
+            if ($response->getContent() === 'Ok') {
+                $uploadOffset = (int) $response->headers->get('Upload-Offset');
+
+                continue;
+            }
+
+            break;
+        }
+
+        $temporaryFile = Filepond::field($serverId)->getFile();
+
+        $this->assertEquals(mb_strlen($content), $temporaryFile->getSize());
+    }
+
+    #[Test]
     public function can_get_metadata_after_file_upload()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -99,6 +154,65 @@ class FilepondFacadeTest extends TestCase
         $responseMetadata = Filepond::field($responses)->getMetadata();
 
         $this->assertEquals($metadatas, $responseMetadata);
+    }
+
+    #[Test]
+    public function can_get_metadata_after_chunk_file_upload(): void
+    {
+        Storage::disk(config('filepond.temp_disk'))->deleteDirectory(config('filepond.temp_folder'));
+        Storage::disk(config('filepond.disk'))->deleteDirectory('chunk_upload_file_to_local');
+
+        $user = User::factory()->create();
+
+        $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
+        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+
+        $metadata = ['some' => 'value'];
+
+        $initChunkUploadResponse = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'avatar' => json_encode($metadata),
+            ], [
+                'Upload-Length' => mb_strlen($content),
+            ]);
+
+        $initChunkUploadResponse->assertSuccessful();
+
+        $serverId = $initChunkUploadResponse->content();
+
+        $uploadOffset = 0;
+
+        foreach ($chunks as $chunk) {
+            $response = $this
+                ->actingAs($user)
+                ->call(
+                    method: 'PATCH',
+                    uri: route('filepond-patch', ['patch' => $serverId]),
+                    content: $chunk,
+                    server: $this->transformHeadersToServerVars([
+                        'Content-Length' => mb_strlen($chunk),
+                        'Upload-Length' => mb_strlen($content),
+                        'Upload-Name' => 'test-file.txt',
+                        'Upload-Offset' => $uploadOffset,
+                        'Content-Type' => 'application/offset+octet-stream',
+                    ])
+                );
+
+            $response->assertSuccessful();
+
+            if ($response->getContent() === 'Ok') {
+                $uploadOffset = (int) $response->headers->get('Upload-Offset');
+
+                continue;
+            }
+
+            break;
+        }
+
+        $responseMetadata = Filepond::field($serverId)->getMetadata();
+
+        $this->assertEquals($metadata, $responseMetadata);
     }
 
     #[Test]
