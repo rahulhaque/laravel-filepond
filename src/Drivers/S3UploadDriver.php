@@ -43,6 +43,7 @@ class S3UploadDriver implements UploaderInterface
             'filename' => Str::uuid().'.tmp',
             'extension' => '',
             'mimetype' => '',
+            'metadata' => $request->string('file', ''),
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
