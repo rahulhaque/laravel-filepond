@@ -58,44 +58,46 @@ class LocalUploadDriver implements UploaderInterface
         $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
 
         if ($chunkSize === false || $chunkSize === 0 || $contentLength !== $chunkSize) {
-            unlink($dir.$uploadOffset); // Remove invalid chunk to retry
+            unlink($dir.$uploadOffset);
             throw new InvalidChunkException;
         }
 
         $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
-        }
-
-        if ($uploadLength === $size) {
-            $file = fopen($dir.$uploadName, 'w');
+        if ($uploadLength === ($uploadOffset + $contentLength)) {
+            $chunks = glob($dir.'*');
             foreach ($chunks as $chunk) {
-                $uploadOffset = (int) basename($chunk);
-
-                $chunkFile = fopen($chunk, 'r');
-                $chunkContent = fread($chunkFile, filesize($chunk));
-                fclose($chunkFile);
-
-                fseek($file, $uploadOffset);
-                fwrite($file, $chunkContent);
-
-                unlink($chunk);
+                $size += filesize($chunk);
             }
-            fclose($file);
 
-            $filepond = $this->model::findOrFail($id);
+            if ($uploadLength === $size) {
+                natsort($chunks);
 
-            $filepond->update([
-                'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
-                'filename' => $uploadName,
-                'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
-                'mimetype' => MimeType::from($uploadName),
-                'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
-            ]);
+                $file = fopen($dir.$uploadName, 'wb');
+                foreach ($chunks as $chunk) {
+                    $chunkFile = fopen($chunk, 'rb');
+
+                    stream_copy_to_stream($chunkFile, $file);
+
+                    fclose($chunkFile);
+                    unlink($chunk);
+                }
+                fclose($file);
+
+                $filepond = $this->model::findOrFail($id);
+
+                $filepond->update([
+                    'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
+                    'filename' => $uploadName,
+                    'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                    'mimetype' => MimeType::from($uploadName),
+                    'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
+                ]);
+            } else {
+                throw new InvalidChunkException;
+            }
         }
 
-        return $size;
+        return $uploadOffset + $contentLength;
     }
 
     public function calculateOffset(Request $request): int
@@ -104,13 +106,26 @@ class LocalUploadDriver implements UploaderInterface
         $filepond = $this->model::findOrFail($id);
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
-        $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
+        $files = glob($dir . '*');
+        if (empty($files)) {
+            return 0;
         }
 
-        return $size;
+        $offsets = array_filter(array_map('basename', $files), 'is_numeric');
+        sort($offsets, SORT_NUMERIC);
+
+        $currentOffset = 0;
+        foreach ($offsets as $startByte) {
+            $startByte = (int)$startByte;
+
+            if ($startByte > $currentOffset) {
+                break;
+            }
+
+            $currentOffset += filesize($dir . $startByte);
+        }
+
+        return $currentOffset;
     }
 
     public function deleteFile(Request $request): bool
