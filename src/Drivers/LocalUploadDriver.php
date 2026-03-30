@@ -55,6 +55,15 @@ class LocalUploadDriver implements UploaderInterface
         $uploadName = $request->header('Upload-Name');
         $uploadOffset = (int) $request->header('Upload-Offset');
 
+        if($uploadOffset === 0) {
+            $filepond = $this->model::findOrFail($id);
+            $filepond->update([
+                'file_size'   => $uploadLength,
+                'chunk_size'  => $contentLength,
+                'chunk_count' => $contentLength > 0 ? ceil($uploadLength / $contentLength) : 0,
+            ]);
+        }
+
         $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
 
         if ($chunkSize === false || $chunkSize === 0 || $contentLength !== $chunkSize) {
@@ -69,7 +78,9 @@ class LocalUploadDriver implements UploaderInterface
                 $size += filesize($chunk);
             }
 
-            if ($uploadLength === $size) {
+            $filepond = $this->model::findOrFail($id);
+
+            if ($uploadLength === $size && count($chunks) === $filepond->chunk_count) {
                 natsort($chunks);
 
                 $file = fopen($dir.$uploadName, 'wb');
@@ -82,8 +93,6 @@ class LocalUploadDriver implements UploaderInterface
                     unlink($chunk);
                 }
                 fclose($file);
-
-                $filepond = $this->model::findOrFail($id);
 
                 $filepond->update([
                     'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
@@ -115,14 +124,25 @@ class LocalUploadDriver implements UploaderInterface
         sort($offsets, SORT_NUMERIC);
 
         $currentOffset = 0;
-        foreach ($offsets as $startByte) {
+        foreach ($offsets as $index => $startByte) {
             $startByte = (int)$startByte;
 
-            if ($startByte > $currentOffset) {
-                break;
-            }
+            if ($startByte > $currentOffset) break;
 
-            $currentOffset += filesize($dir . $startByte);
+            $filePath = $dir . $startByte;
+            if (!file_exists($filePath)) break;
+
+            $actualSize = filesize($filePath);
+
+            $isLastChunk = ($index === $filepond->chunk_count - 1);
+            $expectedSize = $isLastChunk ? ($filepond->file_size - $startByte) : $filepond->chunk_size;
+
+            if ($actualSize !== $expectedSize) break;
+
+            $nextStartByte = isset($offsets[$index + 1]) ? (int)$offsets[$index + 1] : null;
+            if ($nextStartByte !== null && ($startByte + $actualSize) !== $nextStartByte) break;
+
+            $currentOffset += $actualSize;
         }
 
         return $currentOffset;
