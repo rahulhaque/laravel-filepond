@@ -45,12 +45,12 @@ class FilepondFacadeTest extends TestCase
         $user = User::factory()->create();
 
         $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
-        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+        $chunks = str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
 
         $initChunkUploadResponse = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -67,8 +67,8 @@ class FilepondFacadeTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',
@@ -88,7 +88,7 @@ class FilepondFacadeTest extends TestCase
 
         $temporaryFile = Filepond::field($serverId)->getFile();
 
-        $this->assertEquals(mb_strlen($content), $temporaryFile->getSize());
+        $this->assertEquals(strlen($content), $temporaryFile->getSize());
     }
 
     #[Test]
@@ -165,7 +165,7 @@ class FilepondFacadeTest extends TestCase
         $user = User::factory()->create();
 
         $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
-        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+        $chunks = str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
 
         $metadata = ['some' => 'value'];
 
@@ -174,7 +174,7 @@ class FilepondFacadeTest extends TestCase
             ->post(route('filepond-process'), [
                 'avatar' => json_encode($metadata),
             ], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -191,8 +191,8 @@ class FilepondFacadeTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',

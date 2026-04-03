@@ -55,34 +55,19 @@ class LocalUploadDriver implements UploaderInterface
         $uploadName = $request->header('Upload-Name');
         $uploadOffset = (int) $request->header('Upload-Offset');
 
-        $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
+        $file = fopen($dir.$id, 'c+b');
+        fseek($file, $uploadOffset);
+        $chunk = stream_copy_to_stream($request->getContent(true), $file);
+        fclose($file);
 
-        if ($chunkSize === false || $chunkSize === 0 || $contentLength !== $chunkSize) {
-            unlink($dir.$uploadOffset); // Remove invalid chunk to retry
+        if ($chunk === false || $chunk === 0 || $chunk !== $contentLength) {
             throw new InvalidChunkException;
         }
 
-        $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
-        }
+        $size = $uploadOffset + $chunk;
 
-        if ($uploadLength === $size) {
-            $file = fopen($dir.$uploadName, 'w');
-            foreach ($chunks as $chunk) {
-                $uploadOffset = (int) basename($chunk);
-
-                $chunkFile = fopen($chunk, 'r');
-                $chunkContent = fread($chunkFile, filesize($chunk));
-                fclose($chunkFile);
-
-                fseek($file, $uploadOffset);
-                fwrite($file, $chunkContent);
-
-                unlink($chunk);
-            }
-            fclose($file);
+        if ($size === $uploadLength) {
+            rename($dir.$id, $dir.$uploadName);
 
             $filepond = $this->model::findOrFail($id);
 
@@ -102,15 +87,16 @@ class LocalUploadDriver implements UploaderInterface
     {
         $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
-        $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
+        $filepath = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->id);
+
+        if (! is_file($filepath)) {
+            return 0;
         }
 
-        return $size;
+        clearstatcache(true, $filepath);
+
+        return filesize($filepath);
     }
 
     public function deleteFile(Request $request): bool

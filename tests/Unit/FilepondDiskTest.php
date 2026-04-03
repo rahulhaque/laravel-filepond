@@ -177,12 +177,12 @@ class FilepondDiskTest extends TestCase
         $user = User::factory()->create();
 
         $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
-        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+        $chunks = str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
 
         $initChunkUploadResponse = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -199,8 +199,8 @@ class FilepondDiskTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',
@@ -222,7 +222,7 @@ class FilepondDiskTest extends TestCase
 
         $size = Storage::disk(config('filepond.disk'))->size($fileInfo['location']);
 
-        $this->assertEquals(mb_strlen($content), $size);
+        $this->assertEquals(strlen($content), $size);
     }
 
     #[Test]
@@ -240,12 +240,12 @@ class FilepondDiskTest extends TestCase
         $user = User::factory()->create();
 
         $content = str_repeat('f', 23 * 1024 * 1024); // Fake content 23MB
-        $chunks = mb_str_split($content, 5 * 1024 * 1024); // Split into 5 chunks 5MB
+        $chunks = str_split($content, 5 * 1024 * 1024); // Split into 5 chunks 5MB
 
         $initChunkUploadResponse = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -262,8 +262,8 @@ class FilepondDiskTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',
@@ -285,7 +285,7 @@ class FilepondDiskTest extends TestCase
 
         $size = Storage::disk(config('filepond.disk'))->size($fileInfo['location']);
 
-        $this->assertEquals(mb_strlen($content), $size);
+        $this->assertEquals(strlen($content), $size);
     }
 
     #[Test]
@@ -296,12 +296,12 @@ class FilepondDiskTest extends TestCase
         $user = User::factory()->create();
 
         $content = str_repeat('f', 1 * 1024 * 1024); // Fake content 1MB (1048576 Bytes)
-        $chunks = mb_str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
+        $chunks = str_split($content, 128 * 1024); // Split into 8 chunks 128KB (131072 Bytes)
 
         $initChunkUploadResponse = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -318,8 +318,8 @@ class FilepondDiskTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',
@@ -362,12 +362,12 @@ class FilepondDiskTest extends TestCase
 
         // Large chunks
         $content = str_repeat('f', 23 * 1024 * 1024); // Fake content 23MB
-        $chunks = mb_str_split($content, 5 * 1024 * 1024); // Split into 5 chunks 5MB
+        $chunks = str_split($content, 5 * 1024 * 1024); // Split into 5 chunks 5MB
 
         $initChunkUploadResponse = $this
             ->actingAs($user)
             ->post(route('filepond-process'), [], [
-                'Upload-Length' => mb_strlen($content),
+                'Upload-Length' => strlen($content),
             ]);
 
         $initChunkUploadResponse->assertSuccessful();
@@ -384,8 +384,8 @@ class FilepondDiskTest extends TestCase
                     uri: route('filepond-patch', ['patch' => $serverId]),
                     content: $chunk,
                     server: $this->transformHeadersToServerVars([
-                        'Content-Length' => mb_strlen($chunk),
-                        'Upload-Length' => mb_strlen($content),
+                        'Content-Length' => strlen($chunk),
+                        'Upload-Length' => strlen($content),
                         'Upload-Name' => 'test-file.txt',
                         'Upload-Offset' => $uploadOffset,
                         'Content-Type' => 'application/offset+octet-stream',
