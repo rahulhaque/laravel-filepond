@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $extension
  * @property string $mimetype
  * @property array $metadata
+ * @property int $file_size
+ * @property int $chunk_size
+ * @property int $chunk_count
  * @property string $disk
  * @property string $upload_id
  * @property array $upload_tags
