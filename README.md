@@ -141,10 +141,10 @@ class UserAvatarController extends Controller
                 'max:2000'
             ])
         ]);
-    
+
         // Set filename
         $avatarName = 'avatar-' . auth()->id();
-    
+
         // Move the file to permanent storage
         // Automatic file extension set
         $fileInfo = Filepond::field($request->avatar)
@@ -166,7 +166,7 @@ class UserAvatarController extends Controller
 
         $fileInfos = Filepond::field($request->gallery)
             ->moveTo('galleries/' . $galleryName);
-    
+
         // dd($fileInfos);
         // [
         //     [
@@ -207,7 +207,7 @@ class UserAvatarController extends Controller
 This is the quickest way to get started. This package has already implemented all the classes and controllers for you. Next we will discuss about all the nitty gritty stuffs available.
 
 > [!IMPORTANT]
-> If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.  
+> If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.
 
 ## Configuration
 
@@ -258,7 +258,7 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
 
 > [!NOTE]
-> This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
+> This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
 
 #### copyTo()
 
@@ -274,7 +274,7 @@ Calling the `Filepond::field()->delete()` method will delete the temporary file 
 
 ### APIs
 
-If you need more granular approach and know the ins and outs of this package, you may use the below APIs to get the underneath file object and file model to interact with them further. 
+If you need more granular approach and know the ins and outs of this package, you may use the below APIs to get the underneath file object and file model to interact with them further.
 
 #### getFile()
 
@@ -288,10 +288,6 @@ Processing the file object manually will not update the associated `Filepond` mo
 #### getModel()
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
-
-#### getDataURL()
-
-`Filepond::field()->getDataURL()` method returns the Data URL of uploaded file for the given field just like [HTTP Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs). This is useful when you need to store the raw content along with encryption, such as - user signature.
 
 ### Traits
 
