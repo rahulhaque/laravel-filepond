@@ -115,34 +115,32 @@ class LocalUploadDriver implements UploaderInterface
         $filepond = $this->model::findOrFail($id);
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
-        $files = glob($dir . '*');
-        if (empty($files)) {
-            return 0;
-        }
+        if ($filepond->chunk_size <= 0 || $filepond->file_size <= 0 || $filepond->chunk_count <=0) return 0;
 
-        $offsets = array_filter(array_map('basename', $files), 'is_numeric');
+        $files = glob($dir . '*');
+        if (empty($files)) return 0;
+
+        $offsets = array_values(array_filter(array_map('basename', $files), 'ctype_digit'));
         sort($offsets, SORT_NUMERIC);
 
         $currentOffset = 0;
         foreach ($offsets as $index => $startByte) {
             $startByte = (int)$startByte;
-
-            if ($startByte > $currentOffset) break;
+            if ($startByte !== $currentOffset) break;
 
             $filePath = $dir . $startByte;
             if (!file_exists($filePath)) break;
 
             $actualSize = filesize($filePath);
+            if ($actualSize === false) break;
 
-            $isLastChunk = ($index === $filepond->chunk_count - 1);
-            $expectedSize = $isLastChunk ? ($filepond->file_size - $startByte) : $filepond->chunk_size;
-
+            $expectedSize = min($filepond->chunk_size, $filepond->file_size - $startByte);
             if ($actualSize !== $expectedSize) break;
 
             $nextStartByte = isset($offsets[$index + 1]) ? (int)$offsets[$index + 1] : null;
             if ($nextStartByte !== null && ($startByte + $actualSize) !== $nextStartByte) break;
 
-            $currentOffset += $actualSize;
+            $currentOffset = $startByte + $actualSize;
         }
 
         return $currentOffset;
