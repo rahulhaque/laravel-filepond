@@ -105,7 +105,7 @@ class Filepond extends AbstractFilepond
      */
     public function copyTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return null;
         }
 
@@ -152,7 +152,7 @@ class Filepond extends AbstractFilepond
      */
     public function moveTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return null;
         }
 
@@ -182,7 +182,7 @@ class Filepond extends AbstractFilepond
      */
     public function delete()
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return;
         }
 
