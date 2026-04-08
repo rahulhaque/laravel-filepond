@@ -32,7 +32,7 @@ class LocalUploadDriver implements UploaderInterface
             'filepath' => '',
             'filename' => '',
             'extension' => '',
-            'mimetypes' => '',
+            'mimetype' => '',
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
