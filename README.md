@@ -2,6 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
+[![MadeWithLaravel.com shield](https://madewithlaravel.com/storage/repo-shields/4741-shield.svg)](https://madewithlaravel.com/p/laravel-filepond/shield-link)
 
 Straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
 
@@ -17,6 +18,7 @@ Straight forward backend support for Laravel application to work with [FilePond]
 - Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
 - Compatible with [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
+- Compatible with Spatie [laravel-medialibrary](https://github.com/spatie/laravel-medialibrary) package.
 
 Spare a 🌟 to let others know it worked for you.
 
@@ -33,6 +35,7 @@ I’ve spent countless hours building and maintaining this package by developing
 **Video Tutorials:**
 
 - Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
+- Thanks [PovilasKorop](https://github.com/PovilasKorop) for mentioning my package in - [Laravel: Upload Large Files with Filepond and Chunks](https://www.youtube.com/watch?v=xxo2uX5HoM8) (in English).
 
 ## Documentation
 
@@ -71,7 +74,7 @@ php artisan migrate
 <br>
 
 > [!WARNING]
-> If you are upgrading from `12.x` to `13.x`, delete existing migration, publish and run the new one.
+> If you are upgrading from version `12.x` to `13.x`, delete the existing migration. Publish and run the new ones.
 
 ## Quickstart
 
