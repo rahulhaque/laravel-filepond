@@ -31,15 +31,23 @@ class FilepondUtil
     }
 
     /**
+     * Get the field name from request
+     *
+     * @return int|string|null
+     */
+    public static function getField(Request $request)
+    {
+        return array_key_first(Arr::dot($request->all()));
+    }
+
+    /**
      * Get the file from request
      *
      * @return \Illuminate\Http\UploadedFile|\Illuminate\Http\UploadedFile[]|null
      */
     public static function getUploadedFile(Request $request)
     {
-        $field = array_key_first(Arr::dot($request->all()));
-
-        return $request->file($field);
+        return $request->file(self::getField($request));
     }
 
     /**
@@ -49,8 +57,6 @@ class FilepondUtil
      */
     public static function getMetadata(Request $request)
     {
-        $field = array_key_first(Arr::dot($request->all()));
-
-        return json_decode($request->post($field) ?: '', true);
+        return json_decode($request->post(self::getField($request)) ?: '', true);
     }
 }
