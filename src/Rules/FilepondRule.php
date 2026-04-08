@@ -4,21 +4,23 @@ declare(strict_types=1);
 
 namespace RahulHaque\Filepond\Rules;
 
-use Illuminate\Contracts\Validation\DataAwareRule;
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\ValidatorAwareRule;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator as FilepondValidator;
+use Illuminate\Validation\Validator;
 use RahulHaque\Filepond\Facades\Filepond;
 
-class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
+class FilepondRule implements ValidationRule, ValidatorAwareRule
 {
+    /**
+     * The validator instance.
+     *
+     * @var Validator
+     */
     protected $validator;
 
-    protected $data;
-
     protected $rules;
-
-    protected $messages;
 
     /**
      * Create a new rule instance.
@@ -33,10 +35,9 @@ class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
     /**
      * Set the performing validator.
      *
-     * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return $this
      */
-    public function setValidator($validator)
+    public function setValidator(Validator $validator): static
     {
         $this->validator = $validator;
 
@@ -44,50 +45,27 @@ class FilepondRule implements DataAwareRule, Rule, ValidatorAwareRule
     }
 
     /**
-     * Set the data under validation.
-     *
-     * @param  array  $data
-     * @return $this
+     * Run the validation rule.
      */
-    public function setData($data)
-    {
-        $this->data = $data;
-
-        return $this;
-    }
-
-    /**
-     * Determine if the validation rule passes.
-     *
-     * @param  string  $attribute
-     * @param  mixed  $value
-     * @return bool
-     */
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $file = Filepond::field($value)->getFile();
 
-        data_set($this->data, $attribute, $file);
+        $data = $this->validator->getData();
 
-        $validator = Validator::make(
-            $this->data,
+        data_set($data, $attribute, $file);
+
+        $validator = FilepondValidator::make(
+            $data,
             [$attribute => $this->rules],
             $this->validator->customMessages,
             $this->validator->customAttributes
         );
 
-        $this->messages = $validator->errors()->all();
-
-        return ! $validator->fails();
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return array
-     */
-    public function message()
-    {
-        return $this->messages;
+        if ($validator->fails()) {
+            foreach ($validator->errors()->all() as $error) {
+                $fail($error);
+            }
+        }
     }
 }

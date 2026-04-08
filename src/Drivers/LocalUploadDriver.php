@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace RahulHaque\Filepond\Drivers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Storage;
 use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
 use RahulHaque\Filepond\Models\Filepond;
+use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class LocalUploadDriver implements UploaderInterface
 {
@@ -32,7 +33,8 @@ class LocalUploadDriver implements UploaderInterface
             'filepath' => '',
             'filename' => '',
             'extension' => '',
-            'mimetypes' => '',
+            'mimetype' => '',
+            'metadata' => FilepondUtil::getMetadata($request),
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
@@ -40,12 +42,12 @@ class LocalUploadDriver implements UploaderInterface
 
         Storage::disk($this->tempDisk)->makeDirectory($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id);
 
-        return Crypt::encrypt(['id' => $filepond->id]);
+        return FilepondUtil::makeFilepondId(['id' => $filepond->id]);
     }
 
     public function handleChunk(Request $request): int
     {
-        $id = Crypt::decrypt($request->patch)['id'];
+        $id = FilepondUtil::getFilepondId($request->patch);
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
 
         $contentLength = (int) $request->header('Content-Length');
@@ -88,6 +90,7 @@ class LocalUploadDriver implements UploaderInterface
                 'filepath' => $this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR.$uploadName,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetype' => MimeType::from($uploadName),
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
             ]);
         }
@@ -97,7 +100,7 @@ class LocalUploadDriver implements UploaderInterface
 
     public function calculateOffset(Request $request): int
     {
-        $id = Crypt::decrypt($request->patch)['id'];
+        $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
@@ -112,7 +115,7 @@ class LocalUploadDriver implements UploaderInterface
 
     public function deleteFile(Request $request): bool
     {
-        $id = Crypt::decrypt($request->getContent())['id'];
+        $id = FilepondUtil::getFilepondId($request->getContent());
 
         $filepond = $this->model::findOrFail($id);
 

@@ -210,22 +210,9 @@ abstract class AbstractFilepond
         return new UploadedFile(
             Storage::disk($this->tempDisk)->path($filepond->filepath),
             $filepond->filename,
-            $filepond->mimetypes,
+            $filepond->mimetype,
             UPLOAD_ERR_OK,
             true
         );
-    }
-
-    /**
-     * Create Data URL from filepond model
-     * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
-     *
-     * @return string
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    protected function createDataUrl(Filepond $filepond)
-    {
-        return 'data:'.$filepond->mimetypes.';base64,'.base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
     }
 }

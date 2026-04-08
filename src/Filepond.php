@@ -46,29 +46,6 @@ class Filepond extends AbstractFilepond
     }
 
     /**
-     * Get the filepond file as Data URL string
-     * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
-     *
-     * @return array|array<int, string>|string|null
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    public function getDataURL()
-    {
-        if (! $this->getFieldValue()) {
-            return null;
-        }
-
-        if ($this->getIsMultipleUpload()) {
-            return $this->getFieldModel()->map(function ($filepond) {
-                return $this->createDataUrl($filepond);
-            })->toArray();
-        }
-
-        return $this->createDataUrl($this->getFieldModel());
-    }
-
-    /**
      * Get the filepond database model for the FilePond field
      *
      * @return mixed
@@ -76,6 +53,24 @@ class Filepond extends AbstractFilepond
     public function getModel()
     {
         return $this->getFieldModel();
+    }
+
+    /**
+     * Return metadata associated with the file
+     *
+     * @return array|array<int, array>|null
+     */
+    public function getMetadata()
+    {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
+            return null;
+        }
+
+        if ($this->getIsMultipleUpload()) {
+            return $this->getFieldModel()->pluck('metadata')->toArray();
+        }
+
+        return $this->getFieldModel()->metadata;
     }
 
     /**
@@ -105,7 +100,7 @@ class Filepond extends AbstractFilepond
      */
     public function copyTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return null;
         }
 
@@ -152,7 +147,7 @@ class Filepond extends AbstractFilepond
      */
     public function moveTo(string $path, string $disk = '', string $visibility = '')
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return null;
         }
 
@@ -182,7 +177,7 @@ class Filepond extends AbstractFilepond
      */
     public function delete()
     {
-        if (! $this->getFieldValue()) {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
             return;
         }
 
@@ -242,7 +237,7 @@ class Filepond extends AbstractFilepond
             'dirname' => dirname($path.'.'.$filepond->extension),
             'basename' => basename($path.'.'.$filepond->extension),
             'extension' => $filepond->extension,
-            'mimetype' => Storage::disk($permanentDisk)->mimeType($path.'.'.$filepond->extension),
+            'mimetype' => $filepond->mimetype,
             'filename' => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
             'location' => $path.'.'.$filepond->extension,
             'url' => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension),

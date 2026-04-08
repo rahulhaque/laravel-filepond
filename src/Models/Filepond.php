@@ -15,7 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $filename
  * @property string $filepath
  * @property string $extension
- * @property string $mimetypes
+ * @property string $mimetype
+ * @property array $metadata
  * @property string $disk
  * @property string $upload_id
  * @property array $upload_tags
@@ -32,6 +33,7 @@ class Filepond extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'metadata' => 'json',
         'upload_tags' => 'json',
         'expires_at' => 'datetime',
     ];

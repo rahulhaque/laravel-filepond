@@ -65,7 +65,7 @@ class FilepondController extends Controller
 
             return Response::make($content, 200)->withHeaders([
                 'Access-Control-Expose-Headers' => 'Content-Disposition',
-                'Content-Type' => $filepond->mimetypes,
+                'Content-Type' => $filepond->mimetype,
                 'Content-Disposition' => 'inline; filename="'.$filepond->filename.'"',
             ]);
         }

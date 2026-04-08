@@ -16,6 +16,8 @@ Straight forward backend support for Laravel application to work with [FilePond]
 - Scheduled artisan command to automatically clean up expired temporary files and directories.
 - Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
+- Compatible with [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
+- Compatible with Spatie [laravel-medialibrary](https://github.com/spatie/laravel-medialibrary) package.
 
 Spare a 🌟 to let others know it worked for you.
 
@@ -39,6 +41,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
 |Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
@@ -69,7 +72,7 @@ php artisan migrate
 <br>
 
 > [!WARNING]
-> If you are using version `10.2.2` or any earlier release within the `10.x` branch, please delete the existing fileponds table and migration, then publish and run the new one.
+> If you are updating from version `10.3.3`, delete the existing migration. Publish and run the new ones.
 
 ## Quickstart
 
@@ -130,21 +133,19 @@ class UserAvatarController extends Controller
     {
         // Single and multiple file validation
         $this->validate($request, [
-            'avatar' => Rule::filepond([
-                'required',
+            'avatar' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ]),
-            'gallery.*' => Rule::filepond([
-                'required',
+            ]]),
+            'gallery.*' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ])
+            ]])
         ]);
-    
+
         // Set filename
         $avatarName = 'avatar-' . auth()->id();
-    
+
         // Move the file to permanent storage
         // Automatic file extension set
         $fileInfo = Filepond::field($request->avatar)
@@ -166,7 +167,7 @@ class UserAvatarController extends Controller
 
         $fileInfos = Filepond::field($request->gallery)
             ->moveTo('galleries/' . $galleryName);
-    
+
         // dd($fileInfos);
         // [
         //     [
@@ -207,7 +208,7 @@ class UserAvatarController extends Controller
 This is the quickest way to get started. This package has already implemented all the classes and controllers for you. Next we will discuss about all the nitty gritty stuffs available.
 
 > [!IMPORTANT]
-> If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.  
+> If you have Laravel debugbar installed, make sure to add `filepond*` in the `except` array of the `./config/debugbar.php` to ignore appending debugbar information.
 
 ## Configuration
 
@@ -245,7 +246,7 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
 > [!NOTE]
-> If you see your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> If your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the correct permission of filepond's temporary directory and run `php artisan filepond:clear --all` for a clean start (optional). For third party storages like - amazon s3, make sure you have the correct policy set up.
 
 ### Methods
 
@@ -255,10 +256,10 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 #### Rule::filepond($rules)
 
-Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
+Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond field. See the example.
 
 > [!NOTE]
-> This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found. 
+> This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
 
 #### copyTo()
 
@@ -274,7 +275,7 @@ Calling the `Filepond::field()->delete()` method will delete the temporary file 
 
 ### APIs
 
-If you need more granular approach and know the ins and outs of this package, you may use the below APIs to get the underneath file object and file model to interact with them further. 
+If you need more granular approach and know the ins and outs of this package, you may use the below APIs to get the underneath file object and file model to interact with them further.
 
 #### getFile()
 
@@ -289,9 +290,9 @@ Processing the file object manually will not update the associated `Filepond` mo
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
 
-#### getDataURL()
+#### getMetadata()
 
-`Filepond::field()->getDataURL()` method returns the Data URL of uploaded file for the given field just like [HTTP Data URLs](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs). This is useful when you need to store the raw content along with encryption, such as - user signature.
+`Filepond::field()->getMetadata()` method returns the associated file metadata from [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
 
 ### Traits
 
@@ -327,7 +328,7 @@ docker compose build
 docker compose up -d
 
 # Drop to development shell
-docker compose exec laravel-filepond-10 bash
+docker compose exec laravel-filepond-10 sh
 
 # Install dependencies
 composer install
