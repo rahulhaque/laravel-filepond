@@ -210,7 +210,7 @@ abstract class AbstractFilepond
         return new UploadedFile(
             Storage::disk($this->tempDisk)->path($filepond->filepath),
             $filepond->filename,
-            $filepond->mimetypes,
+            $filepond->mimetype,
             UPLOAD_ERR_OK,
             true
         );

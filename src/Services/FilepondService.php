@@ -59,7 +59,7 @@ class FilepondService
             'filepath' => $file->store($this->tempFolder, $this->tempDisk),
             'filename' => $file->getClientOriginalName(),
             'extension' => $file->getClientOriginalExtension(),
-            'mimetypes' => $file->getClientMimeType(),
+            'mimetype' => $file->getClientMimeType(),
             'disk' => $this->disk,
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
