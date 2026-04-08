@@ -22,9 +22,9 @@ return new class extends Migration
             $table->string('disk', 100);
             $table->text('upload_id')->nullable();
             $table->json('upload_tags')->nullable();
-            $table->foreignId('created_by')->nullable();
-            $table->dateTime('expires_at')->nullable();
-            $table->softDeletes();
+            $table->foreignId('created_by')->nullable()->index();
+            $table->dateTime('expires_at')->nullable()->index();
+            $table->dateTime('deleted_at')->nullable()->index();
             $table->timestamps();
         });
     }
