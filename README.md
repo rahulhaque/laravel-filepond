@@ -2,6 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
+[![MadeWithLaravel.com shield](https://madewithlaravel.com/storage/repo-shields/4741-shield.svg)](https://madewithlaravel.com/p/laravel-filepond/shield-link)
 
 Straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
 
@@ -16,6 +17,8 @@ Straight forward backend support for Laravel application to work with [FilePond]
 - Scheduled artisan command to automatically clean up expired temporary files and directories.
 - Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
+- Compatible with [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
+- Compatible with Spatie [laravel-medialibrary](https://github.com/spatie/laravel-medialibrary) package.
 
 Spare a 🌟 to let others know it worked for you.
 
@@ -32,6 +35,7 @@ I’ve spent countless hours building and maintaining this package by developing
 **Video Tutorials:**
 
 - Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
+- Thanks [PovilasKorop](https://github.com/PovilasKorop) for mentioning my package in - [Laravel: Upload Large Files with Filepond and Chunks](https://www.youtube.com/watch?v=xxo2uX5HoM8) (in English).
 
 ## Documentation
 
@@ -39,6 +43,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
 |Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
@@ -69,7 +74,7 @@ php artisan migrate
 <br>
 
 > [!WARNING]
-> If you are using version `11.2.4` or any earlier release within the `11.x` branch, please delete the existing fileponds table and migration, then publish and run the new one.
+> If you are updating from version <= `11.3.5`, delete the existing migration. Publish and run the new ones.
 
 ## Quickstart
 
@@ -130,16 +135,14 @@ class UserAvatarController extends Controller
     {
         // Single and multiple file validation
         $this->validate($request, [
-            'avatar' => Rule::filepond([
-                'required',
+            'avatar' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ]),
-            'gallery.*' => Rule::filepond([
-                'required',
+            ]]),
+            'gallery.*' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ])
+            ]])
         ]);
 
         // Set filename
@@ -245,7 +248,7 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
 > [!NOTE]
-> If you see your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> If your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the correct permission of filepond's temporary directory and run `php artisan filepond:clear --all` for a clean start (optional). For third party storages like - amazon s3, make sure you have the correct policy set up.
 
 ### Methods
 
@@ -255,7 +258,7 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 #### Rule::filepond($rules)
 
-Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
+Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom validator to validate your filepond field. See the example.
 
 > [!NOTE]
 > This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
@@ -288,6 +291,10 @@ Processing the file object manually will not update the associated `Filepond` mo
 #### getModel()
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
+
+#### getMetadata()
+
+`Filepond::field()->getMetadata()` method returns the associated file metadata from [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
 
 ### Traits
 

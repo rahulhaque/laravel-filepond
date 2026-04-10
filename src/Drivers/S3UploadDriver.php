@@ -7,12 +7,13 @@ namespace RahulHaque\Filepond\Drivers;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Crypt;
+use Illuminate\Http\Testing\MimeType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use RahulHaque\Filepond\Contracts\UploaderInterface;
 use RahulHaque\Filepond\Exceptions\InvalidChunkException;
 use RahulHaque\Filepond\Models\Filepond;
+use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class S3UploadDriver implements UploaderInterface
 {
@@ -42,6 +43,7 @@ class S3UploadDriver implements UploaderInterface
             'filename' => Str::uuid().'.tmp',
             'extension' => '',
             'mimetype' => '',
+            'metadata' => FilepondUtil::getMetadata($request),
             'disk' => config('filepond.disk'),
             'created_by' => auth()->id(),
             'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
@@ -59,12 +61,12 @@ class S3UploadDriver implements UploaderInterface
             'upload_tags' => [],
         ]);
 
-        return Crypt::encrypt(['id' => $filepond->id]);
+        return FilepondUtil::makeFilepondId(['id' => $filepond->id]);
     }
 
     public function handleChunk(Request $request): int
     {
-        $id = Crypt::decrypt($request->patch)['id'];
+        $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
         $key = $this->tempFolder.'/'.$filepond->id.'/'.$filepond->filename;
 
@@ -142,6 +144,7 @@ class S3UploadDriver implements UploaderInterface
                 'filepath' => $key,
                 'filename' => $uploadName,
                 'extension' => pathinfo($uploadName, PATHINFO_EXTENSION),
+                'mimetype' => MimeType::from($uploadName),
                 'upload_id' => null,
                 'upload_tags' => null,
                 'expires_at' => now()->addMinutes(config('filepond.expiration', 30)),
@@ -153,7 +156,7 @@ class S3UploadDriver implements UploaderInterface
 
     public function calculateOffset(Request $request): int
     {
-        $id = Crypt::decrypt($request->patch)['id'];
+        $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
 
         return array_sum(array_column($filepond->upload_tags ?? [], 'Size'));
@@ -161,7 +164,7 @@ class S3UploadDriver implements UploaderInterface
 
     public function deleteFile(Request $request): bool
     {
-        $id = Crypt::decrypt($request->getContent())['id'];
+        $id = FilepondUtil::getFilepondId($request->getContent());
 
         $filepond = $this->model::findOrFail($id);
 
