@@ -79,6 +79,24 @@ class Filepond extends AbstractFilepond
     }
 
     /**
+     * Return metadata associated with the file
+     *
+     * @return array|array<int, array>|null
+     */
+    public function getMetadata()
+    {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
+            return null;
+        }
+
+        if ($this->getIsMultipleUpload()) {
+            return $this->getFieldModel()->pluck('metadata')->toArray();
+        }
+
+        return $this->getFieldModel()->metadata;
+    }
+
+    /**
      * Copy the FilePond files to destination
      *
      * @return array{
@@ -242,7 +260,7 @@ class Filepond extends AbstractFilepond
             'dirname' => dirname($path.'.'.$filepond->extension),
             'basename' => basename($path.'.'.$filepond->extension),
             'extension' => $filepond->extension,
-            'mimetype' => Storage::disk($permanentDisk)->mimeType($path.'.'.$filepond->extension),
+            'mimetype' => $filepond->mimetype,
             'filename' => basename($path.'.'.$filepond->extension, '.'.$filepond->extension),
             'location' => $path.'.'.$filepond->extension,
             'url' => Storage::disk($permanentDisk)->url($path.'.'.$filepond->extension),

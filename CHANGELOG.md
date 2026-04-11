@@ -2,6 +2,19 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.4.6 - 2026-04-11
+
+- Support for [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) added. ✨
+- New method `Filepond::field()->getMetadata()` added. ✨
+- Deprecated method from validation removed. 🧽
+- Development environment moved to `serversideup/php`. 🐋
+- New test cases added to support above changes. 🧪
+- Filepond model `null` exception in rare cases fixed. 🐛
+- Filepond migration proper indexing added. 📋
+- Typo in database migration fixed. ✍️
+- Experimental `getDataURL()` method removed. 🧹
+- Unnecessary `pint.json` style removed. 🎨
+
 ## 12.3.6 - 2026-03-05
 
 - Filepond model null during upload in rare cases fixed. 🐛
