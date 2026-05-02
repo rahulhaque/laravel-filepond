@@ -49,25 +49,53 @@ class LocalUploadDriver implements UploaderInterface
     {
         $id = FilepondUtil::getFilepondId($request->patch);
         $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
+        $tempFilePath = $dir.$id.'.temp';
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
         $uploadName = $request->header('Upload-Name');
         $uploadOffset = (int) $request->header('Upload-Offset');
 
-        $file = fopen($dir.$id, 'c+b');
-        fseek($file, $uploadOffset);
-        $chunk = stream_copy_to_stream($request->getContent(true), $file);
-        fclose($file);
+        // If file is not found, filesize() will silently fail
+        // returning false which will then be casted to int 0
+        $uploadedSize = (int) @filesize($tempFilePath);
 
-        if ($chunk === false || $chunk === 0 || $chunk !== $contentLength) {
+        // Check if the received chunk is in correct order
+        // If not, then return the offset to retry from
+        if ($uploadOffset !== $uploadedSize) {
+            return $uploadedSize;
+        }
+
+        $chunkFilePath = $dir.$uploadOffset.'.chunk';
+
+        $lastWrittenChunk = file_put_contents($chunkFilePath, $request->getContent());
+        // Check if chunk successfully written to disk
+        // If not, then delete the chunk and exit
+        if ($lastWrittenChunk === false || $lastWrittenChunk === 0 || $lastWrittenChunk !== $contentLength) {
+            unlink($chunkFilePath);
             throw new InvalidChunkException;
         }
 
-        $size = $uploadOffset + $chunk;
+        // If there is no error in saving chunk
+        // then append the chunk to temp file
+        $tempFile = fopen($tempFilePath, 'a+b');
+        $chunkFile = fopen($chunkFilePath, 'rb');
+        $lastMergedChunk = stream_copy_to_stream($chunkFile, $tempFile);
+        fclose($tempFile);
+        fclose($chunkFile);
+        unlink($chunkFilePath);
 
-        if ($size === $uploadLength) {
-            rename($dir.$id, $dir.$uploadName);
+        // Check if chunk successfully merged to file
+        // If not, then delete the corrupted file
+        if ($lastMergedChunk === false || $lastMergedChunk === 0 || $lastWrittenChunk !== $lastMergedChunk) {
+            unlink($tempFilePath);
+            throw new InvalidChunkException;
+        }
+
+        $nextOffset = $uploadedSize + $lastWrittenChunk;
+
+        if ($nextOffset === $uploadLength) {
+            rename($tempFilePath, $dir.$uploadName);
 
             $filepond = $this->model::findOrFail($id);
 
@@ -80,7 +108,7 @@ class LocalUploadDriver implements UploaderInterface
             ]);
         }
 
-        return $size;
+        return $nextOffset;
     }
 
     public function calculateOffset(Request $request): int
@@ -88,7 +116,7 @@ class LocalUploadDriver implements UploaderInterface
         $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
 
-        $filepath = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->id);
+        $filepath = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->id.'.temp');
 
         if (! is_file($filepath)) {
             return 0;
