@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::table('fileponds', function (Blueprint $table) {
+            $table->renameColumn('mimetypes', 'mimetype');
+        });
+
+        Schema::table('fileponds', function (Blueprint $table) {
+            $table->json('metadata')->after('mimetype')->nullable();
+            $table->text('upload_id')->nullable()->after('metadata');
+            $table->json('upload_tags')->nullable()->after('upload_id');
+            $table->unsignedBigInteger('created_by')->nullable()->index()->change();
+            $table->index('expires_at');
+            $table->index('deleted_at');
+        });
+        
+    }
+
+    public function down(): void
+    {
+        Schema::table('fileponds', function (Blueprint $table) {
+            $table->renameColumn('mimetype', 'mimetypes');
+        });
+
+        Schema::table('fileponds', function (Blueprint $table) {
+            $table->dropColumn(['metadata', 'upload_id', 'upload_tags']);
+            $table->unsignedBigInteger('created_by')->nullable()->change(); // remove index
+            $table->dropIndex(['created_by']);
+            $table->dropIndex(['expires_at']);
+            $table->dropIndex(['deleted_at']);
+        });
+    }
+};
