@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 13.1.2 - 2026-09-09
+
+- Addressed Laravel HTTP request changes in [v13.25.0](https://github.com/laravel/framework/issues/61356). 🐛
+- Addressed Laravel storage path normalization changes in 13.30.1. 🐛
+- Local chunk upload performance improvement. 🚀
+- New test cases added to support above changes. 🧪
+
 ## 13.1.1 - 2026-03-30
 
 - Support for [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) added. ✨

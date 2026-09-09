@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace RahulHaque\Filepond\Services;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Factories\UploaderManager;
@@ -41,9 +40,9 @@ class FilepondService
      */
     public function validator(Request $request, array $rules)
     {
-        $field = array_key_first(Arr::dot($request->all()));
+        $field = FilepondUtil::getField($request);
 
-        return Validator::make($request->all(), [$field => $rules]);
+        return Validator::make(FilepondUtil::convertRequest($request), [$field => $rules]);
     }
 
     /**

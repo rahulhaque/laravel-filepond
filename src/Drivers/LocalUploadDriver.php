@@ -48,8 +48,8 @@ class LocalUploadDriver implements UploaderInterface
     public function handleChunk(Request $request): int
     {
         $id = FilepondUtil::getFilepondId($request->patch);
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
-        $tempFilePath = $dir.$id.'.temp';
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id);
+        $tempFilePath = $dir.DIRECTORY_SEPARATOR.$id.'.temp';
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
@@ -66,7 +66,7 @@ class LocalUploadDriver implements UploaderInterface
             return $uploadedSize;
         }
 
-        $chunkFilePath = $dir.$uploadOffset.'.chunk';
+        $chunkFilePath = $dir.DIRECTORY_SEPARATOR.$uploadOffset.'.chunk';
 
         $lastWrittenChunk = file_put_contents($chunkFilePath, $request->getContent());
         // Check if chunk successfully written to disk
@@ -95,7 +95,7 @@ class LocalUploadDriver implements UploaderInterface
         $nextOffset = $uploadedSize + $lastWrittenChunk;
 
         if ($nextOffset === $uploadLength) {
-            rename($tempFilePath, $dir.$uploadName);
+            rename($tempFilePath, $dir.DIRECTORY_SEPARATOR.$uploadName);
 
             $filepond = $this->model::findOrFail($id);
 
