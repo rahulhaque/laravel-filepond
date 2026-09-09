@@ -57,6 +57,37 @@ class FilepondProcessRouteTest extends TestCase
     }
 
     #[Test]
+    public function can_process_filepond_file_upload_with_same_name_metadata_part()
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $metadata = ['some' => 'value'];
+
+        $response = $this
+            ->actingAs($user)
+            ->call('POST', route('filepond-process'), [
+                'avatar' => json_encode($metadata),
+            ], [], [
+                'avatar' => UploadedFile::fake()->image('avatar.png', 100, 100),
+            ], $this->transformHeadersToServerVars([
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ]));
+
+        $response->assertOk();
+
+        $data = Crypt::decrypt($response->content());
+
+        $fileById = Filepond::find($data['id']);
+
+        Storage::disk(config('filepond.temp_disk', 'local'))->assertExists($fileById->filepath);
+        $this->assertSame('avatar.png', $fileById->filename);
+        $this->assertSame($metadata, $fileById->metadata);
+    }
+
+    #[Test]
     public function can_process_filepond_array_file_upload_request()
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));

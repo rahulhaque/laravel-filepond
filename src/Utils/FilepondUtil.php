@@ -31,13 +31,25 @@ class FilepondUtil
     }
 
     /**
-     * Get the field name from request
+     * Convert the request to prioritize file first
      *
-     * @return int|string|null
+     * @see https://github.com/laravel/framework/issues/61356
+     *
+     * @return array
+     */
+    public static function convertRequest(Request $request)
+    {
+        return array_replace_recursive($request->all(), $request->allFiles());
+    }
+
+    /**
+     * Get the file field name
+     *
+     * @return string|null
      */
     public static function getField(Request $request)
     {
-        return array_key_first(Arr::dot($request->all()));
+        return array_key_first(Arr::dot(self::convertRequest($request)));
     }
 
     /**
@@ -47,16 +59,20 @@ class FilepondUtil
      */
     public static function getUploadedFile(Request $request)
     {
-        return $request->file(self::getField($request));
+        $field = self::getField($request);
+
+        return $request->file($field);
     }
 
     /**
-     * Get the file from request
+     * Get the metadata from request
      *
      * @return array|null
      */
     public static function getMetadata(Request $request)
     {
-        return json_decode($request->post(self::getField($request)) ?: '', true);
+        $field = self::getField($request);
+
+        return json_decode($request->post($field) ?: '', true);
     }
 }
