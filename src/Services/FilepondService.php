@@ -103,9 +103,9 @@ class FilepondService
     }
 
     /**
-     * Retrieve the filepond file model and content
+     * Retrieve and stream the filepond file
      *
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
      */
     public function restore(string $content)
     {
@@ -113,7 +113,19 @@ class FilepondService
 
         $filepond = $this->model::findOrFail($id);
 
-        return [$filepond, Storage::disk($this->tempDisk)->get($filepond->filepath)];
+        if (! Storage::disk($this->tempDisk)->exists($filepond->filepath)) {
+            abort(404, 'File not found on disk.');
+        }
+
+        return Storage::disk($this->tempDisk)->response(
+            $filepond->filepath,
+            $filepond->filename,
+            [
+                'Access-Control-Expose-Headers' => 'Content-Disposition, Content-Length, X-Content-Transfer-Id',
+                'Content-Type' => $filepond->mimetype,
+            ],
+            'inline'
+        );
     }
 
     /**
