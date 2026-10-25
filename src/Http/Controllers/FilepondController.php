@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RahulHaque\Filepond\Http\Controllers;
 
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
@@ -48,7 +50,7 @@ class FilepondController extends Controller
     /**
      * FilePond ./head, ./restore route logic.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Symfony\Component\HttpFoundation\Response
      *
      * @throws Throwable
      */
@@ -61,13 +63,17 @@ class FilepondController extends Controller
 
         // If request has restore key, then its a restore request
         if ($request->has('restore')) {
-            [$filepond, $content] = $service->restore($request->restore);
+            if (! $request->filled('restore') || ! is_string($request->restore)) {
+                return Response::make('Restore token is required.', 400);
+            }
 
-            return Response::make($content, 200)->withHeaders([
-                'Access-Control-Expose-Headers' => 'Content-Disposition',
-                'Content-Type' => $filepond->mimetype,
-                'Content-Disposition' => 'inline; filename="'.$filepond->filename.'"',
-            ]);
+            try {
+                return $service->restore($request->restore);
+            } catch (DecryptException) {
+                return Response::make('Invalid restore token.', 404);
+            } catch (ModelNotFoundException) {
+                return Response::make('File not found.', 404);
+            }
         }
 
         return Response::make('Feature not implemented yet.', 406);
