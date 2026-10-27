@@ -47,6 +47,34 @@ class FilepondRestoreRouteTest extends TestCase
     }
 
     #[Test]
+    public function cannot_restore_file_exceeding_max_previewable_size(): void
+    {
+        Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
+
+        $user = User::factory()->create();
+
+        $responseAfterProcess = $this
+            ->actingAs($user)
+            ->post(route('filepond-process'), [
+                'video' => UploadedFile::fake()->createWithContent('large-video.mp4', str_repeat('a', 5000)),
+            ], [
+                'Content-Type' => 'multipart/form-data',
+                'Accept' => 'application/json',
+            ]);
+
+        $serverId = $responseAfterProcess->content();
+
+        // Set max previewable size to 1KB — file is 5KB so restore should be refused
+        config(['filepond.max_previewable_file_size' => 1]);
+
+        $responseAfterRestore = $this
+            ->actingAs($user)
+            ->get(route('filepond-head', ['restore' => $serverId]));
+
+        $responseAfterRestore->assertStatus(413);
+    }
+
+    #[Test]
     public function cannot_restore_with_missing_token(): void
     {
         $user = User::factory()->create();

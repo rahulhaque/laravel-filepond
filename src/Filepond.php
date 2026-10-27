@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace RahulHaque\Filepond;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Js;
 use RahulHaque\Filepond\Models\Filepond as FilepondModel;
+use RahulHaque\Filepond\Utils\FilepondUtil;
+use Throwable;
 
 class Filepond extends AbstractFilepond
 {
@@ -71,6 +74,48 @@ class Filepond extends AbstractFilepond
         }
 
         return $this->getFieldModel()->metadata;
+    }
+
+    /**
+     * Convert server IDs from old form input into FilePond compatible
+     * files array for restoring temporary uploads after form refresh.
+     */
+    public function preview(): Js
+    {
+        if (! $this->getFieldValue() || ! $this->getFieldModel()) {
+            return Js::from([]);
+        }
+
+        $fileponds = $this->getIsMultipleUpload()
+            ? $this->getFieldModel()
+            : [$this->getFieldModel()];
+
+        $files = [];
+        foreach ($fileponds as $filepond) {
+            // Get file size, try catch
+            // to check file existence
+            try {
+                $fileSize = Storage::disk($this->getTempDisk())->size($filepond->filepath);
+            } catch (Throwable) {
+                continue;
+            }
+
+            $type = FilepondUtil::isPreviewable($fileSize) ? 'limbo' : 'local';
+
+            $files[] = [
+                'source' => FilepondUtil::makeFilepondId(['id' => $filepond->id]),
+                'options' => [
+                    'type' => $type,
+                    'file' => [
+                        'name' => $filepond->filename,
+                        'size' => $fileSize,
+                        'type' => $filepond->mimetype,
+                    ],
+                ],
+            ];
+        }
+
+        return Js::from($files);
     }
 
     /**

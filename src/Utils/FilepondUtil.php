@@ -75,4 +75,16 @@ class FilepondUtil
 
         return json_decode($request->post($field) ?: '', true);
     }
+
+    /**
+     * Check if the file size is within the max previewable size
+     *
+     * @return bool
+     */
+    public static function isPreviewable(int $fileSize)
+    {
+        $previewableSize = config('filepond.max_previewable_file_size');
+
+        return $previewableSize === null || $fileSize <= $previewableSize * 1024;
+    }
 }
