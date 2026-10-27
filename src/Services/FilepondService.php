@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use RahulHaque\Filepond\Models\Filepond;
+use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class FilepondService
 {
@@ -191,11 +192,17 @@ class FilepondService
     {
         $filepond = $this->retrieve($content);
 
-        if (! Storage::disk($this->tempDisk)->exists($filepond->filepath)) {
+        $disk = Storage::disk($this->tempDisk);
+
+        if (! $disk->exists($filepond->filepath)) {
             abort(404, 'File not found on disk.');
         }
 
-        return Storage::disk($this->tempDisk)->response(
+        if (! FilepondUtil::isPreviewable($disk->size($filepond->filepath))) {
+            abort(413, 'File exceeds the maximum previewable file size.');
+        }
+
+        return $disk->response(
             $filepond->filepath,
             $filepond->filename,
             [
