@@ -113,11 +113,17 @@ class FilepondService
 
         $filepond = $this->model::findOrFail($id);
 
-        if (! Storage::disk($this->tempDisk)->exists($filepond->filepath)) {
+        $disk = Storage::disk($this->tempDisk);
+
+        if (! $disk->exists($filepond->filepath)) {
             abort(404, 'File not found on disk.');
         }
 
-        return Storage::disk($this->tempDisk)->response(
+        if (! FilepondUtil::isPreviewable($disk->size($filepond->filepath))) {
+            abort(413, 'File exceeds the maximum previewable file size.');
+        }
+
+        return $disk->response(
             $filepond->filepath,
             $filepond->filename,
             [
