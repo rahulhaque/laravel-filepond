@@ -112,4 +112,17 @@ return [
     'server' => [
         'url' => env('FILEPOND_URL', '/filepond'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Max Previewable File Size (Kilobytes)
+    |--------------------------------------------------------------------------
+    |
+    | Maximum file size in kilobytes allowed to be previewed in Filepond.
+    |
+    | Files exceeding this limit will automatically fall back to 'local'
+    | file mode, displaying only the file name and size in the UI.
+    |
+    */
+    'max_previewable_file_size' => env('FILEPOND_MAX_PREVIEWABLE_FILE_SIZE', 5000),
 ];
