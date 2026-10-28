@@ -7,14 +7,13 @@ namespace RahulHaque\Filepond\Tests\Feature;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
 use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class FilepondBladeDirectiveTest extends TestCase
 {
-    #[Test]
+    /** @test */
     public function can_compile_filepond_preview_directive(): void
     {
         $compiled = Blade::compileString("@filepondPreview(old('avatar'))");
@@ -25,7 +24,7 @@ class FilepondBladeDirectiveTest extends TestCase
         );
     }
 
-    #[Test]
+    /** @test */
     public function can_compile_filepond_preview_directive_with_ownership_argument(): void
     {
         $compiled = Blade::compileString("@filepondPreview(old('avatar'), false)");
@@ -36,7 +35,7 @@ class FilepondBladeDirectiveTest extends TestCase
         );
     }
 
-    #[Test]
+    /** @test */
     public function can_render_filepond_preview_directive(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -68,7 +67,7 @@ class FilepondBladeDirectiveTest extends TestCase
         $this->assertEquals('avatar.png', $entries[0]['options']['file']['name']);
     }
 
-    #[Test]
+    /** @test */
     public function can_render_empty_array_when_no_old_input(): void
     {
         $rendered = Blade::render("@filepondPreview(old('avatar'))");

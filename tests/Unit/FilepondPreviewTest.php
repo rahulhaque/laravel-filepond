@@ -8,7 +8,6 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Js;
-use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Facades\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
@@ -16,7 +15,7 @@ use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class FilepondPreviewTest extends TestCase
 {
-    #[Test]
+    /** @test */
     public function can_return_empty_array_for_null(): void
     {
         $result = Filepond::field(null)->preview();
@@ -25,7 +24,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertEquals('[]', (string) $result);
     }
 
-    #[Test]
+    /** @test */
     public function can_return_empty_array_for_empty_string(): void
     {
         $result = Filepond::field('')->preview();
@@ -33,7 +32,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertEquals('[]', (string) $result);
     }
 
-    #[Test]
+    /** @test */
     public function can_return_empty_array_for_empty_array(): void
     {
         $result = Filepond::field([])->preview();
@@ -41,7 +40,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertEquals('[]', (string) $result);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_preview_with_invalid_token(): void
     {
         $this->expectException(DecryptException::class);
@@ -49,7 +48,7 @@ class FilepondPreviewTest extends TestCase
         Filepond::field('invalid-encrypted-token')->preview();
     }
 
-    #[Test]
+    /** @test */
     public function can_return_limbo_file_entry_for_valid_upload(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -83,7 +82,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertGreaterThan(0, $result[0]['options']['file']['size']);
     }
 
-    #[Test]
+    /** @test */
     public function can_return_multiple_limbo_file_entries(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -116,7 +115,7 @@ class FilepondPreviewTest extends TestCase
         }
     }
 
-    #[Test]
+    /** @test */
     public function can_fall_back_to_local_type_when_exceeding_max_preview_size(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -152,7 +151,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertEquals(5000, $result[0]['options']['file']['size']);
     }
 
-    #[Test]
+    /** @test */
     public function can_use_limbo_when_no_max_size_configured(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -180,7 +179,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertEquals('limbo', $result[0]['options']['type']);
     }
 
-    #[Test]
+    /** @test */
     public function can_skip_files_missing_from_disk(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -208,7 +207,7 @@ class FilepondPreviewTest extends TestCase
         $this->assertCount(0, $result);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_preview_with_invalid_token_in_mixed_array(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))
@@ -232,7 +231,7 @@ class FilepondPreviewTest extends TestCase
         Filepond::field([$validToken, 'invalid-token', ''])->preview();
     }
 
-    #[Test]
+    /** @test */
     public function can_restore_only_files_owned_by_authenticated_user(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))

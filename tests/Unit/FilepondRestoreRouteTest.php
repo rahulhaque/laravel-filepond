@@ -6,7 +6,6 @@ namespace RahulHaque\Filepond\Tests\Unit;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use PHPUnit\Framework\Attributes\Test;
 use RahulHaque\Filepond\Models\Filepond;
 use RahulHaque\Filepond\Tests\TestCase;
 use RahulHaque\Filepond\Tests\User;
@@ -14,7 +13,7 @@ use RahulHaque\Filepond\Utils\FilepondUtil;
 
 class FilepondRestoreRouteTest extends TestCase
 {
-    #[Test]
+    /** @test */
     public function can_restore_filepond_file_upload_request(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -46,7 +45,7 @@ class FilepondRestoreRouteTest extends TestCase
         $this->assertEquals($file->getContent(), $responseAfterRestore->streamedContent());
     }
 
-    #[Test]
+    /** @test */
     public function cannot_restore_file_exceeding_max_previewable_size(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
@@ -74,7 +73,7 @@ class FilepondRestoreRouteTest extends TestCase
         $responseAfterRestore->assertStatus(413);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_restore_with_missing_token(): void
     {
         $user = User::factory()->create();
@@ -86,7 +85,7 @@ class FilepondRestoreRouteTest extends TestCase
         $response->assertStatus(400);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_restore_with_invalid_token(): void
     {
         $user = User::factory()->create();
@@ -98,7 +97,7 @@ class FilepondRestoreRouteTest extends TestCase
         $response->assertStatus(404);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_restore_non_existent_record(): void
     {
         $user = User::factory()->create();
@@ -112,7 +111,7 @@ class FilepondRestoreRouteTest extends TestCase
         $response->assertStatus(404);
     }
 
-    #[Test]
+    /** @test */
     public function cannot_restore_when_file_is_missing_on_disk(): void
     {
         Storage::disk(config('filepond.temp_disk', 'local'))->deleteDirectory(config('filepond.temp_folder', 'filepond/temp'));
