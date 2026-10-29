@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.5.6 - 2026-10-29
+
+- Added `Filepond::field()->preview()` helper method to preview temporary uploads after form refresh. ✨
+- Added `@filepondPreview()` blade directive, does the same as above with less boilerplate. ✨
+- Restore route now streams file response instead of loading into memory. 🚀
+- Restore route enforces `max_previewable_file_size` server-side. 🐛
+- Restore route input validation and error handling improved. 🐛
+- New test cases added to support above changes. 🧪
+
 ## 12.4.6 - 2026-04-11
 
 - Support for [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) added. ✨
