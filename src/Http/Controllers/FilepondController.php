@@ -64,7 +64,7 @@ class FilepondController extends Controller
                 return Response::make('Restore token is required.', 400);
             }
 
-try {
+            try {
                 return $service->restore($request->restore);
             } catch (DecryptException) {
                 return Response::make('Invalid restore token.', 404);

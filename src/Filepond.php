@@ -13,7 +13,6 @@ class Filepond extends AbstractFilepond
     /**
      * Set the FilePond field name
      *
-     * @param string|array|null $field
      * @return $this
      */
     public function field(string|array|null $field, bool $checkOwnership = true)
@@ -102,9 +101,6 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination
      *
-     * @param string $path
-     * @param string $disk
-     * @param string $visibility
      * @return array{
      *     id: int,
      *     dirname: string,
@@ -152,9 +148,6 @@ class Filepond extends AbstractFilepond
     /**
      * Copy the FilePond files to destination and delete
      *
-     * @param string $path
-     * @param string $disk
-     * @param string $visibility
      * @return array{
      *     id: int,
      *     dirname: string,
@@ -239,10 +232,6 @@ class Filepond extends AbstractFilepond
     /**
      * Put the file in permanent storage and return response
      *
-     * @param FilepondModel $filepond
-     * @param string $path
-     * @param string $disk
-     * @param string $visibility
      * @return array{
      *     id: int,
      *     dirname: string,
