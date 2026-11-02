@@ -14,6 +14,7 @@ Straight forward backend support for Laravel application to work with [FilePond]
 - Native AWS S3 multipart upload support.
 - Global server side validation for temporary files.
 - Request/Controller level validation before persisting the temporary files to permanent storage.
+- Helper for easy preview of old files in FilePond after validation error.
 - Scheduled artisan command to automatically clean up expired temporary files and directories.
 - Optimized handling of large files with efficient memory usage.
 - Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
@@ -107,9 +108,13 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
         }
     });
 
-    // Create the FilePond instance
-    FilePond.create(document.querySelector('input[name="avatar"]'));
-    FilePond.create(document.querySelector('input[name="gallery[]"]'), {chunkUploads: true});
+    // Create the FilePond instances
+    FilePond.create(document.querySelector('input[name="avatar"]'), {
+        files: @filepondPreview(old('avatar'))
+    });
+    FilePond.create(document.querySelector('input[name="gallery[]"]'), {
+        files: @filepondPreview(old('gallery'))
+    });
 </script>
 ```
 
@@ -241,6 +246,10 @@ By default, all filepond's routes are protected by `web` and `auth` middleware. 
 
 By default `soft_delete` is set to `true` to keep track of all the files uploaded by the users. Set it to false if you want to delete the files with delete request.
 
+#### File Preview Size
+
+By default, `max_previewable_file_size` is set to 5mb which allows files under 5mb to be previewed in FilePond UI in case of validation error on form submit. Files exceeding this size will only show file name and size in the UI without downloading the whole files.
+
 ## Commands (Cleanup)
 
 This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File `expiration` minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
@@ -252,16 +261,16 @@ This command takes a `--all` option which will truncate the `Filepond` model and
 
 ### Methods
 
-#### field()
-
-`Filepond::field($field, $checkOwnership)` is a required method which tells the library which FilePond form field to work with. The optional second parameter is to check file ownership of the field. It is useful when an unauthenticated user uploads a file and later tries to retrieve it after authentication. Chain the rest of the methods as required.
-
 #### Rule::filepond($rules)
 
 Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom validator to validate your filepond field. See the example.
 
 > [!NOTE]
 > This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
+
+#### field($field, $checkOwnership)
+
+`Filepond::field($field, $checkOwnership)` is a required method which tells the library which FilePond form field to work with. The optional second parameter is to check file ownership of the field (enabled by default). It is useful when an unauthenticated user uploads a file and later tries to retrieve it after authentication. Chain the rest of the methods as required.
 
 #### copyTo()
 
@@ -270,6 +279,13 @@ Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the 
 #### moveTo()
 
 Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as `copyTo()` method. By default the files will be moved to directory relative to config's `disk` option. You can also pass a disk name as **second parameter** if you want to override that. One thing it does extra for you is delete the temporary file after copying, respecting the value of config's `soft_delete` option for `Filepond` model.
+
+#### preview()
+
+Calling the `Filepond::field()->preview()` method allows temporary uploaded files to be structurally loaded into FilePond JS's `files` option, following form submission or validation errors. The ownership check from `Filepond::field($field, $checkOwnership)` applies here as well and is enabled by default. For convenience, the `@filepondPreview(old($field))` Blade directive is equivalent to `Filepond::field(old($field))->preview()`.
+
+> [!NOTE]
+> You can configure `max_previewable_file_size` (kb) in `./config/filepond.php` (or via `.env` with `FILEPOND_MAX_PREVIEWABLE_FILE_SIZE`). Files exceeding this limit will automatically fall back to FilePond's `local` mock file mode. This saves bandwidth by not downloading the full temporary uploaded file in the browser, showing only the file name and size. As a result, file preview will not be available. The restore endpoint enforces this limit server-side as well, responding with `413 Content Too Large` for files exceeding it.
 
 #### delete()
 
