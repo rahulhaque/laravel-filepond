@@ -1,21 +1,30 @@
-# Laravel FilePond Backend
+# Filepond Backend for Laravel
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
 [![Total Downloads](https://img.shields.io/packagist/dt/rahulhaque/laravel-filepond.svg?style=flat-square)](https://packagist.org/packages/rahulhaque/laravel-filepond)
+[![MadeWithLaravel.com shield](https://madewithlaravel.com/storage/repo-shields/4741-shield.svg)](https://madewithlaravel.com/p/laravel-filepond/shield-link)
 
-A straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them. It currently features - 
+Straight forward backend support for Laravel application to work with [FilePond](https://pqina.nl/filepond/) file upload javascript library. This package takes care of all the heavy lifting behind the scenes - managing temporary storage, validation and cleanup, so you can focus on building great user experiences instead of worrying about upload handling. This package keeps tracks of all the uploaded files and provides an easier interface for the developers to interact with them.
 
-- Single and multiple file uploads.
-- Chunk uploads with resume support.
-- Third party storage support.
+**Key Features**
+
+- Support for both single and multiple file uploads.
+- Integrates well with third-party storage drivers.
+- Chunked uploads with resume capability for both local and external storage.
+- Native AWS S3 multipart upload support.
 - Global server side validation for temporary files.
-- Controller/Request level validation before moving the temporary files to permanent location.
-- Helper for easy preview of old files in FilePond after validation error.
-- Scheduled artisan command to clean up temporary files and folders after they have expired.
-- Can handle filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
-- Can handle large files efficiently.
+- Request/Controller level validation before persisting the temporary files to permanent storage.
+- Scheduled artisan command to automatically clean up expired temporary files and directories.
+- Optimized handling of large files with efficient memory usage.
+- Can handle Filepond's `process`, `patch`, `head`, `revert` and `restore` endpoints.
+- Compatible with [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
+- Compatible with Spatie [laravel-medialibrary](https://github.com/spatie/laravel-medialibrary) package.
 
-Support the development with a :star: to let others know it worked for you.
+Spare a 🌟 to let others know it worked for you.
+
+**Support the Development**
+
+I’ve spent countless hours building and maintaining this package by developing new features, fixing issues from the community and making sure it stays reliable with the latest updates and changes from Laravel. If you find it useful, please consider supporting my work on Ko-fi. Your support keep me motivated and allow me to dedicate more time in maintaining and enhancing this project. ❤️
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/W7W2I1JIV)
 
@@ -26,6 +35,7 @@ Support the development with a :star: to let others know it worked for you.
 **Video Tutorials:**
 
 - Thanks [ludoguenet](https://github.com/ludoguenet) for featuring my package in - [Créer un système de Drag'n Drop avec Laravel Filepond](https://www.youtube.com/watch?v=IQ3fEseDck8) (in French).
+- Thanks [PovilasKorop](https://github.com/PovilasKorop) for mentioning my package in - [Laravel: Upload Large Files with Filepond and Chunks](https://www.youtube.com/watch?v=xxo2uX5HoM8) (in English).
 
 ## Documentation
 
@@ -33,6 +43,7 @@ See the corresponding branch for the documentation.
 
 |Version|Branch|
 |:-:|:-:|
+|Laravel 13|[13.x branch](../../tree/13.x/README.md)|
 |Laravel 12|[12.x branch](../../tree/12.x/README.md)|
 |Laravel 11|[11.x branch](../../tree/11.x/README.md)|
 |Laravel 10|[10.x branch](../../tree/10.x/README.md)|
@@ -58,6 +69,27 @@ Run the migration.
 
 ```bash
 php artisan migrate
+```
+
+<br>
+
+> [!WARNING]
+> If you are upgrading from version `9.2.x` or older, the storage driver based file processing needs an updated `fileponds` table. Delete the existing published migration file, publish and run the new ones. To keep the previous records, add the following columns to your existing `fileponds` table with a new migration instead.
+
+```php
+Schema::table('fileponds', function (Blueprint $table) {
+    $table->string('mimetype', 100)->nullable()->after('extension');
+    $table->json('metadata')->nullable();
+    $table->text('upload_id')->nullable();
+    $table->json('upload_tags')->nullable();
+});
+
+// Carry the old mimetypes data over, then drop the old column
+DB::table('fileponds')->update(['mimetype' => DB::raw('mimetypes')]);
+
+Schema::table('fileponds', function (Blueprint $table) {
+    $table->dropColumn('mimetypes');
+});
 ```
 
 ## Quickstart
@@ -86,18 +118,14 @@ Let's assume we are updating a user avatar and his/her gallery like the form bel
         server: {
             url: "{{ config('filepond.server.url') }}",
             headers: {
-                'X-CSRF-TOKEN': "{{ @csrf_token() }}",
+                'X-CSRF-TOKEN': "{{ csrf_token() }}",
             }
         }
     });
 
-    // Create the FilePond instances
-    FilePond.create(document.querySelector('input[name="avatar"]'), {
-        files: @filepondPreview(old('avatar'))
-    });
-    FilePond.create(document.querySelector('input[name="gallery[]"]'), {
-        files: @filepondPreview(old('gallery'))
-    });
+    // Create the FilePond instance
+    FilePond.create(document.querySelector('input[name="avatar"]'));
+    FilePond.create(document.querySelector('input[name="gallery[]"]'), {chunkUploads: true});
 </script>
 ```
 
@@ -123,16 +151,14 @@ class UserAvatarController extends Controller
     {
         // Single and multiple file validation
         $this->validate($request, [
-            'avatar' => Rule::filepond([
-                'required',
+            'avatar' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ]),
-            'gallery.*' => Rule::filepond([
-                'required',
+            ]]),
+            'gallery.*' => ['required', Rule::filepond([
                 'image',
                 'max:2000'
-            ])
+            ]])
         ]);
 
         // Set filename
@@ -214,8 +240,13 @@ This package uses Laravel's public filesystem driver for permanent file storage 
 
 This package uses Laravel's `local` filesystem driver for temporary file storage by default. Change the `temp_disk` and `temp_folder` name to points towards directory for temporary file storage.
 
+The temporary storage driver is detected automatically - the `local` driver processes the chunk uploads on the disk while an S3 compatible `temp_disk` is processed natively with the AWS S3 [multipart upload](https://docs.aws.amazon.com/AmazonS3/latest/userguide/mpu-overview.html) API. No extra configuration is needed.
+
 > [!NOTE]
 > Setting temporary file storage to third party will upload the files directly to cloud. On the other hand, you will lose the ability to use controller level validation because the files will not be available in your application server.
+
+> [!NOTE]
+> When the temporary storage is set to an S3 compatible disk, chunk size must be between 5 MB and 5 GB, and the file must not exceed 5 TiB. These limits are enforced by the S3 multipart upload API.
 
 #### Validation Rules
 
@@ -231,10 +262,6 @@ By default, all filepond's routes are protected by `web` and `auth` middleware. 
 
 By default `soft_delete` is set to `true` to keep track of all the files uploaded by the users. Set it to false if you want to delete the files with delete request.
 
-#### File Preview Size
-
-By default, `max_previewable_file_size` is set to 5mb which allows files under 5mb to be previewed in FilePond UI in case of validation error on form submit. Files exceeding this size will only show file name and size in the UI without downloading the whole files.
-
 ## Commands (Cleanup)
 
 This package includes a `php artisan filepond:clear` command to clean up the expired files from the temporary storage. File `expiration` minute can be set in the config file, default is 30 minutes. Add this command to your scheduled command list to run daily. Know more about task scheduling here - [Scheduling Artisan Commands](https://laravel.com/docs/8.x/scheduling#scheduling-artisan-commands)
@@ -242,20 +269,20 @@ This package includes a `php artisan filepond:clear` command to clean up the exp
 This command takes a `--all` option which will truncate the `Filepond` model and delete everything inside the temporary storage regardless they are expired or not. This is useful when you lost track of your uploaded files and want to start clean.
 
 > [!NOTE]
-> If you see your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the permission of filepond's temporary directory to 775 with `sudo chmod -R 775 ./storage/app/filepond/`. And run `php artisan filepond:clear --all` for a clean start (optional). For third party storage like - amazon s3, make sure you have the correct policy set.
+> If your files are not deleted even after everything is set up correctly, then its probably directory permission issue. Try setting the correct permission of filepond's temporary directory and run `php artisan filepond:clear --all` for a clean start (optional). For third party storages like - amazon s3, make sure you have the correct policy set up.
 
 ### Methods
 
+#### field()
+
+`Filepond::field($field, $checkOwnership)` is a required method which tells the library which FilePond form field to work with. The optional second parameter is to check file ownership of the field. It is useful when an unauthenticated user uploads a file and later tries to retrieve it after authentication. Chain the rest of the methods as required.
+
 #### Rule::filepond($rules)
 
-Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond fields. See the example.
+Use `Rule::filepond($rules)` inside Request class or directly in controller or in custom Validator to validate your filepond field. See the example.
 
 > [!NOTE]
 > This method will not work when third party storage is set as your temporary storage. The files are uploaded directly to your third party storage and not available locally for any further modification. Calling this method in such condition will throw error that the file is not found.
-
-#### field($field, $checkOwnership)
-
-`Filepond::field($field, $checkOwnership)` is a required method which tells the library which FilePond form field to work with. The optional second parameter is to check file ownership of the field (enabled by default). It is useful when an unauthenticated user uploads a file and later tries to retrieve it after authentication. Chain the rest of the methods as required.
 
 #### copyTo()
 
@@ -264,13 +291,6 @@ Calling the `Filepond::field()->copyTo($pathWithFilename)` method will copy the 
 #### moveTo()
 
 Calling the `Filepond::field()->moveTo($pathWithFilename)` method works the same way as `copyTo()` method. By default the files will be moved to directory relative to config's `disk` option. You can also pass a disk name as **second parameter** if you want to override that. One thing it does extra for you is delete the temporary file after copying, respecting the value of config's `soft_delete` option for `Filepond` model.
-
-#### preview()
-
-Calling the `Filepond::field()->preview()` method allows temporary uploaded files to be structurally loaded into FilePond JS's `files` option, following form submission or validation errors. The ownership check from `Filepond::field($field, $checkOwnership)` applies here as well and is enabled by default. For convenience, the `@filepondPreview(old($field))` Blade directive is equivalent to `Filepond::field(old($field))->preview()`.
-
-> [!NOTE]
-> You can configure `max_previewable_file_size` (kb) in `./config/filepond.php` (or via `.env` with `FILEPOND_MAX_PREVIEWABLE_FILE_SIZE`). Files exceeding this limit will automatically fall back to FilePond's `local` mock file mode. This saves bandwidth by not downloading the full temporary uploaded file in the browser, showing only the file name and size. As a result, file preview will not be available. The restore endpoint enforces this limit server-side as well, responding with `413 Content Too Large` for files exceeding it.
 
 #### delete()
 
@@ -292,6 +312,10 @@ Processing the file object manually will not update the associated `Filepond` mo
 #### getModel()
 
 `Filepond::field()->getModel()` method returns the underlying Laravel `Filepond` model for the given field. This is useful when you have added some custom fields to update in the published migration file for your need.
+
+#### getMetadata()
+
+`Filepond::field()->getMetadata()` method returns the associated file metadata from [filepond-plugin-file-metadata](https://pqina.nl/filepond/docs/api/plugins/file-metadata/) plugin.
 
 ### Traits
 
@@ -327,7 +351,7 @@ docker compose build
 docker compose up -d
 
 # Drop to development shell
-docker compose exec laravel-filepond-9 bash
+docker compose exec laravel-filepond-9 sh
 
 # Install dependencies
 composer install

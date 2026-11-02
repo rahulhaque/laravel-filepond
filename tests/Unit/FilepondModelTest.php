@@ -18,10 +18,10 @@ class FilepondModelTest extends TestCase
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
-            'mimetypes' => 'image/png',
+            'mimetype' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ];
 
         Filepond::create($data);
@@ -36,10 +36,10 @@ class FilepondModelTest extends TestCase
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
-            'mimetypes' => 'image/png',
+            'mimetype' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filename = 'new_filename.png';
@@ -47,7 +47,7 @@ class FilepondModelTest extends TestCase
         $filepond->filename = $filename;
         $filepond->save();
 
-        $this->assertEquals(true, $filepond->filename == $filename);
+        $this->assertEquals(true, $filepond->filename === $filename);
     }
 
     /** @test */
@@ -57,10 +57,10 @@ class FilepondModelTest extends TestCase
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
-            'mimetypes' => 'image/png',
+            'mimetype' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filepond->delete();
@@ -75,10 +75,10 @@ class FilepondModelTest extends TestCase
             'filepath' => Storage::disk(config('filepond.disk', 'public'))->path('fake_filename.png'),
             'filename' => 'fake_filename.png',
             'extension' => 'png',
-            'mimetypes' => 'image/png',
+            'mimetype' => 'image/png',
             'disk' => 'filepond',
             'created_by' => 1,
-            'expires_at' => now()->addMinutes(30)->toISOString(),
+            'expires_at' => now()->addMinutes(30),
         ]);
 
         $filepond->forceDelete();

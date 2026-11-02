@@ -2,10 +2,12 @@
 
 namespace RahulHaque\Filepond;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rule;
 use RahulHaque\Filepond\Console\FilepondClear;
+use RahulHaque\Filepond\Factories\UploaderManager;
 use RahulHaque\Filepond\Rules\FilepondRule;
 
 class FilepondServiceProvider extends ServiceProvider
@@ -48,6 +50,8 @@ class FilepondServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/filepond.php', 'filepond');
+
+        $this->app->singleton(UploaderManager::class, fn (Application $app) => new UploaderManager($app));
 
         $this->app->singleton('filepond', function () {
             return new Filepond;
