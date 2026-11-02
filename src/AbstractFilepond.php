@@ -2,6 +2,9 @@
 
 namespace RahulHaque\Filepond;
 
+use const UPLOAD_ERR_OK;
+
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Crypt;
@@ -196,25 +199,18 @@ abstract class AbstractFilepond
      */
     protected function createFileObject(Filepond $filepond)
     {
+        $driver = config('filesystems.disks.'.$this->tempDisk.'.driver');
+
+        if ($driver !== 'local') {
+            throw new Exception('Unable to create file object for ['.$this->tempDisk.'] disk driver.');
+        }
+
         return new UploadedFile(
             Storage::disk($this->tempDisk)->path($filepond->filepath),
             $filepond->filename,
-            $filepond->mimetypes,
-            \UPLOAD_ERR_OK,
+            $filepond->mimetype,
+            UPLOAD_ERR_OK,
             true
         );
-    }
-
-    /**
-     * Create Data URL from filepond model
-     * More at - https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs
-     *
-     * @return string
-     *
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
-    protected function createDataUrl(Filepond $filepond)
-    {
-        return 'data:'.$filepond->mimetypes.';base64,'.base64_encode(Storage::disk($this->tempDisk)->get($filepond->filepath));
     }
 }
