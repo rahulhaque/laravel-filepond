@@ -2,7 +2,7 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
-## 13.1.3 - 2026-10-25
+## 13.2.2 - 2026-11-03
 
 - Added `Filepond::field()->preview()` helper method to preview temporary uploads after form refresh. ✨
 - Added `@filepondPreview()` blade directive, does the same as above with less boilerplate. ✨
