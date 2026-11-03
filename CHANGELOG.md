@@ -2,6 +2,15 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 13.1.3 - 2026-10-25
+
+- Added `Filepond::field()->preview()` helper method to preview temporary uploads after form refresh. ✨
+- Added `@filepondPreview()` blade directive, does the same as above with less boilerplate. ✨
+- Restore route now streams file response instead of loading into memory. 🚀
+- Restore route enforces `max_previewable_file_size` server-side. 🐛
+- Restore route input validation and error handling improved. 🐛
+- New test cases added to support above changes. 🧪
+
 ## 13.1.2 - 2026-09-09
 
 - Addressed Laravel HTTP request changes in [v13.25.0](https://github.com/laravel/framework/issues/61356). 🐛
