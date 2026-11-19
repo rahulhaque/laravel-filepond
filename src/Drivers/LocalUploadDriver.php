@@ -48,41 +48,54 @@ class LocalUploadDriver implements UploaderInterface
     public function handleChunk(Request $request): int
     {
         $id = FilepondUtil::getFilepondId($request->patch);
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id.DIRECTORY_SEPARATOR);
+        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$id);
+        $tempFilePath = $dir.DIRECTORY_SEPARATOR.$id.'.temp';
 
         $contentLength = (int) $request->header('Content-Length');
         $uploadLength = (int) $request->header('Upload-Length');
         $uploadName = $request->header('Upload-Name');
         $uploadOffset = (int) $request->header('Upload-Offset');
 
-        $chunkSize = file_put_contents($dir.$uploadOffset, $request->getContent());
+        // If file is not found, filesize() will silently fail
+        // returning false which will then be casted to int 0
+        $uploadedSize = (int) @filesize($tempFilePath);
 
-        if ($chunkSize === false || $chunkSize === 0 || $contentLength !== $chunkSize) {
-            unlink($dir.$uploadOffset); // Remove invalid chunk to retry
+        // Check if the received chunk is in correct order
+        // If not, then return the offset to retry from
+        if ($uploadOffset !== $uploadedSize) {
+            return $uploadedSize;
+        }
+
+        $chunkFilePath = $dir.DIRECTORY_SEPARATOR.$uploadOffset.'.chunk';
+
+        $lastWrittenChunk = file_put_contents($chunkFilePath, $request->getContent());
+        // Check if chunk successfully written to disk
+        // If not, then delete the chunk and exit
+        if ($lastWrittenChunk === false || $lastWrittenChunk === 0 || $lastWrittenChunk !== $contentLength) {
+            unlink($chunkFilePath);
             throw new InvalidChunkException;
         }
 
-        $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
+        // If there is no error in saving chunk
+        // then append the chunk to temp file
+        $tempFile = fopen($tempFilePath, 'a+b');
+        $chunkFile = fopen($chunkFilePath, 'rb');
+        $lastMergedChunk = stream_copy_to_stream($chunkFile, $tempFile);
+        fclose($tempFile);
+        fclose($chunkFile);
+        unlink($chunkFilePath);
+
+        // Check if chunk successfully merged to file
+        // If not, then delete the corrupted file
+        if ($lastMergedChunk === false || $lastMergedChunk === 0 || $lastWrittenChunk !== $lastMergedChunk) {
+            unlink($tempFilePath);
+            throw new InvalidChunkException;
         }
 
-        if ($uploadLength === $size) {
-            $file = fopen($dir.$uploadName, 'w');
-            foreach ($chunks as $chunk) {
-                $uploadOffset = (int) basename($chunk);
+        $nextOffset = $uploadedSize + $lastWrittenChunk;
 
-                $chunkFile = fopen($chunk, 'r');
-                $chunkContent = fread($chunkFile, filesize($chunk));
-                fclose($chunkFile);
-
-                fseek($file, $uploadOffset);
-                fwrite($file, $chunkContent);
-
-                unlink($chunk);
-            }
-            fclose($file);
+        if ($nextOffset === $uploadLength) {
+            rename($tempFilePath, $dir.DIRECTORY_SEPARATOR.$uploadName);
 
             $filepond = $this->model::findOrFail($id);
 
@@ -95,22 +108,23 @@ class LocalUploadDriver implements UploaderInterface
             ]);
         }
 
-        return $size;
+        return $nextOffset;
     }
 
     public function calculateOffset(Request $request): int
     {
         $id = FilepondUtil::getFilepondId($request->patch);
         $filepond = $this->model::findOrFail($id);
-        $dir = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR);
 
-        $size = 0;
-        $chunks = glob($dir.'*');
-        foreach ($chunks as $chunk) {
-            $size += filesize($chunk);
+        $filepath = Storage::disk($this->tempDisk)->path($this->tempFolder.DIRECTORY_SEPARATOR.$filepond->id.DIRECTORY_SEPARATOR.$filepond->id.'.temp');
+
+        if (! is_file($filepath)) {
+            return 0;
         }
 
-        return $size;
+        clearstatcache(true, $filepath);
+
+        return filesize($filepath);
     }
 
     public function deleteFile(Request $request): bool

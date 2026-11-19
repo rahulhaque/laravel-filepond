@@ -42,7 +42,7 @@ class FilepondService
     {
         $field = FilepondUtil::getField($request);
 
-        return Validator::make($request->all(), [$field => $rules]);
+        return Validator::make(FilepondUtil::convertRequest($request), [$field => $rules]);
     }
 
     /**

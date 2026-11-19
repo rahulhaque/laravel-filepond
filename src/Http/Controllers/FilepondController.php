@@ -26,7 +26,7 @@ class FilepondController extends Controller
             return Response::make($service->initChunk($request), 200, ['content-type' => 'text/plain']);
         }
 
-        $validator = $service->validator($request, config('filepond.validation_rules', []));
+        $validator = $service->validator($request, config('filepond.validation_rules'));
 
         if ($validator->fails()) {
             return Response::make($validator->errors(), 422);

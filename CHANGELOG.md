@@ -2,6 +2,13 @@
 
 All notable changes to `laravel-filepond` will be documented in this file.
 
+## 12.5.7 - 2026-11-19
+
+- Addressed Laravel HTTP request changes in latest 12.x release. 🐛
+- Addressed Laravel storage path normalization changes in latest 12.x release. 🐛
+- Local chunk upload performance improvement. 🚀
+- New test cases added to support above changes. 🧪
+
 ## 12.5.6 - 2026-10-29
 
 - Added `Filepond::field()->preview()` helper method to preview temporary uploads after form refresh. ✨
